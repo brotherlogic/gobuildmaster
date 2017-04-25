@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package gobuildmaster;
+
+import "github.com/brotherlogic/gobuildslave/proto/slave.proto";
+
+message Config {
+  repeated Intent intents = 1;
+}
+
+message Intent {
+  gobuildslave.JobSpec spec = 1;
+  int32 masters = 2;
+  int32 slaves = 3;
+}
