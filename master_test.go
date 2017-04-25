@@ -3,6 +3,27 @@ package main
 import "testing"
 import pb "github.com/brotherlogic/gobuildmaster/proto"
 import pbs "github.com/brotherlogic/gobuildslave/proto"
+import pbd "github.com/brotherlogic/discovery/proto"
+
+type testChecker struct{}
+
+func (t *testChecker) assess(server string) *pbs.JobList {
+	if server == "server1" {
+		return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}
+	}
+	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test2"}}}}
+}
+
+func (t *testChecker) discover() *pbd.ServiceList {
+	return &pbd.ServiceList{Services: []*pbd.RegistryEntry{&pbd.RegistryEntry{Identifier: "server1", Name: "gobuildslave"}, &pbd.RegistryEntry{Identifier: "server2", Name: "gobuildslave"}}}
+}
+
+func TestPullData(t *testing.T) {
+	status := getFleetStatus(&testChecker{})
+	if val, ok := status["server1"]; !ok || len(val.Details) != 1 {
+		t.Errorf("Status has come back bad: %v", status)
+	}
+}
 
 func TestRunJob(t *testing.T) {
 	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Masters: 2}
