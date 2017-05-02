@@ -1,9 +1,12 @@
 package main
 
-import "testing"
-import pb "github.com/brotherlogic/gobuildmaster/proto"
-import pbs "github.com/brotherlogic/gobuildslave/proto"
-import pbd "github.com/brotherlogic/discovery/proto"
+import (
+	"testing"
+
+	pbd "github.com/brotherlogic/discovery/proto"
+	pb "github.com/brotherlogic/gobuildmaster/proto"
+	pbs "github.com/brotherlogic/gobuildslave/proto"
+)
 
 type testChecker struct{}
 
@@ -22,6 +25,18 @@ func TestPullData(t *testing.T) {
 	status := getFleetStatus(&testChecker{})
 	if val, ok := status["server1"]; !ok || len(val.Details) != 1 {
 		t.Errorf("Status has come back bad: %v", status)
+	}
+}
+
+func TestLoadConfig(t *testing.T) {
+	f := "testdata/testconfig.pb"
+	c, err := loadConfig(f)
+	if err != nil {
+		t.Errorf("Config load failed: %v", err)
+	}
+
+	if len(c.Intents) != 2 {
+		t.Errorf("Config parsing failed: %v", c)
 	}
 }
 
