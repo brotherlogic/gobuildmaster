@@ -1,10 +1,12 @@
 package main
 
 import (
+	"io/ioutil"
 	"log"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
+	"github.com/golang/protobuf/proto"
 
 	pbd "github.com/brotherlogic/discovery/proto"
 )
@@ -31,6 +33,13 @@ func getFleetStatus(c checker) map[string]*pbs.JobList {
 
 func configDiff(cm, cs *pb.Config) *pb.Config {
 	return cm
+}
+
+func loadConfig(f string) (*pb.Config, error) {
+	toload := &pb.Config{}
+	bytes, _ := ioutil.ReadFile(f)
+	proto.UnmarshalText(string(bytes), toload)
+	return toload, nil
 }
 
 func runJobs(c *pb.Config) []*pbs.JobSpec {
