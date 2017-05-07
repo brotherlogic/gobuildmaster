@@ -49,7 +49,7 @@ func TestRunJob(t *testing.T) {
 }
 
 func TestDiff(t *testing.T) {
-	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}}
+	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Masters: 1}
 	c1 := &pb.Config{Intents: []*pb.Intent{i1}}
 	c2 := &pb.Config{Intents: []*pb.Intent{}}
 
