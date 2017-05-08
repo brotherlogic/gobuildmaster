@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"strconv"
 	"time"
@@ -139,9 +140,15 @@ func main() {
 	if err != nil {
 		log.Fatalf("Fatal loading of config: %v", err)
 	}
+
+	var sync = flag.Bool("once", true, "One pass intent match")
 	s := Server{&goserver.GoServer{}, config, true}
-	s.Register = s
-	s.PrepServer()
-	s.RegisterServer("gobuildmaster", false)
-	s.Serve()
+	if *sync {
+		s.MatchIntent()
+	} else {
+		s.Register = s
+		s.PrepServer()
+		s.RegisterServer("gobuildmaster", false)
+		s.Serve()
+	}
 }
