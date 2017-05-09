@@ -131,6 +131,7 @@ func (s Server) MatchIntent() {
 	state := getConfig(&mainChecker{})
 	diff := configDiff(s.config, state)
 	joblist := runJobs(diff)
+	log.Printf("FOUND %v from %v and %v", joblist, state, diff)
 	for _, job := range joblist {
 		runJob(job)
 	}
