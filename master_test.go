@@ -40,6 +40,18 @@ func TestLoadConfig(t *testing.T) {
 	}
 }
 
+func TestLoadNamedConfig(t *testing.T) {
+	f := "testdata/config_test.pb"
+	c, err := loadConfig(f)
+	if err != nil {
+		t.Errorf("Config load failed: %v", err)
+	}
+
+	if len(c.Intents) != 1 || c.Intents[0].Spec.Name != "github.com/brotherlogic/cardserver" {
+		t.Errorf("Config parsing failed: %v", c)
+	}
+}
+
 func TestRunJob(t *testing.T) {
 	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Masters: 2}
 	jobs := runJobs(&pb.Config{Intents: []*pb.Intent{i1}})
