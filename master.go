@@ -22,7 +22,7 @@ func getFleetStatus(c checker) map[string]*pbs.JobList {
 	for _, service := range c.discover().Services {
 		log.Printf("Found: %v", service)
 		if service.Name == "gobuildslave" {
-			joblist := c.assess(service.Name)
+			joblist := c.assess(service.Identifier)
 			log.Printf("LIST %v", joblist)
 			res[service.Identifier] = joblist
 		}
