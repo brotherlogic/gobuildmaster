@@ -29,7 +29,7 @@ type Server struct {
 type mainChecker struct{}
 
 func getIP(servertype, servername string) (string, int) {
-	conn, _ := grpc.Dial("192.168.86.34:5555", grpc.WithInsecure())
+	conn, _ := grpc.Dial("192.168.86.34:50055", grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
