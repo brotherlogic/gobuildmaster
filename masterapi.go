@@ -64,6 +64,7 @@ func (t *mainChecker) assess(server string) *pbs.JobList {
 }
 
 func runJob(job *pbs.JobSpec) {
+	log.Printf("RUNNING: %v", job)
 	ip, port := getIP("gobuildslave", job.Server)
 	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 	defer conn.Close()
