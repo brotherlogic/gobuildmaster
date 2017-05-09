@@ -63,9 +63,19 @@ func (t *mainChecker) assess(server string) *pbs.JobList {
 	return list
 }
 
-func runJob(job *pbs.JobSpec) {
-	log.Printf("RUNNING: %v", job)
-	ip, port := getIP("gobuildslave", job.Server)
+// Find the first available server
+func chooseServer(job *pbs.JobSpec, c checker) string {
+	for _, service := range c.discover().Services {
+		if service.Name == "gobuildslave" {
+			return service.Identifier
+		}
+	}
+	return ""
+}
+
+func runJob(job *pbs.JobSpec, server string) {
+	log.Printf("RUNNING: %v on %v", job, server)
+	ip, port := getIP("gobuildslave", server)
 	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 	defer conn.Close()
 
@@ -133,7 +143,7 @@ func (s Server) MatchIntent() {
 	joblist := runJobs(diff)
 	log.Printf("FOUND %v from %v and %v", joblist, state, s.config)
 	for _, job := range joblist {
-		runJob(job)
+		runJob(job, chooseServer(job, &mainChecker{}))
 	}
 	//}
 }
