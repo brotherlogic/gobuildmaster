@@ -38,6 +38,7 @@ func getIP(servertype, servername string) (string, int) {
 		return "", -1
 	}
 	for _, s := range r.Services {
+		log.Printf("Does %v = %v and %v = %v?", s.Name, servertype, s.Identifier, servername)
 		if s.Name == servertype && s.Identifier == servername {
 			return s.Ip, int(s.Port)
 		}
