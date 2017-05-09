@@ -74,7 +74,7 @@ func runJob(job *pbs.JobSpec) {
 func (t *mainChecker) discover() *pbd.ServiceList {
 	ret := &pbd.ServiceList{}
 
-	conn, _ := grpc.Dial("192.168.86.34:5555", grpc.WithInsecure())
+	conn, _ := grpc.Dial("192.168.86.34:50055", grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
