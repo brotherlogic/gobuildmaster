@@ -81,6 +81,7 @@ func runJob(job *pbs.JobSpec, server string) {
 
 	slave := pbs.NewGoBuildSlaveClient(conn)
 	slave.Run(context.Background(), job)
+	log.Printf("RUN COMMAND SENT %v", job)
 }
 
 func (t *mainChecker) discover() *pbd.ServiceList {
