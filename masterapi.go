@@ -143,6 +143,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Fatal loading of config: %v", err)
 	}
+	log.Printf("READ: %v", config)
 
 	var sync = flag.Bool("once", true, "One pass intent match")
 	s := Server{&goserver.GoServer{}, config, true}
