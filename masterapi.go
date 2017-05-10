@@ -50,6 +50,7 @@ func getIP(servertype, servername string) (string, int) {
 func (t *mainChecker) assess(server string) *pbs.JobList {
 	list := &pbs.JobList{}
 
+	log.Printf("Assessing server %v", server)
 	ip, port := getIP("gobuildslave", server)
 	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 	defer conn.Close()
@@ -57,8 +58,11 @@ func (t *mainChecker) assess(server string) *pbs.JobList {
 	slave := pbs.NewGoBuildSlaveClient(conn)
 	r, err := slave.List(context.Background(), &pbs.Empty{})
 	if err == nil {
+		log.Printf("FOUND %v", r)
 		return r
 	}
+
+	log.Printf("Error in listing: %v", err)
 
 	return list
 }
@@ -92,6 +96,7 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
 	r, err := registry.ListAllServices(context.Background(), &pbd.Empty{})
+	log.Printf("DISCOVERED: %v", r)
 	if err == nil {
 		for _, s := range r.Services {
 			ret.Services = append(ret.Services, s)
