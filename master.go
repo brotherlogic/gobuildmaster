@@ -32,7 +32,31 @@ func getFleetStatus(c checker) map[string]*pbs.JobList {
 }
 
 func configDiff(cm, cs *pb.Config) *pb.Config {
-	return cm
+	retConfig := &pb.Config{}
+
+	log.Printf("COMPARE %v to %v", cm, cs)
+	for _, entry := range cm.Intents {
+		nIntent := &pb.Intent{}
+		nIntent.Spec = entry.Spec
+		nIntent.Masters = entry.Masters
+		nIntent.Slaves = entry.Slaves
+		retConfig.Intents = append(retConfig.Intents, nIntent)
+	}
+
+	log.Printf("FIRST PASS: %v", retConfig)
+	for _, entry := range cs.Intents {
+		for _, pair := range retConfig.Intents {
+			if entry.Spec.Name == pair.Spec.Name {
+				log.Printf("FOUND: %v", pair)
+				pair.Masters -= entry.Masters
+				pair.Slaves -= entry.Slaves
+				log.Printf("RESULT: %v", retConfig)
+			}
+		}
+	}
+
+	log.Printf("RETURNING: %v", retConfig)
+	return retConfig
 }
 
 func loadConfig(f string) (*pb.Config, error) {
