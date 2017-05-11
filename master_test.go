@@ -71,6 +71,17 @@ func TestDiff(t *testing.T) {
 	}
 }
 
+func TestDiffWhenMatch(t *testing.T) {
+	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Masters: 1}
+	c1 := &pb.Config{Intents: []*pb.Intent{i1}}
+	c2 := &pb.Config{Intents: []*pb.Intent{i1}}
+
+	diff := configDiff(c1, c2)
+	if len(diff.Intents) != 0 && diff.Intents[0].Masters != 0 {
+		t.Errorf("Error in diff: %v", diff)
+	}
+}
+
 func TestClean(t *testing.T) {
 	blank()
 }
