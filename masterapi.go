@@ -163,6 +163,8 @@ func main() {
 
 	var sync = flag.Bool("once", true, "One pass intent match")
 	s := Server{&goserver.GoServer{}, config, true}
+
+	flag.Parse()
 	if *sync {
 		s.MatchIntent()
 	} else {
