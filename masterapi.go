@@ -74,13 +74,15 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 
 func runJob(job *pbs.JobSpec, server string) {
 	log.Printf("RUNNING: %v on %v", job, server)
-	ip, port := getIP("gobuildslave", server)
-	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
-	defer conn.Close()
+	if server != "" {
+		ip, port := getIP("gobuildslave", server)
+		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+		defer conn.Close()
 
-	slave := pbs.NewGoBuildSlaveClient(conn)
-	slave.Run(context.Background(), job)
-	log.Printf("RUN COMMAND SENT %v", job)
+		slave := pbs.NewGoBuildSlaveClient(conn)
+		slave.Run(context.Background(), job)
+		log.Printf("RUN COMMAND SENT %v", job)
+	}
 }
 
 func (t *mainChecker) discover() *pbd.ServiceList {
