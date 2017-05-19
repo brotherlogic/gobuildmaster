@@ -54,6 +54,18 @@ func TestLoadNamedConfig(t *testing.T) {
 	}
 }
 
+func TestLoadMainConfig(t *testing.T) {
+	f := "config.pb"
+	c, err := loadConfig(f)
+	if err != nil {
+		t.Errorf("Config load failed: %v", err)
+	}
+
+	if len(c.Intents) == 0 {
+		t.Errorf("Config parsing failed: %v", c)
+	}
+}
+
 func TestRunJob(t *testing.T) {
 	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Masters: 2}
 	jobs := runJobs(&pb.Config{Intents: []*pb.Intent{i1}})
