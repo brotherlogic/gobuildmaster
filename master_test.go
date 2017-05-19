@@ -8,21 +8,23 @@ import (
 	pbs "github.com/brotherlogic/gobuildslave/proto"
 )
 
-type testChecker struct{}
-
-func (t *testChecker) assess(server string) *pbs.JobList {
-	if server == "server1" {
-		return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}
-	}
-	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test2"}}}}
+type testChecker struct {
+	machines []*pbs.Config
 }
 
-func (t *testChecker) discover() *pbd.ServiceList {
+func (t testChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
+	if server == "server1" {
+		return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}, t.machines[0]
+	}
+	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test2"}}}}, t.machines[1]
+}
+
+func (t testChecker) discover() *pbd.ServiceList {
 	return &pbd.ServiceList{Services: []*pbd.RegistryEntry{&pbd.RegistryEntry{Identifier: "server1", Name: "gobuildslave"}, &pbd.RegistryEntry{Identifier: "server2", Name: "gobuildslave"}}}
 }
 
 func TestPullData(t *testing.T) {
-	status := getFleetStatus(&testChecker{})
+	status, _ := getFleetStatus(&testChecker{machines: []*pbs.Config{&pbs.Config{}, &pbs.Config{}}})
 	if val, ok := status["server1"]; !ok || len(val.Details) != 1 {
 		t.Errorf("Status has come back bad: %v", status)
 	}
@@ -82,6 +84,26 @@ func TestDiffWhenMatch(t *testing.T) {
 	}
 }
 
-func TestClean(t *testing.T) {
-	blank()
+func TestLoadOntoDiskMachine(t *testing.T) {
+	conf := &pbs.JobSpec{Name: "needsdisk", Disk: 1024}
+
+	machine1 := &pbs.Config{Disk: 100}
+	machine2 := &pbs.Config{Disk: 2000}
+
+	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
+	if server != "server2" {
+		t.Errorf("Failed to select correct server: %v", server)
+	}
+}
+
+func TestMissServer(t *testing.T) {
+	conf := &pbs.JobSpec{Name: "needsdisk", Disk: 1024}
+
+	machine1 := &pbs.Config{Disk: 100}
+	machine2 := &pbs.Config{Disk: 100}
+
+	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
+	if server != "" {
+		t.Errorf("Found a server even though one is not there: %v", server)
+	}
 }
