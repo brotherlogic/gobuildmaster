@@ -12,23 +12,38 @@ import (
 )
 
 type checker interface {
-	assess(server string) *pbs.JobList
+	assess(server string) (*pbs.JobList, *pbs.Config)
 	discover() *pbd.ServiceList
 }
 
-func getFleetStatus(c checker) map[string]*pbs.JobList {
-	res := make(map[string]*pbs.JobList)
+func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config) {
+	resJ := make(map[string]*pbs.JobList)
+	resC := make(map[string]*pbs.Config)
 
 	for _, service := range c.discover().Services {
 		log.Printf("Found: %v", service)
 		if service.Name == "gobuildslave" {
-			joblist := c.assess(service.Identifier)
-			log.Printf("LIST %v", joblist)
-			res[service.Identifier] = joblist
+			log.Printf("HERE: %v", service)
+			joblist, config := c.assess(service.Identifier)
+			resJ[service.Identifier] = joblist
+			resC[service.Identifier] = config
 		}
 	}
 
-	return res
+	return resJ, resC
+}
+
+// Find the first available server
+func chooseServer(job *pbs.JobSpec, c checker) string {
+	for _, service := range c.discover().Services {
+		if service.Name == "gobuildslave" {
+			_, sc := c.assess(service.Identifier)
+			if sc.GetDisk() > job.GetDisk() {
+				return service.Identifier
+			}
+		}
+	}
+	return ""
 }
 
 func configDiff(cm, cs *pb.Config) *pb.Config {
@@ -75,8 +90,4 @@ func runJobs(c *pb.Config) []*pbs.JobSpec {
 	}
 
 	return jobs
-}
-
-func blank() {
-
 }

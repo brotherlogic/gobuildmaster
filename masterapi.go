@@ -47,8 +47,9 @@ func getIP(servertype, servername string) (string, int) {
 	return "", -1
 }
 
-func (t *mainChecker) assess(server string) *pbs.JobList {
+func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	list := &pbs.JobList{}
+	conf := &pbs.Config{}
 
 	log.Printf("Assessing server %v", server)
 	ip, port := getIP("gobuildslave", server)
@@ -57,24 +58,18 @@ func (t *mainChecker) assess(server string) *pbs.JobList {
 
 	slave := pbs.NewGoBuildSlaveClient(conn)
 	r, err := slave.List(context.Background(), &pbs.Empty{})
-	if err == nil {
-		log.Printf("FOUND %v", r)
-		return r
+	if err != nil {
+		log.Printf("Err %v", err)
+		return list, conf
 	}
 
-	log.Printf("Error in listing: %v", err)
-
-	return list
-}
-
-// Find the first available server
-func chooseServer(job *pbs.JobSpec, c checker) string {
-	for _, service := range c.discover().Services {
-		if service.Name == "gobuildslave" {
-			return service.Identifier
-		}
+	r2, err := slave.GetConfig(context.Background(), &pbs.Empty{})
+	if err != nil {
+		log.Printf("Err %v", err)
+		return list, conf
 	}
-	return ""
+
+	return r, r2
 }
 
 func runJob(job *pbs.JobSpec, server string) {
@@ -117,7 +112,7 @@ func (s Server) ReportHealth() bool {
 }
 
 func getConfig(c checker) *pb.Config {
-	list := getFleetStatus(c)
+	list, _ := getFleetStatus(c)
 	config := &pb.Config{}
 
 	for _, jlist := range list {
