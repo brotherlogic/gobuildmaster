@@ -158,7 +158,7 @@ func main() {
 	}
 	log.Printf("READ: %v", config)
 
-	var sync = flag.Bool("once", true, "One pass intent match")
+	var sync = flag.Bool("once", false, "One pass intent match")
 	s := Server{&goserver.GoServer{}, config, true}
 
 	flag.Parse()
