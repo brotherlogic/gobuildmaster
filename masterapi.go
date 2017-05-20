@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"io/ioutil"
 	"log"
 	"strconv"
 	"time"
@@ -161,7 +162,14 @@ func main() {
 	var sync = flag.Bool("once", false, "One pass intent match")
 	s := Server{&goserver.GoServer{}, config, true}
 
+	var quiet = flag.Bool("quiet", true, "Show all output")
 	flag.Parse()
+
+	if *quiet {
+		log.SetFlags(0)
+		log.SetOutput(ioutil.Discard)
+	}
+
 	if *sync {
 		s.MatchIntent()
 	} else {
