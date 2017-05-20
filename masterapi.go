@@ -138,17 +138,17 @@ func getConfig(c checker) *pb.Config {
 
 // MatchIntent tries to match the intent with the state of production
 func (s Server) MatchIntent() {
-	//for s.serving {
-	time.Sleep(intentWait)
+	for s.serving {
+		time.Sleep(intentWait)
 
-	state := getConfig(&mainChecker{})
-	diff := configDiff(s.config, state)
-	joblist := runJobs(diff)
-	log.Printf("FOUND %v from %v and %v", joblist, state, s.config)
-	for _, job := range joblist {
-		runJob(job, chooseServer(job, &mainChecker{}))
+		state := getConfig(&mainChecker{})
+		diff := configDiff(s.config, state)
+		joblist := runJobs(diff)
+		log.Printf("FOUND %v from %v and %v", joblist, state, s.config)
+		for _, job := range joblist {
+			runJob(job, chooseServer(job, &mainChecker{}))
+		}
 	}
-	//}
 }
 
 func main() {
@@ -168,6 +168,7 @@ func main() {
 		s.Register = s
 		s.PrepServer()
 		s.RegisterServer("gobuildmaster", false)
+		s.RegisterServingTask(s.MatchIntent)
 		s.Serve()
 	}
 }
