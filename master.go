@@ -27,6 +27,12 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 			joblist, config := c.assess(service.Identifier)
 			resJ[service.Identifier] = joblist
 			resC[service.Identifier] = config
+
+			for i := range resJ[service.Identifier].Details {
+				if !resJ[service.Identifier].Details[i].Running {
+					resJ[service.Identifier].Details = append(resJ[service.Identifier].Details[:i], resJ[service.Identifier].Details[i+1:]...)
+				}
+			}
 		}
 	}
 
