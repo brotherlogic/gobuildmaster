@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"math/rand"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
@@ -43,7 +44,9 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 
 // Find the first available server
 func chooseServer(job *pbs.JobSpec, c checker) string {
-	for _, service := range c.discover().Services {
+	services := c.discover().Services
+	for i := range rand.Perm(len(services)) {
+		service := services[i]
 		if service.Name == "gobuildslave" {
 			_, sc := c.assess(service.Identifier)
 			if sc.GetDisk() > job.GetDisk() {
