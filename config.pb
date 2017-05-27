@@ -13,3 +13,10 @@ intents <
   masters: 1
   slaves: 0
 >
+intents <
+  spec <
+    name: "github.com/brotherlogic/instasearch"
+  >
+  masters: 1
+  slaves: 0
+>
