@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"testing"
 
 	pbd "github.com/brotherlogic/discovery/proto"
@@ -72,6 +73,9 @@ func TestLoadMainConfig(t *testing.T) {
 	if len(c.Intents) == 0 {
 		t.Errorf("Config parsing failed: %v", c)
 	}
+
+	log.Printf("READ CONFIG")
+	log.Printf("%v", c)
 }
 
 func TestRunJob(t *testing.T) {

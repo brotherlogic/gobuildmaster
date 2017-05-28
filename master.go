@@ -49,7 +49,7 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 		service := services[i]
 		if service.Name == "gobuildslave" {
 			_, sc := c.assess(service.Identifier)
-			if sc.GetDisk() > job.GetDisk() {
+			if sc.Disk > job.Disk {
 				return service.Identifier
 			}
 		}

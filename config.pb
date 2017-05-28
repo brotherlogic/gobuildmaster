@@ -16,6 +16,8 @@ intents <
 intents <
   spec <
     name: "github.com/brotherlogic/instasearch"
+    args: "--hashtags"
+    args: "bendandnisrene,nisreneandben"
   >
   masters: 1
   slaves: 0
