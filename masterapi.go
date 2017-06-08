@@ -30,7 +30,7 @@ type Server struct {
 type mainChecker struct{}
 
 func getIP(servertype, servername string) (string, int) {
-	conn, _ := grpc.Dial("192.168.86.34:50055", grpc.WithInsecure())
+	conn, _ := grpc.Dial("192.168.86.64:50055", grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
@@ -89,7 +89,7 @@ func runJob(job *pbs.JobSpec, server string) {
 func (t *mainChecker) discover() *pbd.ServiceList {
 	ret := &pbd.ServiceList{}
 
-	conn, _ := grpc.Dial("192.168.86.34:50055", grpc.WithInsecure())
+	conn, _ := grpc.Dial("192.168.86.64:50055", grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
