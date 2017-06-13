@@ -7,7 +7,7 @@ intents <
 >
 intents <
   spec <
-    name: "github.com/brotherlogic/recorgetter"
+    name: "github.com/brotherlogic/recordgetter"
   >
   masters: 1
   slaves: 0
