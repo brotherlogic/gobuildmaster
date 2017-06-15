@@ -2,23 +2,20 @@ intents <
   spec <
     name: "github.com/brotherlogic/cardserver"
   >
-  masters: 1
-  slaves: 0
+  count: 1
 >
 intents <
   spec <
     name: "github.com/brotherlogic/recordgetter"
   >
-  masters: 1
-  slaves: 0
+  count: 1
 >
 intents <
   spec <
     name: "github.com/brotherlogic/keystore"
     disk: 1048576
   >
-  masters: 1
-  slaves: 0
+  count: 1
 >
 intents <
   spec <
@@ -26,6 +23,5 @@ intents <
     args: "--hashtags"
     args: "benandnisrene,nisreneandben"
   >
-  masters: 1
-  slaves: 0
+  count: 1
 >

@@ -10,6 +10,5 @@ message Config {
 
 message Intent {
   gobuildslave.JobSpec spec = 1;
-  int32 masters = 2;
-  int32 slaves = 3;
+  int32 count = 2;
 }
