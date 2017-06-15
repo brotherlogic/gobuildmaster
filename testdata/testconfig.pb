@@ -1,6 +1,6 @@
 intents <
-  masters: 2
+  count: 2
 >
 intents <
-  masters: 1
+  count: 1
 >

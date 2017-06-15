@@ -123,13 +123,13 @@ func getConfig(c checker) *pb.Config {
 			found := false
 			for _, ij := range config.Intents {
 				if job.Spec.Name == ij.Spec.Name {
-					ij.Masters++
+					ij.Count++
 					found = true
 				}
 			}
 
 			if !found {
-				config.Intents = append(config.Intents, &pb.Intent{Spec: &pbs.JobSpec{Name: job.Spec.Name}, Masters: 1})
+				config.Intents = append(config.Intents, &pb.Intent{Spec: &pbs.JobSpec{Name: job.Spec.Name}, Count: 1})
 			}
 		}
 	}

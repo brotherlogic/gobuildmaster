@@ -64,8 +64,7 @@ func configDiff(cm, cs *pb.Config) *pb.Config {
 	for _, entry := range cm.Intents {
 		nIntent := &pb.Intent{}
 		nIntent.Spec = entry.Spec
-		nIntent.Masters = entry.Masters
-		nIntent.Slaves = entry.Slaves
+		nIntent.Count = entry.Count
 		retConfig.Intents = append(retConfig.Intents, nIntent)
 	}
 
@@ -74,8 +73,7 @@ func configDiff(cm, cs *pb.Config) *pb.Config {
 		for _, pair := range retConfig.Intents {
 			if entry.Spec.Name == pair.Spec.Name {
 				log.Printf("FOUND: %v", pair)
-				pair.Masters -= entry.Masters
-				pair.Slaves -= entry.Slaves
+				pair.Count -= entry.Count
 				log.Printf("RESULT: %v", retConfig)
 			}
 		}
@@ -95,7 +93,7 @@ func loadConfig(f string) (*pb.Config, error) {
 func runJobs(c *pb.Config) []*pbs.JobSpec {
 	var jobs []*pbs.JobSpec
 	for _, j := range c.Intents {
-		for i := 0; i < int(j.Masters); i++ {
+		for i := 0; i < int(j.Count); i++ {
 			jobs = append(jobs, j.Spec)
 		}
 	}

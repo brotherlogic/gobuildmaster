@@ -79,7 +79,7 @@ func TestLoadMainConfig(t *testing.T) {
 }
 
 func TestRunJob(t *testing.T) {
-	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Masters: 2}
+	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Count: 2}
 	jobs := runJobs(&pb.Config{Intents: []*pb.Intent{i1}})
 	if len(jobs) != 2 || jobs[0].Name != "testing" || jobs[1].Name != "testing" {
 		t.Errorf("Run jobs produced bad result: %v", jobs)
@@ -87,7 +87,7 @@ func TestRunJob(t *testing.T) {
 }
 
 func TestDiff(t *testing.T) {
-	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Masters: 1}
+	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Count: 1}
 	c1 := &pb.Config{Intents: []*pb.Intent{i1}}
 	c2 := &pb.Config{Intents: []*pb.Intent{}}
 
@@ -98,12 +98,12 @@ func TestDiff(t *testing.T) {
 }
 
 func TestDiffWhenMatch(t *testing.T) {
-	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Masters: 1}
+	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Count: 1}
 	c1 := &pb.Config{Intents: []*pb.Intent{i1}}
 	c2 := &pb.Config{Intents: []*pb.Intent{i1}}
 
 	diff := configDiff(c1, c2)
-	if len(diff.Intents) != 0 && diff.Intents[0].Masters != 0 {
+	if len(diff.Intents) != 0 && diff.Intents[0].Count != 0 {
 		t.Errorf("Error in diff: %v", diff)
 	}
 }
