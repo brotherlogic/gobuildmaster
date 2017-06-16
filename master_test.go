@@ -81,6 +81,7 @@ func TestLoadMainConfig(t *testing.T) {
 func TestRunJob(t *testing.T) {
 	i1 := &pb.Intent{Spec: &pbs.JobSpec{Name: "testing"}, Count: 2}
 	jobs := runJobs(&pb.Config{Intents: []*pb.Intent{i1}})
+	log.Printf("RUN ON: %v", jobs)
 	if len(jobs) != 2 || jobs[0].Name != "testing" || jobs[1].Name != "testing" {
 		t.Errorf("Run jobs produced bad result: %v", jobs)
 	}
@@ -117,6 +118,17 @@ func TestLoadOntoDiskMachine(t *testing.T) {
 	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
 	if server != "server2" {
 		t.Errorf("Failed to select correct server: %v", server)
+	}
+}
+
+func TestDoubleLoadServer(t *testing.T) {
+	conf := &pbs.JobSpec{Name: "test1"}
+	machine1 := &pbs.Config{Disk: 100}
+	machine2 := &pbs.Config{Disk: 100}
+	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
+
+	if server == "server1" {
+		t.Errorf("Loaded on server1 even though job was running there: %v", server)
 	}
 }
 

@@ -47,10 +47,22 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 	services := c.discover().Services
 	for i := range rand.Perm(len(services)) {
 		service := services[i]
+		log.Printf("Trying %v", service)
 		if service.Name == "gobuildslave" {
-			_, sc := c.assess(service.Identifier)
-			if sc.Disk > job.Disk {
-				return service.Identifier
+			jobs, sc := c.assess(service.Identifier)
+
+			//Don't accept a server which is already running this job
+			jobfine := true
+			for _, j := range jobs.Details {
+				log.Printf("%v and %v", job, j.Spec)
+				if j.Spec.Name == job.Name {
+					jobfine = false
+				}
+			}
+			if jobfine {
+				if sc.Disk > job.Disk {
+					return service.Identifier
+				}
 			}
 		}
 	}
