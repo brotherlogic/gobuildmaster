@@ -48,6 +48,7 @@ func main() {
 				log.Printf("Error building job: %v", err)
 			}
 			log.Printf("Actual: %v", res.Current)
+			log.Printf("Desire: %v", res.Desired)
 		}
 	}
 }
