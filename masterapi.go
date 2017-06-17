@@ -129,6 +129,8 @@ func (s Server) Compare(ctx context.Context, in *pb.Empty) (*pb.CompareResponse,
 			cc.Intents = append(cc.Intents, &pb.Intent{Spec: job.GetSpec()})
 		}
 	}
+	resp.Current = cc
+	resp.Desired = s.config
 
 	return resp, nil
 }
