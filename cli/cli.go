@@ -39,13 +39,16 @@ func main() {
 		case "list":
 			host, port := findServer("gobuildmaster")
 
-			conn, _ := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
+			conn, err := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
+			if err != nil {
+				log.Fatalf("Cannot dial master: %v", err)
+			}
 			defer conn.Close()
 
 			registry := pb.NewGoBuildMasterClient(conn)
 			res, err := registry.Compare(context.Background(), &pb.Empty{})
 			if err != nil {
-				log.Printf("Error building job: %v", err)
+				log.Fatalf("Error doing compare job: %v", err)
 			}
 			log.Printf("Actual: %v", res.Current)
 			log.Printf("Desire: %v", res.Desired)
