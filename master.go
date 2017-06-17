@@ -39,6 +39,7 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 		}
 	}
 
+	log.Printf("RETURNING FLEET STATUS: %v", resJ)
 	return resJ, resC
 }
 
