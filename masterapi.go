@@ -114,6 +114,11 @@ func (s Server) ReportHealth() bool {
 	return true
 }
 
+// Mote promotes/demotes this server
+func (s Server) Mote(master bool) error {
+	return nil
+}
+
 func getConfig(c checker) *pb.Config {
 	list, _ := getFleetStatus(c)
 	config := &pb.Config{}
