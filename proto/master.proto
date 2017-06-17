@@ -12,3 +12,14 @@ message Intent {
   gobuildslave.JobSpec spec = 1;
   int32 count = 2;
 }
+
+message Empty {}
+
+message CompareResponse {
+  Config current = 1;
+  Config desired = 2;
+}
+
+service GoBuildMaster {
+	rpc Compare(Empty) returns (CompareResponse) {};
+}
