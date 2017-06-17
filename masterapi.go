@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"io/ioutil"
 	"log"
@@ -9,6 +8,7 @@ import (
 	"time"
 
 	"github.com/brotherlogic/goserver"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	pbd "github.com/brotherlogic/discovery/proto"
@@ -106,7 +106,7 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 
 // DoRegister Registers this server
 func (s Server) DoRegister(server *grpc.Server) {
-	// Do nothing
+	pb.RegisterGoBuildMasterServer(server, &s)
 }
 
 // ReportHealth determines if the server is healthy
@@ -117,6 +117,20 @@ func (s Server) ReportHealth() bool {
 // Mote promotes/demotes this server
 func (s Server) Mote(master bool) error {
 	return nil
+}
+
+//Compare compares current state to desired state
+func (s Server) Compare(ctx context.Context, in *pb.Empty) (*pb.CompareResponse, error) {
+	resp := &pb.CompareResponse{}
+	list, _ := getFleetStatus(&mainChecker{})
+	cc := &pb.Config{}
+	for _, jlist := range list {
+		for _, job := range jlist.GetDetails() {
+			cc.Intents = append(cc.Intents, &pb.Intent{Spec: job.GetSpec()})
+		}
+	}
+
+	return resp, nil
 }
 
 func getConfig(c checker) *pb.Config {
