@@ -56,7 +56,7 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 			jobfine := true
 			for _, j := range jobs.Details {
 				log.Printf("%v and %v", job, j.Spec)
-				if j.Spec.Name == job.Name {
+				if j.Spec.Name == job.Name && j.Running {
 					jobfine = false
 				}
 			}
