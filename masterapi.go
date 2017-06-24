@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	intentWait = 1000
+	intentWait = time.Second
 )
 
 // Server the main server type
