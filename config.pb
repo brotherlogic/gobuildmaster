@@ -1,5 +1,11 @@
 intents <
   spec <
+    name: "github.com/brotherlogic/cardserver"
+  >
+  count: 1
+>
+intents <
+  spec <
     name: "github.com/brotherlogic/recordgetter"
   >
   count: 1
