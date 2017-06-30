@@ -12,6 +12,12 @@ intents <
 >
 intents <
   spec <
+    name: "github.com/brotherlogic/githubcard"
+  >
+  count: 1
+>
+intents <
+  spec <
     name: "github.com/brotherlogic/beer"
   >
   count: 1

@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	intentWait = 1000
+	intentWait = time.Second
 )
 
 // Server the main server type
@@ -41,6 +41,7 @@ func getIP(servertype, servername string) (string, int) {
 	for _, s := range r.Services {
 		log.Printf("Does %v = %v and %v = %v?", s.Name, servertype, s.Identifier, servername)
 		if s.Name == servertype && s.Identifier == servername {
+			log.Printf("RETURNING: %v", s)
 			return s.Ip, int(s.Port)
 		}
 	}
