@@ -164,13 +164,17 @@ func (s Server) MatchIntent() {
 	for s.serving {
 		time.Sleep(intentWait)
 
+		log.Printf("Getting state")
 		state := getConfig(&mainChecker{})
+		log.Printf("Computing Diff")
 		diff := configDiff(s.config, state)
+		log.Printf("Determining jobs to run")
 		joblist := runJobs(diff)
-		log.Printf("FOUND %v from %v and %v", joblist, state, s.config)
+		log.Printf("MATCH FOUND %v from %v and %v", joblist, state, s.config)
 		for _, job := range joblist {
 			runJob(job, chooseServer(job, &mainChecker{}))
 		}
+		log.Printf("Completed Intent Run")
 	}
 }
 
