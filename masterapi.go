@@ -55,7 +55,9 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 
 	log.Printf("Assessing server %v", server)
 	ip, port := getIP("gobuildslave", server)
-	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	conn, _ := grpc.DialContext(ctx, ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 	defer conn.Close()
 
 	slave := pbs.NewGoBuildSlaveClient(conn)
