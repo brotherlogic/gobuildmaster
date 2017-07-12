@@ -80,7 +80,9 @@ func runJob(job *pbs.JobSpec, server string) {
 	log.Printf("RUNNING: %v on %v", job, server)
 	if server != "" {
 		ip, port := getIP("gobuildslave", server)
-		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		conn, _ := grpc.DialContext(ctx, ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 		defer conn.Close()
 
 		slave := pbs.NewGoBuildSlaveClient(conn)
