@@ -24,7 +24,7 @@ intents <
 >
 intents <
   spec <
-    name: "github.com/brotherlogic/beer"
+    name: "github.com/brotherlogic/beerserver"
   >
   count: 1
 >
