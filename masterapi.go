@@ -204,6 +204,7 @@ func main() {
 	} else {
 		s.Register = s
 		s.PrepServer()
+		s.GoServer.Killme = false
 		s.RegisterServer("gobuildmaster", false)
 		s.RegisterServingTask(s.MatchIntent)
 		s.Serve()
