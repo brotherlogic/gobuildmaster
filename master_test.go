@@ -16,9 +16,9 @@ type testChecker struct {
 
 func (t testChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	if server == "server1" {
-		return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}, Running: true}}}, t.machines[0]
+		return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}, t.machines[0]
 	}
-	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test2"}, Running: t.running}}}, t.machines[1]
+	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test2"}}}}, t.machines[1]
 }
 
 func (t testChecker) discover() *pbd.ServiceList {
@@ -34,7 +34,7 @@ func TestPullData(t *testing.T) {
 
 func TestFleetCount(t *testing.T) {
 	status, _ := getFleetStatus(&testChecker{machines: []*pbs.Config{&pbs.Config{}, &pbs.Config{}}, running: false})
-	if val, ok := status["server2"]; !ok || len(val.Details) != 0 {
+	if val, ok := status["server2"]; !ok || len(val.Details) != 1 {
 		t.Errorf("Status has come back good when not running: %v", val)
 	}
 }
