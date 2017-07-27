@@ -28,14 +28,6 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 			joblist, config := c.assess(service.Identifier)
 			resJ[service.Identifier] = joblist
 			resC[service.Identifier] = config
-
-			sub := 0
-			for i := range resJ[service.Identifier].Details {
-				if !resJ[service.Identifier].Details[i-sub].Running {
-					resJ[service.Identifier].Details = append(resJ[service.Identifier].Details[:(i-sub)], resJ[service.Identifier].Details[(i-sub)+1:]...)
-					sub++
-				}
-			}
 		}
 	}
 
@@ -56,7 +48,7 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 			jobfine := true
 			for _, j := range jobs.Details {
 				log.Printf("%v and %v", job, j.Spec)
-				if j.Spec.Name == job.Name && j.Running {
+				if j.Spec.Name == job.Name {
 					jobfine = false
 				}
 			}
