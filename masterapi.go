@@ -86,6 +86,7 @@ func runJob(job *pbs.JobSpec, server string) {
 		defer conn.Close()
 
 		slave := pbs.NewGoBuildSlaveClient(conn)
+		job.Server = server
 		slave.Run(context.Background(), job)
 		log.Printf("RUN COMMAND SENT %v", job)
 	}
