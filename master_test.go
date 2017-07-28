@@ -121,6 +121,18 @@ func TestLoadOntoDiskMachine(t *testing.T) {
 	}
 }
 
+func TestLoadOntoExternalMachine(t *testing.T) {
+	conf := &pbs.JobSpec{Name: "needsexternal", External: true}
+
+	machine1 := &pbs.Config{Disk: 100, External: false}
+	machine2 := &pbs.Config{Disk: 100, External: true}
+
+	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
+	if server != "server2" {
+		t.Errorf("Failed to select correct server: %v", server)
+	}
+}
+
 func TestDoubleLoadServer(t *testing.T) {
 	conf := &pbs.JobSpec{Name: "test1"}
 	machine1 := &pbs.Config{Disk: 100}

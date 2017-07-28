@@ -53,7 +53,8 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 				}
 			}
 			if jobfine {
-				if sc.Disk > job.Disk {
+				log.Printf("HERE: %v, %v, %v - %v", job, sc, sc.Disk > job.Disk, (!job.External || sc.External))
+				if sc.Disk > job.Disk && (!job.External || sc.External) {
 					return service.Identifier
 				}
 			}
