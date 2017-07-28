@@ -1,5 +1,12 @@
 intents <
   spec <
+    name: "github.com/brotherlogic/monitor"
+    external: true
+  >
+  count: 1
+>
+intents <
+  spec <
     name: "github.com/brotherlogic/discogssyncer"
   >
   count: 1
