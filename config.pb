@@ -42,11 +42,3 @@ intents <
   >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/instasearch"
-    args: "--hashtags"
-    args: "benandnisrene,nisreneandben"
-  >
-  count: 1
->
