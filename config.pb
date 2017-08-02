@@ -7,6 +7,12 @@ intents <
 >
 intents <
   spec <
+    name: "github.com/brotherlogic/recordsorganiser"
+   >
+  count: 1
+>
+intents <
+  spec <
     name: "github.com/brotherlogic/discogssyncer"
   >
   count: 1
