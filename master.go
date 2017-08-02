@@ -2,7 +2,6 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"math/rand"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
@@ -22,16 +21,13 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 	resC := make(map[string]*pbs.Config)
 
 	for _, service := range c.discover().Services {
-		log.Printf("Found: %v", service)
 		if service.Name == "gobuildslave" {
-			log.Printf("HERE: %v", service)
 			joblist, config := c.assess(service.Identifier)
 			resJ[service.Identifier] = joblist
 			resC[service.Identifier] = config
 		}
 	}
 
-	log.Printf("RETURNING FLEET STATUS: %v -> %v", resJ, resJ["framethree"])
 	return resJ, resC
 }
 
@@ -40,20 +36,17 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 	services := c.discover().Services
 	for i := range rand.Perm(len(services)) {
 		service := services[i]
-		log.Printf("Trying %v", service)
 		if service.Name == "gobuildslave" {
 			jobs, sc := c.assess(service.Identifier)
 
 			//Don't accept a server which is already running this job
 			jobfine := true
 			for _, j := range jobs.Details {
-				log.Printf("%v and %v", job, j.Spec)
 				if j.Spec.Name == job.Name {
 					jobfine = false
 				}
 			}
 			if jobfine {
-				log.Printf("HERE: %v, %v, %v - %v", job, sc, sc.Disk > job.Disk, (!job.External || sc.External))
 				if sc.Disk > job.Disk && (!job.External || sc.External) {
 					return service.Identifier
 				}
@@ -66,7 +59,6 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 func configDiff(cm, cs *pb.Config) *pb.Config {
 	retConfig := &pb.Config{}
 
-	log.Printf("COMPARE %v to %v", cm, cs)
 	for _, entry := range cm.Intents {
 		nIntent := &pb.Intent{}
 		nIntent.Spec = entry.Spec
@@ -74,18 +66,14 @@ func configDiff(cm, cs *pb.Config) *pb.Config {
 		retConfig.Intents = append(retConfig.Intents, nIntent)
 	}
 
-	log.Printf("FIRST PASS: %v", retConfig)
 	for _, entry := range cs.Intents {
 		for _, pair := range retConfig.Intents {
 			if entry.Spec.Name == pair.Spec.Name {
-				log.Printf("FOUND: %v", pair)
 				pair.Count -= entry.Count
-				log.Printf("RESULT: %v", retConfig)
 			}
 		}
 	}
 
-	log.Printf("RETURNING: %v", retConfig)
 	return retConfig
 }
 

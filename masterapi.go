@@ -39,9 +39,7 @@ func getIP(servertype, servername string) (string, int) {
 		return "", -1
 	}
 	for _, s := range r.Services {
-		log.Printf("Does %v = %v and %v = %v?", s.Name, servertype, s.Identifier, servername)
 		if s.Name == servertype && s.Identifier == servername {
-			log.Printf("RETURNING: %v", s)
 			return s.Ip, int(s.Port)
 		}
 	}
@@ -53,7 +51,6 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	list := &pbs.JobList{}
 	conf := &pbs.Config{}
 
-	log.Printf("Assessing server %v", server)
 	ip, port := getIP("gobuildslave", server)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -63,13 +60,11 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	slave := pbs.NewGoBuildSlaveClient(conn)
 	r, err := slave.List(context.Background(), &pbs.Empty{})
 	if err != nil {
-		log.Printf("Err %v", err)
 		return list, conf
 	}
 
 	r2, err := slave.GetConfig(context.Background(), &pbs.Empty{})
 	if err != nil {
-		log.Printf("Err %v", err)
 		return list, conf
 	}
 
@@ -77,7 +72,7 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 }
 
 func runJob(job *pbs.JobSpec, server string) {
-	log.Printf("RUNNING: %v on %v", job, server)
+	log.Printf("Run %v on %v", job.Name, server)
 	if server != "" {
 		ip, port := getIP("gobuildslave", server)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -88,7 +83,6 @@ func runJob(job *pbs.JobSpec, server string) {
 		slave := pbs.NewGoBuildSlaveClient(conn)
 		job.Server = server
 		slave.Run(context.Background(), job)
-		log.Printf("RUN COMMAND SENT %v", job)
 	}
 }
 
@@ -100,7 +94,6 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
 	r, err := registry.ListAllServices(context.Background(), &pbd.Empty{})
-	log.Printf("DISCOVERED: %v", r)
 	if err == nil {
 		for _, s := range r.Services {
 			ret.Services = append(ret.Services, s)
@@ -169,17 +162,12 @@ func (s Server) MatchIntent() {
 	for s.serving {
 		time.Sleep(intentWait)
 
-		log.Printf("Getting state")
 		state := getConfig(&mainChecker{})
-		log.Printf("Computing Diff")
 		diff := configDiff(s.config, state)
-		log.Printf("Determining jobs to run")
 		joblist := runJobs(diff)
-		log.Printf("MATCH FOUND %v from %v and %v", joblist, state, s.config)
 		for _, job := range joblist {
 			runJob(job, chooseServer(job, &mainChecker{}))
 		}
-		log.Printf("Completed Intent Run")
 	}
 }
 
