@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"log"
 	"math/rand"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
@@ -20,8 +21,10 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 	resJ := make(map[string]*pbs.JobList)
 	resC := make(map[string]*pbs.Config)
 
+	log.Printf("Discovering")
 	for _, service := range c.discover().Services {
 		if service.Name == "gobuildslave" {
+			log.Printf("Found server on %v", service.Identifier)
 			joblist, config := c.assess(service.Identifier)
 			resJ[service.Identifier] = joblist
 			resC[service.Identifier] = config

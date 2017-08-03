@@ -100,7 +100,6 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 		}
 	}
 
-	log.Printf("Discovered: %v", ret)
 	return ret
 }
 
