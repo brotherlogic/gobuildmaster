@@ -13,12 +13,6 @@ intents <
 >
 intents <
   spec <
-    name: "github.com/brotherlogic/discogssyncer"
-  >
-  count: 1
->
-intents <
-  spec <
     name: "github.com/brotherlogic/cardserver"
   >
   count: 1
