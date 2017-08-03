@@ -25,6 +25,14 @@ func (t testChecker) discover() *pbd.ServiceList {
 	return &pbd.ServiceList{Services: []*pbd.RegistryEntry{&pbd.RegistryEntry{Identifier: "server1", Name: "gobuildslave"}, &pbd.RegistryEntry{Identifier: "server2", Name: "gobuildslave"}}}
 }
 
+func (t testChecker) getprev() []string {
+	return make([]string, 0)
+}
+
+func (t testChecker) setprev(v []string) {
+	// Do nothing
+}
+
 func TestPullData(t *testing.T) {
 	status, _ := getFleetStatus(&testChecker{machines: []*pbs.Config{&pbs.Config{}, &pbs.Config{}}})
 	if val, ok := status["server1"]; !ok || len(val.Details) != 1 {

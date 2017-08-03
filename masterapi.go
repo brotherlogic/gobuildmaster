@@ -27,7 +27,9 @@ type Server struct {
 	serving bool
 }
 
-type mainChecker struct{}
+type mainChecker struct {
+	prev []string
+}
 
 func getIP(servertype, servername string) (string, int) {
 	conn, _ := grpc.Dial("192.168.86.64:50055", grpc.WithInsecure())
@@ -45,6 +47,13 @@ func getIP(servertype, servername string) (string, int) {
 	}
 
 	return "", -1
+}
+
+func (t *mainChecker) getprev() []string {
+	return t.prev
+}
+func (t *mainChecker) setprev(v []string) {
+	t.prev = v
 }
 
 func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
