@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
-	"reflect"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
@@ -24,7 +23,6 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 	resJ := make(map[string]*pbs.JobList)
 	resC := make(map[string]*pbs.Config)
 
-	log.Printf("Discovering")
 	curr := make([]string, 0)
 	for _, service := range c.discover().Services {
 		if service.Name == "gobuildslave" {
@@ -35,7 +33,7 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 		}
 	}
 
-	if !reflect.DeepEqual(curr, c.getprev()) {
+	if !greflect.DeepEqual(curr, c.getprev()) {
 		log.Printf("Services = %v", curr)
 	}
 	c.setprev(curr)
