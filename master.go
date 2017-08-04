@@ -2,7 +2,9 @@ package main
 
 import (
 	"io/ioutil"
+	"log"
 	"math/rand"
+	"reflect"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
@@ -14,19 +16,28 @@ import (
 type checker interface {
 	assess(server string) (*pbs.JobList, *pbs.Config)
 	discover() *pbd.ServiceList
+	setprev([]string)
+	getprev() []string
 }
 
 func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config) {
 	resJ := make(map[string]*pbs.JobList)
 	resC := make(map[string]*pbs.Config)
 
+	curr := make([]string, 0)
 	for _, service := range c.discover().Services {
 		if service.Name == "gobuildslave" {
+			curr = append(curr, service.Identifier)
 			joblist, config := c.assess(service.Identifier)
 			resJ[service.Identifier] = joblist
 			resC[service.Identifier] = config
 		}
 	}
+
+	if !reflect.DeepEqual(curr, c.getprev()) {
+		log.Printf("Services = %v", curr)
+	}
+	c.setprev(curr)
 
 	return resJ, resC
 }
