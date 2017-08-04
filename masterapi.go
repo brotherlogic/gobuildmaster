@@ -168,14 +168,15 @@ func getConfig(c checker) *pb.Config {
 
 // MatchIntent tries to match the intent with the state of production
 func (s Server) MatchIntent() {
+	checker := &mainChecker{}
 	for s.serving {
 		time.Sleep(intentWait)
 
-		state := getConfig(&mainChecker{})
+		state := getConfig(checker)
 		diff := configDiff(s.config, state)
 		joblist := runJobs(diff)
 		for _, job := range joblist {
-			runJob(job, chooseServer(job, &mainChecker{}))
+			runJob(job, chooseServer(job, checker))
 		}
 	}
 }
