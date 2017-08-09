@@ -90,7 +90,9 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry) {
 	server := pbg.NewGoserverServiceClient(conn)
 	log.Printf("SETTING MASTER: %v", entry)
 	_, err := server.Mote(context.Background(), &pbg.MoteRequest{Master: entry.GetMaster()})
-	log.Printf("RESPONSE: %v", err)
+	if err != nil {
+		log.Printf("RESPONSE: %v", err)
+	}
 }
 
 func runJob(job *pbs.JobSpec, server string) {
@@ -212,7 +214,6 @@ func (s Server) SetMaster() {
 			}
 		}
 
-		log.Printf("Resolved Master: %v", matcher)
 		for _, entry := range matcher {
 			if !entry.GetMaster() {
 				entry.Master = true
