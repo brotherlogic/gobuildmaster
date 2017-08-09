@@ -88,6 +88,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry) {
 	defer conn.Close()
 
 	server := pbg.NewGoserverServiceClient(conn)
+	log.Printf("SETTING MASTER: %v", entry)
 	server.Mote(context.Background(), &pbg.MoteRequest{Master: entry.GetMaster()})
 }
 
