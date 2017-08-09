@@ -14,6 +14,7 @@ import (
 	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
+	pbg "github.com/brotherlogic/goserver/proto"
 )
 
 const (
@@ -78,6 +79,16 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	}
 
 	return r, r2
+}
+
+func (t *mainChecker) master(entry *pbd.RegistryEntry) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	conn, _ := grpc.DialContext(ctx, entry.GetIp()+":"+strconv.Itoa(int(entry.GetPort())), grpc.WithInsecure())
+	defer conn.Close()
+
+	server := pbg.NewGoserverServiceClient(conn)
+	server.Mote(context.Background(), &pbg.MoteRequest{Master: entry.GetMaster()})
 }
 
 func runJob(job *pbs.JobSpec, server string) {
@@ -181,6 +192,32 @@ func (s Server) MatchIntent() {
 	}
 }
 
+// SetMaster sets up the master settings
+func (s Server) SetMaster() {
+	checker := &mainChecker{}
+	for s.serving {
+		time.Sleep(intentWait)
+
+		fleet := checker.discover()
+		matcher := make(map[string]*pbd.RegistryEntry)
+		for _, entry := range fleet.GetServices() {
+			if val, ok := matcher[entry.GetName()]; !ok {
+				matcher[entry.GetName()] = val
+			} else {
+				if entry.GetMaster() {
+					matcher[entry.GetName()] = val
+				}
+			}
+		}
+
+		for _, entry := range matcher {
+			if !entry.GetMaster() {
+				checker.master(entry)
+			}
+		}
+	}
+}
+
 func main() {
 	config, err := loadConfig("config.pb")
 	if err != nil {
@@ -206,6 +243,7 @@ func main() {
 		s.GoServer.Killme = false
 		s.RegisterServer("gobuildmaster", false)
 		s.RegisterServingTask(s.MatchIntent)
+		s.RegisterServingTask(s.SetMaster)
 		s.Serve()
 	}
 }

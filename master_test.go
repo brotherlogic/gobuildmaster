@@ -33,6 +33,10 @@ func (t testChecker) setprev(v []string) {
 	// Do nothing
 }
 
+func (t testChecker) master(entry *pbd.RegistryEntry) {
+	// Do nothing
+}
+
 func TestPullData(t *testing.T) {
 	status, _ := getFleetStatus(&testChecker{machines: []*pbs.Config{&pbs.Config{}, &pbs.Config{}}})
 	if val, ok := status["server1"]; !ok || len(val.Details) != 1 {
