@@ -202,11 +202,11 @@ func (s Server) SetMaster() {
 		fleet := checker.discover()
 		matcher := make(map[string]*pbd.RegistryEntry)
 		for _, entry := range fleet.GetServices() {
-			if val, ok := matcher[entry.GetName()]; !ok {
-				matcher[entry.GetName()] = val
+			if _, ok := matcher[entry.GetName()]; !ok {
+				matcher[entry.GetName()] = entry
 			} else {
 				if entry.GetMaster() {
-					matcher[entry.GetName()] = val
+					matcher[entry.GetName()] = entry
 				}
 			}
 		}
