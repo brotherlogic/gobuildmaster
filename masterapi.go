@@ -215,6 +215,7 @@ func (s Server) SetMaster() {
 		log.Printf("Resolved Master: %v", matcher)
 		for _, entry := range matcher {
 			if !entry.GetMaster() {
+				entry.Master = true
 				checker.master(entry)
 			}
 		}
