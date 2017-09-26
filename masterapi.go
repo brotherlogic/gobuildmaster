@@ -15,6 +15,7 @@ import (
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
 	pbg "github.com/brotherlogic/goserver/proto"
+	"github.com/brotherlogic/goserver/utils"
 )
 
 const (
@@ -33,7 +34,7 @@ type mainChecker struct {
 }
 
 func getIP(servertype, servername string) (string, int) {
-	conn, _ := grpc.Dial("192.168.86.64:50055", grpc.WithInsecure())
+	conn, _ := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
@@ -116,7 +117,7 @@ func runJob(job *pbs.JobSpec, server string) {
 func (t *mainChecker) discover() *pbd.ServiceList {
 	ret := &pbd.ServiceList{}
 
-	conn, _ := grpc.Dial("192.168.86.64:50055", grpc.WithInsecure())
+	conn, _ := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
