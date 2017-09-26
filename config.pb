@@ -58,4 +58,5 @@ intents <
   spec <
     name: "github.com/brotherlogic/crasher"
   >
+  count: 1
 >
