@@ -34,7 +34,8 @@ type mainChecker struct {
 }
 
 func getIP(servertype, servername string) (string, int) {
-	conn, _ := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
+	conn, err := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
+	log.Printf("Error? %v", err)
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
