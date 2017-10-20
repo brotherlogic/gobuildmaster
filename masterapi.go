@@ -39,7 +39,7 @@ func getIP(servertype, servername string) (string, int) {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
-	r, err := registry.ListAllServices(context.Background(), &pbd.Empty{})
+	r, err := registry.ListAllServices(context.Background(), &pbd.Empty{}, grpc.FailFast(false))
 	if err != nil {
 		return "", -1
 	}
@@ -73,12 +73,12 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	defer conn.Close()
 
 	slave := pbs.NewGoBuildSlaveClient(conn)
-	r, err := slave.List(context.Background(), &pbs.Empty{})
+	r, err := slave.List(context.Background(), &pbs.Empty{}, grpc.FailFast(false))
 	if err != nil {
 		return list, conf
 	}
 
-	r2, err := slave.GetConfig(context.Background(), &pbs.Empty{})
+	r2, err := slave.GetConfig(context.Background(), &pbs.Empty{}, grpc.FailFast(false))
 	if err != nil {
 		return list, conf
 	}
@@ -94,7 +94,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry) {
 
 	server := pbg.NewGoserverServiceClient(conn)
 	log.Printf("SETTING MASTER: %v", entry)
-	_, err := server.Mote(context.Background(), &pbg.MoteRequest{Master: entry.GetMaster()})
+	_, err := server.Mote(context.Background(), &pbg.MoteRequest{Master: entry.GetMaster()}, grpc.FailFast(false))
 	if err != nil {
 		log.Printf("RESPONSE: %v", err)
 	}
@@ -111,7 +111,7 @@ func runJob(job *pbs.JobSpec, server string) {
 
 		slave := pbs.NewGoBuildSlaveClient(conn)
 		job.Server = server
-		slave.Run(context.Background(), job)
+		slave.Run(context.Background(), job, grpc.FailFast(false))
 	}
 }
 
@@ -122,7 +122,7 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
-	r, err := registry.ListAllServices(context.Background(), &pbd.Empty{})
+	r, err := registry.ListAllServices(context.Background(), &pbd.Empty{}, grpc.FailFast(false))
 	if err == nil {
 		for _, s := range r.Services {
 			ret.Services = append(ret.Services, s)
