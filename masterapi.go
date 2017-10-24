@@ -94,7 +94,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry) {
 
 	server := pbg.NewGoserverServiceClient(conn)
 	log.Printf("SETTING MASTER: %v", entry)
-	_, err := server.Mote(context.Background(), &pbg.MoteRequest{Master: entry.GetMaster()}, grpc.FailFast(false))
+	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: entry.GetMaster()}, grpc.FailFast(false))
 	if err != nil {
 		log.Printf("RESPONSE: %v", err)
 	}
