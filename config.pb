@@ -48,3 +48,9 @@ intents <
    >
   count: 1
 >
+intents <
+  spec <
+    name: "github.com/brotherlogic/reminders"
+   >
+  count: 1
+>
