@@ -25,8 +25,9 @@ const (
 // Server the main server type
 type Server struct {
 	*goserver.GoServer
-	config  *pb.Config
-	serving bool
+	config     *pb.Config
+	serving    bool
+	lastIntent time.Time
 }
 
 type mainChecker struct {
@@ -147,6 +148,11 @@ func (s Server) Mote(master bool) error {
 	return nil
 }
 
+//GetState gets the state of the server
+func (s Server) GetState() []*pbg.State {
+	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.lastIntent.Unix()}}
+}
+
 //Compare compares current state to desired state
 func (s Server) Compare(ctx context.Context, in *pb.Empty) (*pb.CompareResponse, error) {
 	resp := &pb.CompareResponse{}
@@ -191,6 +197,7 @@ func (s Server) MatchIntent() {
 	checker := &mainChecker{}
 	for s.serving {
 		time.Sleep(intentWait)
+		s.lastIntent = time.Now()
 
 		state := getConfig(checker)
 		diff := configDiff(s.config, state)
@@ -235,7 +242,7 @@ func main() {
 	}
 
 	var sync = flag.Bool("once", false, "One pass intent match")
-	s := Server{&goserver.GoServer{}, config, true}
+	s := Server{&goserver.GoServer{}, config, true, time.Now()}
 
 	var quiet = flag.Bool("quiet", true, "Show all output")
 	flag.Parse()
