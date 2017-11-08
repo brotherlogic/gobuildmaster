@@ -28,7 +28,7 @@ type Server struct {
 	*goserver.GoServer
 	config     *pb.Config
 	serving    bool
-	lastIntent time.Time
+	lastIntent *time.Time
 }
 
 type mainChecker struct {
@@ -203,7 +203,8 @@ func (s *Server) MatchIntent() {
 	for s.serving {
 		s.Log(fmt.Sprintf("MATCHING %v", s.serving))
 		time.Sleep(intentWait)
-		s.lastIntent = time.Now()
+		t := time.Now()
+		s.lastIntent = &t
 
 		state := getConfig(checker)
 		s.Log(fmt.Sprintf("GOT CONFIG"))
@@ -254,7 +255,8 @@ func main() {
 	}
 
 	var sync = flag.Bool("once", false, "One pass intent match")
-	s := Server{&goserver.GoServer{}, config, true, time.Now()}
+	t := time.Now()
+	s := Server{&goserver.GoServer{}, config, true, &t}
 
 	var quiet = flag.Bool("quiet", true, "Show all output")
 	flag.Parse()
