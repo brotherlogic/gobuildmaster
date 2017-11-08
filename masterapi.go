@@ -197,7 +197,7 @@ func getConfig(c checker) *pb.Config {
 }
 
 // MatchIntent tries to match the intent with the state of production
-func (s Server) MatchIntent() {
+func (s *Server) MatchIntent() {
 	checker := &mainChecker{}
 	for s.serving {
 		time.Sleep(intentWait)
