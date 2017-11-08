@@ -270,8 +270,8 @@ func main() {
 	if *sync {
 		s.MatchIntent()
 	} else {
-		s.Register = s
 		s.PrepServer()
+		s.Register = s
 		s.GoServer.Killme = false
 		s.RegisterServer("gobuildmaster", false)
 		s.RegisterServingTask(s.MatchIntent)
