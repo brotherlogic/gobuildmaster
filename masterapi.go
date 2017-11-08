@@ -40,7 +40,9 @@ func getIP(servertype, servername string) (string, int) {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
-	r, err := registry.ListAllServices(context.Background(), &pbd.Empty{}, grpc.FailFast(false))
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := registry.ListAllServices(ctx, &pbd.Empty{}, grpc.FailFast(false))
 	if err != nil {
 		return "", -1
 	}
@@ -74,12 +76,12 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	defer conn.Close()
 
 	slave := pbs.NewGoBuildSlaveClient(conn)
-	r, err := slave.List(context.Background(), &pbs.Empty{}, grpc.FailFast(false))
+	r, err := slave.List(ctx, &pbs.Empty{}, grpc.FailFast(false))
 	if err != nil {
 		return list, conf
 	}
 
-	r2, err := slave.GetConfig(context.Background(), &pbs.Empty{}, grpc.FailFast(false))
+	r2, err := slave.GetConfig(ctx, &pbs.Empty{}, grpc.FailFast(false))
 	if err != nil {
 		return list, conf
 	}
@@ -112,7 +114,7 @@ func runJob(job *pbs.JobSpec, server string) {
 
 		slave := pbs.NewGoBuildSlaveClient(conn)
 		job.Server = server
-		slave.Run(context.Background(), job, grpc.FailFast(false))
+		slave.Run(ctx, job, grpc.FailFast(false))
 	}
 }
 
@@ -123,7 +125,9 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
-	r, err := registry.ListAllServices(context.Background(), &pbd.Empty{}, grpc.FailFast(false))
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := registry.ListAllServices(ctx, &pbd.Empty{}, grpc.FailFast(false))
 	if err == nil {
 		for _, s := range r.Services {
 			ret.Services = append(ret.Services, s)
