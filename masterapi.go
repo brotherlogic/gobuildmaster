@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"strconv"
@@ -28,7 +27,7 @@ type Server struct {
 	*goserver.GoServer
 	config     *pb.Config
 	serving    bool
-	lastIntent *time.Time
+	LastIntent time.Time
 }
 
 type mainChecker struct {
@@ -155,7 +154,8 @@ func (s Server) Mote(master bool) error {
 
 //GetState gets the state of the server
 func (s Server) GetState() []*pbg.State {
-	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.lastIntent.Unix()}}
+	log.Printf("GETTING STATE: %p", &s)
+	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()}}
 }
 
 //Compare compares current state to desired state
@@ -200,22 +200,17 @@ func getConfig(c checker) *pb.Config {
 // MatchIntent tries to match the intent with the state of production
 func (s *Server) MatchIntent() {
 	checker := &mainChecker{}
+	log.Printf("SERVING: %v", s.serving)
 	for s.serving {
-		s.Log(fmt.Sprintf("MATCHING %v", s.serving))
 		time.Sleep(intentWait)
-		t := time.Now()
-		s.lastIntent = &t
-		s.Log(fmt.Sprintf("SETTING INTENT:%v", t))
+		s.LastIntent = time.Now()
+		log.Printf("SETTING %p", s)
 
 		state := getConfig(checker)
-		s.Log(fmt.Sprintf("GOT CONFIG"))
 		diff := configDiff(s.config, state)
-		s.Log(fmt.Sprintf("GOT DIFF"))
 		joblist := runJobs(diff)
 		for _, job := range joblist {
-			s.Log(fmt.Sprintf("RUNNING %v", job))
 			runJob(job, chooseServer(job, checker))
-			s.Log(fmt.Sprintf("RAN"))
 		}
 	}
 }
@@ -256,8 +251,7 @@ func main() {
 	}
 
 	var sync = flag.Bool("once", false, "One pass intent match")
-	t := time.Now()
-	s := Server{&goserver.GoServer{}, config, true, &t}
+	s := &Server{&goserver.GoServer{}, config, true, time.Now()}
 
 	var quiet = flag.Bool("quiet", true, "Show all output")
 	flag.Parse()
@@ -270,8 +264,8 @@ func main() {
 	if *sync {
 		s.MatchIntent()
 	} else {
-		s.PrepServer()
 		s.Register = s
+		s.PrepServer()
 		s.GoServer.Killme = false
 		s.RegisterServer("gobuildmaster", false)
 		s.RegisterServingTask(s.MatchIntent)
