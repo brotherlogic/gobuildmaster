@@ -205,6 +205,7 @@ func (s *Server) MatchIntent() {
 		time.Sleep(intentWait)
 		t := time.Now()
 		s.lastIntent = &t
+		s.Log(fmt.Sprintf("SETTING INTENT:%v", t))
 
 		state := getConfig(checker)
 		s.Log(fmt.Sprintf("GOT CONFIG"))
