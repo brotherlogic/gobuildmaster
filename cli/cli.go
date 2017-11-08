@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/brotherlogic/goserver/utils"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
@@ -14,7 +15,7 @@ import (
 )
 
 func findServer(name string) (string, int) {
-	conn, _ := grpc.Dial("192.168.86.64:50055", grpc.WithInsecure())
+	conn, _ := grpc.Dial(utils.Discover, grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pbdi.NewDiscoveryServiceClient(conn)
