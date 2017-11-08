@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strconv"
@@ -200,14 +201,19 @@ func getConfig(c checker) *pb.Config {
 func (s *Server) MatchIntent() {
 	checker := &mainChecker{}
 	for s.serving {
+		s.Log(fmt.Sprintf("MATCHING %v", s.serving))
 		time.Sleep(intentWait)
 		s.lastIntent = time.Now()
 
 		state := getConfig(checker)
+		s.Log(fmt.Sprintf("GOT CONFIG"))
 		diff := configDiff(s.config, state)
+		s.Log(fmt.Sprintf("GOT DIFF"))
 		joblist := runJobs(diff)
 		for _, job := range joblist {
+			s.Log(fmt.Sprintf("RUNNING %v", job))
 			runJob(job, chooseServer(job, checker))
+			s.Log(fmt.Sprintf("RAN"))
 		}
 	}
 }
@@ -217,6 +223,8 @@ func (s Server) SetMaster() {
 	checker := &mainChecker{}
 	for s.serving {
 		time.Sleep(intentWait)
+
+		log.Printf("Running SetMaster")
 
 		fleet := checker.discover()
 		matcher := make(map[string]*pbd.RegistryEntry)
