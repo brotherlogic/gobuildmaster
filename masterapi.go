@@ -203,7 +203,6 @@ func (s *Server) MatchIntent() {
 	log.Printf("SERVING: %v", s.serving)
 	for s.serving {
 		time.Sleep(intentWait)
-		t := time.Now()
 		s.LastIntent = time.Now()
 		log.Printf("SETTING %p", s)
 
@@ -213,7 +212,6 @@ func (s *Server) MatchIntent() {
 		for _, job := range joblist {
 			runJob(job, chooseServer(job, checker))
 		}
-		s.LogFunction("MatchIntentRun", t)
 	}
 }
 
