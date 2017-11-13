@@ -89,7 +89,7 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	return r, r2
 }
 
-func (t *mainChecker) master(entry *pbd.RegistryEntry) {
+func (t *mainChecker) master(entry *pbd.RegistryEntry) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	conn, _ := grpc.DialContext(ctx, entry.GetIp()+":"+strconv.Itoa(int(entry.GetPort())), grpc.WithInsecure())
@@ -101,6 +101,8 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry) {
 	if err != nil {
 		log.Printf("RESPONSE: %v", err)
 	}
+
+	return err == nil
 }
 
 func runJob(job *pbs.JobSpec, server string) {
@@ -226,21 +228,28 @@ func (s Server) SetMaster() {
 		log.Printf("Running SetMaster")
 
 		fleet := checker.discover()
-		matcher := make(map[string]*pbd.RegistryEntry)
+		matcher := make(map[string][]*pbd.RegistryEntry)
+		hasMaster := make(map[string]bool)
 		for _, entry := range fleet.GetServices() {
 			if _, ok := matcher[entry.GetName()]; !ok {
-				matcher[entry.GetName()] = entry
+				hasMaster[entry.GetName()] = entry.GetMaster()
+				matcher[entry.GetName()] = []*pbd.RegistryEntry{entry}
 			} else {
 				if entry.GetMaster() {
-					matcher[entry.GetName()] = entry
+					hasMaster[entry.GetName()] = true
+					matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
 				}
 			}
 		}
 
-		for _, entry := range matcher {
-			if !entry.GetMaster() {
-				entry.Master = true
-				checker.master(entry)
+		for key, entries := range matcher {
+			if !hasMaster[key] {
+				for _, entry := range entries {
+					if checker.master(entry) {
+						entry.Master = true
+						break
+					}
+				}
 			}
 		}
 	}

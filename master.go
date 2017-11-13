@@ -16,7 +16,7 @@ import (
 type checker interface {
 	assess(server string) (*pbs.JobList, *pbs.Config)
 	discover() *pbd.ServiceList
-	master(entry *pbd.RegistryEntry)
+	master(entry *pbd.RegistryEntry) bool
 	setprev([]string)
 	getprev() []string
 }
