@@ -54,3 +54,9 @@ intents <
    >
   count: 1
 >
+intents <
+  spec <
+    name: "github.com/brotherlogic/recordcollection"
+   >
+  count: 1
+>
