@@ -97,11 +97,12 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry) bool {
 
 	server := pbg.NewGoserverServiceClient(conn)
 	log.Printf("SETTING MASTER: %v", entry)
-	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: entry.GetMaster()}, grpc.FailFast(false))
+	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: true}, grpc.FailFast(false))
 	if err != nil {
 		log.Printf("RESPONSE: %v", err)
 	}
 
+	log.Printf("SET MASTER on %v", entry)
 	return err == nil
 }
 
@@ -218,12 +219,12 @@ func (s *Server) MatchIntent() {
 }
 
 // SetMaster sets up the master settings
-func (s Server) SetMaster() {
+func (s *Server) SetMaster() {
 	checker := &mainChecker{}
 	for s.serving {
 		time.Sleep(intentWait)
 
-		log.Printf("Running SetMaster")
+		log.Printf("Running SetMaster on %p", s)
 
 		fleet := checker.discover()
 		matcher := make(map[string][]*pbd.RegistryEntry)
@@ -242,9 +243,12 @@ func (s Server) SetMaster() {
 
 		for key, entries := range matcher {
 			if !hasMaster[key] {
+				log.Printf("%v HAS NO MASTER", key)
 				for _, entry := range entries {
+					log.Printf("CHECKING %v for %v", entry, key)
 					if checker.master(entry) {
 						entry.Master = true
+						log.Printf("AND NOW: %v", entry)
 						break
 					}
 				}
