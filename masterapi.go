@@ -89,7 +89,7 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	return r, r2
 }
 
-func (t *mainChecker) master(entry *pbd.RegistryEntry) bool {
+func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	conn, _ := grpc.DialContext(ctx, entry.GetIp()+":"+strconv.Itoa(int(entry.GetPort())), grpc.WithInsecure())
@@ -97,7 +97,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry) bool {
 
 	server := pbg.NewGoserverServiceClient(conn)
 	log.Printf("SETTING MASTER: %v", entry)
-	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: true}, grpc.FailFast(false))
+	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
 	if err != nil {
 		log.Printf("RESPONSE: %v", err)
 	}
@@ -228,25 +228,39 @@ func (s *Server) SetMaster() {
 
 		fleet := checker.discover()
 		matcher := make(map[string][]*pbd.RegistryEntry)
-		hasMaster := make(map[string]bool)
+		hasMaster := make(map[string]int)
 		for _, entry := range fleet.GetServices() {
 			if _, ok := matcher[entry.GetName()]; !ok {
-				hasMaster[entry.GetName()] = entry.GetMaster()
+				if entry.GetMaster() {
+					hasMaster[entry.GetName()]++
+				}
 				matcher[entry.GetName()] = []*pbd.RegistryEntry{entry}
 			} else {
 				if entry.GetMaster() {
-					hasMaster[entry.GetName()] = true
+					hasMaster[entry.GetName()] = 1
 					matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
 				}
 			}
 		}
 
 		for key, entries := range matcher {
-			if !hasMaster[key] {
+			if hasMaster[key] > 1 {
+				hasMaster[key] = 1
+				seen := false
+				for _, entry := range entries {
+					if seen && entry.GetMaster() {
+						checker.master(entry, false)
+					} else if entry.GetMaster() {
+						seen = true
+					}
+				}
+			}
+
+			if hasMaster[key] == 0 {
 				log.Printf("%v HAS NO MASTER", key)
 				for _, entry := range entries {
 					log.Printf("CHECKING %v for %v", entry, key)
-					if checker.master(entry) {
+					if checker.master(entry, true) {
 						entry.Master = true
 						log.Printf("AND NOW: %v", entry)
 						break
