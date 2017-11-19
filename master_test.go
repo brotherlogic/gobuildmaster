@@ -33,7 +33,7 @@ func (t testChecker) setprev(v []string) {
 	// Do nothing
 }
 
-func (t testChecker) master(entry *pbd.RegistryEntry) bool {
+func (t testChecker) master(entry *pbd.RegistryEntry, master bool) bool {
 	// Do nothing
 	return true
 }
