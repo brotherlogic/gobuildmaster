@@ -60,3 +60,9 @@ intents <
    >
   count: 1
 >
+intents <
+  spec <
+    name: "github.com/brotherlogic/versionserver"
+   >
+  count: 1
+>
