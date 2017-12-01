@@ -5,11 +5,11 @@ intents <
   >
   count: 1
 >
-intents <		
-  spec <			
-    name: "github.com/brotherlogic/beerserver"		
-  > 	    
- count: 1		
+intents <
+  spec <
+    name: "github.com/brotherlogic/beerserver"
+  >
+ count: 1
 >
 intents <
   spec <
@@ -63,6 +63,7 @@ intents <
 intents <
   spec <
     name: "github.com/brotherlogic/versionserver"
+    server: "stable"
    >
   count: 1
 >
