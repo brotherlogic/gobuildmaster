@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strconv"
@@ -31,7 +32,8 @@ type Server struct {
 }
 
 type mainChecker struct {
-	prev []string
+	prev   []string
+	logger func(string)
 }
 
 func getIP(servertype, servername string) (string, int) {
@@ -100,6 +102,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
 	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
 	if err != nil {
 		log.Printf("RESPONSE: %v", err)
+		t.logger(fmt.Sprintf("Master REJECT: %v", err))
 	}
 
 	log.Printf("SET MASTER on %v", entry)
@@ -164,7 +167,7 @@ func (s Server) GetState() []*pbg.State {
 //Compare compares current state to desired state
 func (s Server) Compare(ctx context.Context, in *pb.Empty) (*pb.CompareResponse, error) {
 	resp := &pb.CompareResponse{}
-	list, _ := getFleetStatus(&mainChecker{})
+	list, _ := getFleetStatus(&mainChecker{logger: s.Log})
 	cc := &pb.Config{}
 	for _, jlist := range list {
 		for _, job := range jlist.GetDetails() {
@@ -202,7 +205,7 @@ func getConfig(c checker) *pb.Config {
 
 // MatchIntent tries to match the intent with the state of production
 func (s *Server) MatchIntent() {
-	checker := &mainChecker{}
+	checker := &mainChecker{logger: s.Log}
 	log.Printf("SERVING: %v", s.serving)
 	for s.serving {
 		time.Sleep(intentWait)
@@ -220,7 +223,7 @@ func (s *Server) MatchIntent() {
 
 // SetMaster sets up the master settings
 func (s *Server) SetMaster() {
-	checker := &mainChecker{}
+	checker := &mainChecker{logger: s.Log}
 	for s.serving {
 		time.Sleep(intentWait)
 
