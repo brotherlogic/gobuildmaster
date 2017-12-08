@@ -2,8 +2,9 @@ intents <
   spec <
     name: "github.com/brotherlogic/keystore"
     disk: 1048576
+    server: "framethree"
   >
-  count: 2
+  count: 1
 >
 intents <
   spec <
