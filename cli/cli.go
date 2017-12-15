@@ -23,7 +23,6 @@ func findServer(name string) (string, int) {
 
 	for _, r := range rs.Services {
 		if r.Name == name {
-			log.Printf("%v -> %v", name, r)
 			return r.Ip, int(r.Port)
 		}
 	}
@@ -51,8 +50,8 @@ func main() {
 			if err != nil {
 				log.Fatalf("Error doing compare job: %v", err)
 			}
-			log.Printf("Actual: %v", res.Current)
-			log.Printf("Desire: %v", res.Desired)
+			fmt.Printf("Actual: %v\n", res.Current)
+			fmt.Printf("Desire: %v\n", res.Desired)
 		}
 	}
 }
