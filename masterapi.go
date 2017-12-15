@@ -37,7 +37,7 @@ type mainChecker struct {
 }
 
 func getIP(servertype, servername string) (string, int) {
-	conn, err := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
+	conn, _ := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
@@ -71,10 +71,10 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	conn, err := grpc.DialContext(ctx, ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+	defer conn.Close()
 	if err != nil {
 		return list, conf
 	}
-	defer conn.Close()
 
 	slave := pbs.NewGoBuildSlaveClient(conn)
 	r, err := slave.List(ctx, &pbs.Empty{}, grpc.FailFast(false))
