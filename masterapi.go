@@ -287,6 +287,9 @@ func main() {
 		s.RegisterServer("gobuildmaster", false)
 		s.RegisterServingTask(s.MatchIntent)
 		s.RegisterServingTask(s.SetMaster)
-		s.Serve()
+		err := s.Serve()
+		if err != nil {
+			log.Fatalf("Serve error: %v", err)
+		}
 	}
 }
