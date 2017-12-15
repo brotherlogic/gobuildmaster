@@ -93,7 +93,7 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	conn, _ := grpc.DialContext(ctx, entry.GetIp()+":"+strconv.Itoa(int(entry.GetPort())), grpc.WithInsecure())
+	conn, _ := grpc.Dial(entry.GetIp()+":"+strconv.Itoa(int(entry.GetPort())), grpc.WithInsecure())
 	defer conn.Close()
 
 	server := pbg.NewGoserverServiceClient(conn)
