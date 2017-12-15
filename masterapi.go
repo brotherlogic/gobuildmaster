@@ -38,7 +38,6 @@ type mainChecker struct {
 
 func getIP(servertype, servername string) (string, int) {
 	conn, err := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
-	log.Printf("Error? %v", err)
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
@@ -98,19 +97,15 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
 	defer conn.Close()
 
 	server := pbg.NewGoserverServiceClient(conn)
-	log.Printf("SETTING MASTER: %v", entry)
 	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
 	if err != nil {
-		log.Printf("RESPONSE: %v", err)
 		t.logger(fmt.Sprintf("Master REJECT: %v", err))
 	}
 
-	log.Printf("SET MASTER on %v", entry)
 	return err == nil
 }
 
 func runJob(job *pbs.JobSpec, server string) {
-	log.Printf("Run %v on %v", job.Name, server)
 	if server != "" {
 		ip, port := getIP("gobuildslave", server)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -160,7 +155,6 @@ func (s Server) Mote(master bool) error {
 
 //GetState gets the state of the server
 func (s Server) GetState() []*pbg.State {
-	log.Printf("GETTING STATE: %p", &s)
 	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()}}
 }
 
@@ -206,11 +200,9 @@ func getConfig(c checker) *pb.Config {
 // MatchIntent tries to match the intent with the state of production
 func (s *Server) MatchIntent() {
 	checker := &mainChecker{logger: s.Log}
-	log.Printf("SERVING: %v", s.serving)
 	for s.serving {
 		time.Sleep(intentWait)
 		s.LastIntent = time.Now()
-		log.Printf("SETTING %p", s)
 
 		state := getConfig(checker)
 		diff := configDiff(s.config, state)
@@ -226,8 +218,6 @@ func (s *Server) SetMaster() {
 	checker := &mainChecker{logger: s.Log}
 	for s.serving {
 		time.Sleep(intentWait)
-
-		log.Printf("Running SetMaster on %p", s)
 
 		fleet := checker.discover()
 		matcher := make(map[string][]*pbd.RegistryEntry)
@@ -260,12 +250,9 @@ func (s *Server) SetMaster() {
 			}
 
 			if hasMaster[key] == 0 {
-				log.Printf("%v HAS NO MASTER", key)
 				for _, entry := range entries {
-					log.Printf("CHECKING %v for %v", entry, key)
 					if checker.master(entry, true) {
 						entry.Master = true
-						log.Printf("AND NOW: %v", entry)
 						break
 					}
 				}
@@ -283,7 +270,7 @@ func main() {
 	var sync = flag.Bool("once", false, "One pass intent match")
 	s := &Server{&goserver.GoServer{}, config, true, time.Now()}
 
-	var quiet = flag.Bool("quiet", true, "Show all output")
+	var quiet = flag.Bool("quiet", false, "Show all output")
 	flag.Parse()
 
 	if *quiet {

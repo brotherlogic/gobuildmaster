@@ -2,9 +2,7 @@ package main
 
 import (
 	"io/ioutil"
-	"log"
 	"math/rand"
-	"reflect"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
@@ -35,9 +33,6 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 		}
 	}
 
-	if !reflect.DeepEqual(curr, c.getprev()) {
-		log.Printf("Services = %v", curr)
-	}
 	c.setprev(curr)
 
 	return resJ, resC
