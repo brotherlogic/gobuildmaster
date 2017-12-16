@@ -29,6 +29,7 @@ type Server struct {
 	config     *pb.Config
 	serving    bool
 	LastIntent time.Time
+	LastMaster time.Time
 }
 
 type mainChecker struct {
@@ -155,7 +156,8 @@ func (s Server) Mote(master bool) error {
 
 //GetState gets the state of the server
 func (s Server) GetState() []*pbg.State {
-	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()}}
+	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
+		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()}}
 }
 
 //Compare compares current state to desired state
@@ -218,6 +220,7 @@ func (s *Server) SetMaster() {
 	checker := &mainChecker{logger: s.Log}
 	for s.serving {
 		time.Sleep(intentWait)
+		s.LastMaster = time.Now()
 
 		fleet := checker.discover()
 		matcher := make(map[string][]*pbd.RegistryEntry)
@@ -268,7 +271,7 @@ func main() {
 	}
 
 	var sync = flag.Bool("once", false, "One pass intent match")
-	s := &Server{&goserver.GoServer{}, config, true, time.Now()}
+	s := &Server{&goserver.GoServer{}, config, true, time.Now(), time.Now()}
 
 	var quiet = flag.Bool("quiet", false, "Show all output")
 	flag.Parse()
