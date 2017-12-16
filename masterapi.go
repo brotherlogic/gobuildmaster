@@ -70,7 +70,7 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	ip, port := getIP("gobuildslave", server)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	conn, err := grpc.DialContext(ctx, ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+	conn, err := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 	defer conn.Close()
 	if err != nil {
 		return list, conf
@@ -110,7 +110,7 @@ func runJob(job *pbs.JobSpec, server string) {
 		ip, port := getIP("gobuildslave", server)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		conn, _ := grpc.DialContext(ctx, ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 		defer conn.Close()
 
 		slave := pbs.NewGoBuildSlaveClient(conn)
