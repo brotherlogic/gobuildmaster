@@ -100,7 +100,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
 	server := pbg.NewGoserverServiceClient(conn)
 	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
 	if err != nil {
-		t.logger(fmt.Sprintf("Master REJECT: %v", err))
+		t.logger(fmt.Sprintf("Master REJECT(%v): %v", entry, err))
 	}
 
 	return err == nil
