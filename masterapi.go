@@ -29,6 +29,7 @@ type Server struct {
 	config     *pb.Config
 	serving    bool
 	LastIntent time.Time
+	LastMaster time.Time
 }
 
 type mainChecker struct {
@@ -70,7 +71,7 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	ip, port := getIP("gobuildslave", server)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	conn, err := grpc.DialContext(ctx, ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+	conn, err := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 	defer conn.Close()
 	if err != nil {
 		return list, conf
@@ -91,7 +92,7 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 }
 
 func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	conn, _ := grpc.Dial(entry.GetIp()+":"+strconv.Itoa(int(entry.GetPort())), grpc.WithInsecure())
 	defer conn.Close()
@@ -99,7 +100,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
 	server := pbg.NewGoserverServiceClient(conn)
 	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
 	if err != nil {
-		t.logger(fmt.Sprintf("Master REJECT: %v", err))
+		t.logger(fmt.Sprintf("Master REJECT(%v): %v", entry, err))
 	}
 
 	return err == nil
@@ -110,7 +111,7 @@ func runJob(job *pbs.JobSpec, server string) {
 		ip, port := getIP("gobuildslave", server)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		conn, _ := grpc.DialContext(ctx, ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 		defer conn.Close()
 
 		slave := pbs.NewGoBuildSlaveClient(conn)
@@ -155,7 +156,8 @@ func (s Server) Mote(master bool) error {
 
 //GetState gets the state of the server
 func (s Server) GetState() []*pbg.State {
-	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()}}
+	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
+		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()}}
 }
 
 //Compare compares current state to desired state
@@ -218,6 +220,7 @@ func (s *Server) SetMaster() {
 	checker := &mainChecker{logger: s.Log}
 	for s.serving {
 		time.Sleep(intentWait)
+		s.LastMaster = time.Now()
 
 		fleet := checker.discover()
 		matcher := make(map[string][]*pbd.RegistryEntry)
@@ -268,7 +271,7 @@ func main() {
 	}
 
 	var sync = flag.Bool("once", false, "One pass intent match")
-	s := &Server{&goserver.GoServer{}, config, true, time.Now()}
+	s := &Server{&goserver.GoServer{}, config, true, time.Now(), time.Now()}
 
 	var quiet = flag.Bool("quiet", false, "Show all output")
 	flag.Parse()
