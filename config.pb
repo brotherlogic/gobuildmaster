@@ -52,7 +52,7 @@ intents <
 intents <
   spec <
     name: "github.com/brotherlogic/recordcollection"
-    server: "SiMac.Local"
+    server: "SiMac.local"
    >
   count: 1
 >
