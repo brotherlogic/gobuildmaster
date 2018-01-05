@@ -68,4 +68,9 @@ intents <
    >
   count: 1
 >
-
+intents <
+  spec <
+    name: "github.com/brotherlogic/recordmover"
+   >
+  count: 3
+>
