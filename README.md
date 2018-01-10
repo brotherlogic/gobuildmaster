@@ -1,3 +1,3 @@
 # gobuildmaster
 
-Master Builder
+Master Builder - tells the slaves what to do.
