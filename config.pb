@@ -74,3 +74,9 @@ intents <
    >
   count: 3
 >
+intents <
+  spec <
+    name: "github.com/brotherlogic/movelist"
+   >
+  count: 3
+>
