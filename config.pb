@@ -80,3 +80,9 @@ intents <
    >
   count: 3
 >
+intents <
+  spec <
+    name: "github.com/brotherlogic/cdprocessor"
+  >
+  count: 3
+>
