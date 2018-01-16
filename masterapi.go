@@ -226,15 +226,17 @@ func (s *Server) SetMaster() {
 		matcher := make(map[string][]*pbd.RegistryEntry)
 		hasMaster := make(map[string]int)
 		for _, entry := range fleet.GetServices() {
-			if _, ok := matcher[entry.GetName()]; !ok {
-				if entry.GetMaster() {
-					hasMaster[entry.GetName()]++
-				}
-				matcher[entry.GetName()] = []*pbd.RegistryEntry{entry}
-			} else {
-				if entry.GetMaster() {
-					hasMaster[entry.GetName()] = 1
-					matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
+			if !entry.GetIgnoresMaster() {
+				if _, ok := matcher[entry.GetName()]; !ok {
+					if entry.GetMaster() {
+						hasMaster[entry.GetName()]++
+					}
+					matcher[entry.GetName()] = []*pbd.RegistryEntry{entry}
+				} else {
+					if entry.GetMaster() {
+						hasMaster[entry.GetName()] = 1
+						matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
+					}
 				}
 			}
 		}
