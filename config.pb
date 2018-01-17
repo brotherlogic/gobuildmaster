@@ -83,6 +83,7 @@ intents <
 intents <
   spec <
     name: "github.com/brotherlogic/cdprocessor"
+    cds: true
   >
   count: 3
 >
