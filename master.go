@@ -55,7 +55,7 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 
 			}
 			if jobfine {
-				if sc.Disk > job.Disk && (!job.External || sc.External) {
+				if sc.Disk > job.Disk && (!job.External || sc.External) && (!job.GetCds() || sc.GetSupportsCds()) {
 					return service.Identifier
 				}
 			}
