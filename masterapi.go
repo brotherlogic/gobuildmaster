@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/brotherlogic/goserver"
@@ -30,6 +31,53 @@ type Server struct {
 	serving    bool
 	LastIntent time.Time
 	LastMaster time.Time
+	worldMutex *sync.Mutex
+	world      map[string]map[string]struct{}
+	getter     getter
+}
+
+type prodGetter struct{}
+
+func (g *prodGetter) getJobs(server *pbd.RegistryEntry) (*pbs.JobList, error) {
+	list := &pbs.JobList{}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	conn, err := grpc.Dial(server.GetIp()+":"+strconv.Itoa(int(server.GetPort())), grpc.WithInsecure())
+	defer conn.Close()
+	if err != nil {
+		return list, err
+	}
+
+	slave := pbs.NewGoBuildSlaveClient(conn)
+	r, err := slave.List(ctx, &pbs.Empty{}, grpc.FailFast(false))
+	return r, err
+}
+
+func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
+	ret := &pbd.ServiceList{}
+
+	conn, err := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
+	if err != nil {
+		return ret, err
+	}
+	defer conn.Close()
+
+	registry := pbd.NewDiscoveryServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := registry.ListAllServices(ctx, &pbd.Empty{}, grpc.FailFast(false))
+	if err != nil {
+		return ret, err
+	}
+
+	for _, s := range r.Services {
+		if s.GetName() == "gobuildslave" {
+			ret.Services = append(ret.Services, s)
+		}
+	}
+
+	return ret, nil
 }
 
 type mainChecker struct {
@@ -157,7 +205,8 @@ func (s Server) Mote(master bool) error {
 //GetState gets the state of the server
 func (s Server) GetState() []*pbg.State {
 	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
-		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()}}
+		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
+		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)}}
 }
 
 //Compare compares current state to desired state
@@ -266,14 +315,28 @@ func (s *Server) SetMaster() {
 	}
 }
 
+//Init builds up the server
+func Init(config *pb.Config) *Server {
+	s := &Server{
+		&goserver.GoServer{},
+		config,
+		true,
+		time.Now(),
+		time.Now(),
+		&sync.Mutex{},
+		make(map[string]map[string]struct{}),
+		&prodGetter{},
+	}
+	return s
+}
+
 func main() {
 	config, err := loadConfig("config.pb")
 	if err != nil {
 		log.Fatalf("Fatal loading of config: %v", err)
 	}
 
-	var sync = flag.Bool("once", false, "One pass intent match")
-	s := &Server{&goserver.GoServer{}, config, true, time.Now(), time.Now()}
+	s := Init(config)
 
 	var quiet = flag.Bool("quiet", false, "Show all output")
 	flag.Parse()
@@ -283,18 +346,16 @@ func main() {
 		log.SetOutput(ioutil.Discard)
 	}
 
-	if *sync {
-		s.MatchIntent()
-	} else {
-		s.Register = s
-		s.PrepServer()
-		s.GoServer.Killme = false
-		s.RegisterServer("gobuildmaster", false)
-		s.RegisterServingTask(s.MatchIntent)
-		s.RegisterServingTask(s.SetMaster)
-		err := s.Serve()
-		if err != nil {
-			log.Fatalf("Serve error: %v", err)
-		}
+	s.Register = s
+	s.PrepServer()
+	s.GoServer.Killme = false
+	s.RegisterServer("gobuildmaster", false)
+	s.RegisterServingTask(s.MatchIntent)
+	s.RegisterServingTask(s.SetMaster)
+	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
+
+	err = s.Serve()
+	if err != nil {
+		log.Fatalf("Serve error: %v", err)
 	}
 }
