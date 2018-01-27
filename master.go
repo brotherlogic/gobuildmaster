@@ -4,12 +4,17 @@ import (
 	"io/ioutil"
 	"math/rand"
 
-	pb "github.com/brotherlogic/gobuildmaster/proto"
-	pbs "github.com/brotherlogic/gobuildslave/proto"
 	"github.com/golang/protobuf/proto"
 
 	pbd "github.com/brotherlogic/discovery/proto"
+	pb "github.com/brotherlogic/gobuildmaster/proto"
+	pbs "github.com/brotherlogic/gobuildslave/proto"
 )
+
+type getter interface {
+	getSlaves() (*pbd.ServiceList, error)
+	getJobs(*pbd.RegistryEntry) (*pbs.JobList, error)
+}
 
 type checker interface {
 	assess(server string) (*pbs.JobList, *pbs.Config)
