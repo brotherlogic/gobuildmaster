@@ -266,53 +266,52 @@ func (s *Server) MatchIntent() {
 
 // SetMaster sets up the master settings
 func (s *Server) SetMaster() {
+	t := time.Now()
 	checker := &mainChecker{logger: s.Log}
-	for s.serving {
-		time.Sleep(intentWait)
-		s.LastMaster = time.Now()
+	s.LastMaster = time.Now()
 
-		fleet := checker.discover()
-		matcher := make(map[string][]*pbd.RegistryEntry)
-		hasMaster := make(map[string]int)
-		for _, entry := range fleet.GetServices() {
-			if !entry.GetIgnoresMaster() {
-				if _, ok := matcher[entry.GetName()]; !ok {
-					if entry.GetMaster() {
-						hasMaster[entry.GetName()]++
-					}
-					matcher[entry.GetName()] = []*pbd.RegistryEntry{entry}
-				} else {
-					if entry.GetMaster() {
-						hasMaster[entry.GetName()] = 1
-						matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
-					}
+	fleet := checker.discover()
+	matcher := make(map[string][]*pbd.RegistryEntry)
+	hasMaster := make(map[string]int)
+	for _, entry := range fleet.GetServices() {
+		if !entry.GetIgnoresMaster() {
+			if _, ok := matcher[entry.GetName()]; !ok {
+				if entry.GetMaster() {
+					hasMaster[entry.GetName()]++
 				}
-			}
-		}
-
-		for key, entries := range matcher {
-			if hasMaster[key] > 1 {
-				hasMaster[key] = 1
-				seen := false
-				for _, entry := range entries {
-					if seen && entry.GetMaster() {
-						checker.master(entry, false)
-					} else if entry.GetMaster() {
-						seen = true
-					}
-				}
-			}
-
-			if hasMaster[key] == 0 {
-				for _, entry := range entries {
-					if checker.master(entry, true) {
-						entry.Master = true
-						break
-					}
+				matcher[entry.GetName()] = []*pbd.RegistryEntry{entry}
+			} else {
+				if entry.GetMaster() {
+					hasMaster[entry.GetName()] = 1
+					matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
 				}
 			}
 		}
 	}
+
+	for key, entries := range matcher {
+		if hasMaster[key] > 1 {
+			hasMaster[key] = 1
+			seen := false
+			for _, entry := range entries {
+				if seen && entry.GetMaster() {
+					checker.master(entry, false)
+				} else if entry.GetMaster() {
+					seen = true
+				}
+			}
+		}
+
+		if hasMaster[key] == 0 {
+			for _, entry := range entries {
+				if checker.master(entry, true) {
+					entry.Master = true
+					break
+				}
+			}
+		}
+	}
+	s.LogFunction("SetMasterRun", t)
 }
 
 //Init builds up the server
@@ -351,7 +350,7 @@ func main() {
 	s.GoServer.Killme = false
 	s.RegisterServer("gobuildmaster", false)
 	s.RegisterServingTask(s.MatchIntent)
-	s.RegisterServingTask(s.SetMaster)
+	s.RegisterRepeatingTask(s.SetMaster, time.Second)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
 
 	err = s.Serve()
