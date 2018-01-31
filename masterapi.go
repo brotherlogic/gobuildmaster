@@ -329,6 +329,16 @@ func Init(config *pb.Config) *Server {
 	return s
 }
 
+func (s *Server) becomeMaster() {
+	for true {
+		time.Sleep(time.Minute)
+		_, _, err := utils.Resolve("gobuildmaster")
+		if err != nil {
+			s.Registry.Master = true
+		}
+	}
+}
+
 func main() {
 	config, err := loadConfig("config.pb")
 	if err != nil {
@@ -350,6 +360,7 @@ func main() {
 	s.GoServer.Killme = false
 	s.RegisterServer("gobuildmaster", false)
 	s.RegisterServingTask(s.MatchIntent)
+	s.RegisterServingTask(s.becomeMaster)
 	s.RegisterRepeatingTask(s.SetMaster, time.Second)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
 
