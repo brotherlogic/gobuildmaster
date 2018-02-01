@@ -374,7 +374,7 @@ func main() {
 	s.RegisterRepeatingTask(s.SetMaster, time.Second)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
 
-	s.checkerThread(s.config.GetIntents()[0])
+	go s.checkerThread(s.config.GetIntents()[0])
 
 	err = s.Serve()
 	if err != nil {
