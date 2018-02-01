@@ -87,3 +87,17 @@ intents <
   >
   count: 3
 >
+intents <
+  spec <
+    name: "github.com/brotherlogic/recordwants"
+    cds: true
+  >
+  count: 3
+>
+intents <
+  spec <
+    name: "github.com/brotherlogic/recordalerting"
+    cds: true
+  >
+  count: 3
+>
