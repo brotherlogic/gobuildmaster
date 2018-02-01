@@ -54,6 +54,16 @@ func (g *prodGetter) getJobs(server *pbd.RegistryEntry) (*pbs.JobList, error) {
 	return r, err
 }
 
+func (s *Server) checkerThread(i *pb.Intent) {
+	for true {
+		time.Sleep(time.Minute)
+
+		if len(s.world[i.GetSpec().GetName()]) != int(i.Count) {
+			s.Log(fmt.Sprintf("MISMATCH: %v, %v", i, s.world[i.GetSpec().GetName()]))
+		}
+	}
+}
+
 func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	ret := &pbd.ServiceList{}
 
@@ -346,6 +356,7 @@ func main() {
 	}
 
 	s := Init(config)
+	s.checkerThread(s.config.GetIntents()[0])
 
 	var quiet = flag.Bool("quiet", false, "Show all output")
 	flag.Parse()
