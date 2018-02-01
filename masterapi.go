@@ -356,7 +356,6 @@ func main() {
 	}
 
 	s := Init(config)
-	s.checkerThread(s.config.GetIntents()[0])
 
 	var quiet = flag.Bool("quiet", false, "Show all output")
 	flag.Parse()
@@ -374,6 +373,8 @@ func main() {
 	s.RegisterServingTask(s.becomeMaster)
 	s.RegisterRepeatingTask(s.SetMaster, time.Second)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
+
+	s.checkerThread(s.config.GetIntents()[0])
 
 	err = s.Serve()
 	if err != nil {
