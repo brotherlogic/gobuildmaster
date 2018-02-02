@@ -341,7 +341,7 @@ func Init(config *pb.Config) *Server {
 
 func (s *Server) becomeMaster() {
 	for true {
-		time.Sleep(time.Minute)
+		time.Sleep(time.Second * 5)
 		_, _, err := utils.Resolve("gobuildmaster")
 		if err != nil {
 			s.Registry.Master = true
