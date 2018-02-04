@@ -60,6 +60,9 @@ func (s *Server) checkerThread(i *pb.Intent) {
 
 		if len(s.world[i.GetSpec().GetName()]) != int(i.Count) {
 			s.Log(fmt.Sprintf("MISMATCH: %v, %v", i, s.world[i.GetSpec().GetName()]))
+			if len(s.world[i.GetSpec().GetName()]) < int(i.Count) {
+				s.Log(fmt.Sprintf("UP : %v", i.GetSpec().GetName()))
+			}
 		}
 	}
 }
@@ -374,7 +377,9 @@ func main() {
 	s.RegisterRepeatingTask(s.SetMaster, time.Second)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
 
-	go s.checkerThread(s.config.GetIntents()[0])
+	for i := 0; i < len(s.config.GetIntents()); i++ {
+		go s.checkerThread(s.config.GetIntents()[i])
+	}
 
 	err = s.Serve()
 	if err != nil {
