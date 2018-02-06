@@ -34,6 +34,7 @@ type Server struct {
 	worldMutex *sync.Mutex
 	world      map[string]map[string]struct{}
 	getter     getter
+	mapString  string
 }
 
 type prodGetter struct{}
@@ -219,7 +220,8 @@ func (s Server) Mote(master bool) error {
 func (s Server) GetState() []*pbg.State {
 	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
 		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
-		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)}}
+		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
+		&pbg.State{Key: "master", Text: s.mapString}}
 }
 
 //Compare compares current state to desired state
@@ -282,6 +284,7 @@ func (s *Server) SetMaster() {
 	t := time.Now()
 	checker := &mainChecker{logger: s.Log}
 	s.LastMaster = time.Now()
+	masterMap := make(map[string]string)
 
 	fleet := checker.discover()
 	matcher := make(map[string][]*pbd.RegistryEntry)
@@ -291,12 +294,14 @@ func (s *Server) SetMaster() {
 			if _, ok := matcher[entry.GetName()]; !ok {
 				if entry.GetMaster() {
 					hasMaster[entry.GetName()]++
+					masterMap[entry.GetName()] = entry.GetIdentifier()
 				}
 				matcher[entry.GetName()] = []*pbd.RegistryEntry{entry}
 			} else {
 				if entry.GetMaster() {
 					hasMaster[entry.GetName()] = 1
 					matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
+					masterMap[entry.GetName()] = entry.GetIdentifier()
 				}
 			}
 		}
@@ -318,12 +323,14 @@ func (s *Server) SetMaster() {
 		if hasMaster[key] == 0 {
 			for _, entry := range entries {
 				if checker.master(entry, true) {
+					masterMap[entry.GetName()] = entry.GetIdentifier()
 					entry.Master = true
 					break
 				}
 			}
 		}
 	}
+	s.mapString = fmt.Sprintf("%v", masterMap)
 	s.LogFunction("SetMasterRun", t)
 }
 
@@ -338,6 +345,7 @@ func Init(config *pb.Config) *Server {
 		&sync.Mutex{},
 		make(map[string]map[string]struct{}),
 		&prodGetter{},
+		"",
 	}
 	return s
 }
