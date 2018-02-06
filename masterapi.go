@@ -153,7 +153,7 @@ func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
 	return r, r2
 }
 
-func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
+func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	conn, _ := grpc.Dial(entry.GetIp()+":"+strconv.Itoa(int(entry.GetPort())), grpc.WithInsecure())
@@ -165,7 +165,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) bool {
 		t.logger(fmt.Sprintf("Master REJECT(%v): %v", entry, err))
 	}
 
-	return err == nil
+	return err == nil, err
 }
 
 func runJob(job *pbs.JobSpec, server string) {
@@ -320,19 +320,22 @@ func (s *Server) SetMaster() {
 			}
 		}
 
-		found := false
 		if hasMaster[key] == 0 {
+
+			if len(entries) == 0 {
+				masterMap[key] = "NONE_AVAILABLE"
+			}
+
 			for _, entry := range entries {
-				if checker.master(entry, true) {
+				val, err := checker.master(entry, true)
+				if val {
 					masterMap[entry.GetName()] = entry.GetIdentifier()
 					entry.Master = true
-					found = true
 					break
+				} else {
+					masterMap[entry.GetName()] = fmt.Sprintf("%v", err)
 				}
 			}
-		}
-		if !found {
-			masterMap[key] = "NOT_FOUND"
 		}
 	}
 	s.mapString = fmt.Sprintf("%v", masterMap)

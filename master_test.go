@@ -33,9 +33,9 @@ func (t testChecker) setprev(v []string) {
 	// Do nothing
 }
 
-func (t testChecker) master(entry *pbd.RegistryEntry, master bool) bool {
+func (t testChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error) {
 	// Do nothing
-	return true
+	return true, nil
 }
 
 func TestPullData(t *testing.T) {

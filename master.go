@@ -19,7 +19,7 @@ type getter interface {
 type checker interface {
 	assess(server string) (*pbs.JobList, *pbs.Config)
 	discover() *pbd.ServiceList
-	master(entry *pbd.RegistryEntry, master bool) bool
+	master(entry *pbd.RegistryEntry, master bool) (bool, error)
 	setprev([]string)
 	getprev() []string
 }
