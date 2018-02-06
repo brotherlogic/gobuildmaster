@@ -320,14 +320,19 @@ func (s *Server) SetMaster() {
 			}
 		}
 
+		found := false
 		if hasMaster[key] == 0 {
 			for _, entry := range entries {
 				if checker.master(entry, true) {
 					masterMap[entry.GetName()] = entry.GetIdentifier()
 					entry.Master = true
+					found = true
 					break
 				}
 			}
+		}
+		if !found {
+			masterMap[key] = "NOT_FOUND"
 		}
 	}
 	s.mapString = fmt.Sprintf("%v", masterMap)
