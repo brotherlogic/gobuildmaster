@@ -63,6 +63,8 @@ func (s *Server) checkerThread(i *pb.Intent) {
 			s.Log(fmt.Sprintf("MISMATCH: %v, %v", i, s.world[i.GetSpec().GetName()]))
 			if len(s.world[i.GetSpec().GetName()]) < int(i.Count) {
 				s.Log(fmt.Sprintf("UP : %v", i.GetSpec().GetName()))
+			} else {
+				s.Log(fmt.Sprintf("DOWN : %v", i.GetSpec().GetName()))
 			}
 		}
 	}
