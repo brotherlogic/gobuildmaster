@@ -82,12 +82,12 @@ func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	registry := pbd.NewDiscoveryServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := registry.ListAllServices(ctx, &pbd.Empty{}, grpc.FailFast(false))
+	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{}, grpc.FailFast(false))
 	if err != nil {
 		return ret, err
 	}
 
-	for _, s := range r.Services {
+	for _, s := range r.GetServices().Services {
 		if s.GetName() == "gobuildslave" {
 			ret.Services = append(ret.Services, s)
 		}
@@ -108,11 +108,11 @@ func getIP(servertype, servername string) (string, int) {
 	registry := pbd.NewDiscoveryServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := registry.ListAllServices(ctx, &pbd.Empty{}, grpc.FailFast(false))
+	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{}, grpc.FailFast(false))
 	if err != nil {
 		return "", -1
 	}
-	for _, s := range r.Services {
+	for _, s := range r.GetServices().Services {
 		if s.Name == servertype && s.Identifier == servername {
 			return s.Ip, int(s.Port)
 		}
@@ -193,9 +193,9 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 	registry := pbd.NewDiscoveryServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := registry.ListAllServices(ctx, &pbd.Empty{}, grpc.FailFast(false))
+	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{}, grpc.FailFast(false))
 	if err == nil {
-		for _, s := range r.Services {
+		for _, s := range r.GetServices().Services {
 			ret.Services = append(ret.Services, s)
 		}
 	}
