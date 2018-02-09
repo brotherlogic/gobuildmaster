@@ -283,7 +283,6 @@ func (s *Server) MatchIntent() {
 
 // SetMaster sets up the master settings
 func (s *Server) SetMaster() {
-	t := time.Now()
 	checker := &mainChecker{logger: s.Log}
 	s.LastMaster = time.Now()
 	masterMap := make(map[string]string)
@@ -341,7 +340,6 @@ func (s *Server) SetMaster() {
 		}
 	}
 	s.mapString = fmt.Sprintf("%v", masterMap)
-	s.LogFunction("SetMasterRun", t)
 }
 
 //Init builds up the server
