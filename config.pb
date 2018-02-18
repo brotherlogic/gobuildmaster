@@ -58,7 +58,7 @@ intents <
 intents <
   spec <
     name: "github.com/brotherlogic/versionserver"
-    server: "stable"
+    server: "serverstatus"
    >
   count: 1
 >
