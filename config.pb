@@ -99,3 +99,9 @@ intents <
   >
   count: 3
 >
+intents <
+  spec <
+    name: "github.com/brotherlogic/filecopier"
+  >
+  count: 1
+>
