@@ -18,11 +18,11 @@ func (s *Server) buildWorld() {
 		if err != nil {
 			s.Log(fmt.Sprintf("Error reading slave: %v -> %v", server, err))
 		}
-		for _, job := range jobs.GetDetails() {
-			if _, ok := s.world[job.GetSpec().GetName()]; !ok {
-				s.world[job.GetSpec().GetName()] = make(map[string]struct{})
+		for _, job := range jobs {
+			if _, ok := s.world[job.Job.GetName()]; !ok {
+				s.world[job.Job.GetName()] = make(map[string]struct{})
 			}
-			s.world[job.GetSpec().GetName()][server.GetIdentifier()] = struct{}{}
+			s.world[job.Job.GetName()][server.GetIdentifier()] = struct{}{}
 		}
 	}
 

@@ -13,7 +13,7 @@ import (
 
 type getter interface {
 	getSlaves() (*pbd.ServiceList, error)
-	getJobs(*pbd.RegistryEntry) (*pbs.JobList, error)
+	getJobs(*pbd.RegistryEntry) ([]*pbs.JobAssignment, error)
 }
 
 type checker interface {

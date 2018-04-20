@@ -29,11 +29,12 @@ func (g *testGetter) getSlaves() (*pbd.ServiceList, error) {
 	}}, nil
 }
 
-func (g *testGetter) getJobs(r *pbd.RegistryEntry) (*pbgs.JobList, error) {
+func (g *testGetter) getJobs(r *pbd.RegistryEntry) ([]*pbgs.JobAssignment, error) {
 	if g.failGetJobs {
-		return &pbgs.JobList{}, errors.New("Built to fail")
+		return []*pbgs.JobAssignment{}, errors.New("Built to fail")
 	}
-	return &pbgs.JobList{Details: []*pbgs.JobDetails{&pbgs.JobDetails{Spec: &pbgs.JobSpec{Name: "testjob"}}}}, nil
+	return []*pbgs.JobAssignment{&pbgs.JobAssignment{Server: "testserver", Job: &pbgs.Job{Name: "testjob"}}}, nil
+
 }
 
 func TestBuildWorld(t *testing.T) {
