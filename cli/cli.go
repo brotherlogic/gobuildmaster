@@ -11,7 +11,6 @@ import (
 	"google.golang.org/grpc"
 
 	pbdi "github.com/brotherlogic/discovery/proto"
-	pb "github.com/brotherlogic/gobuildmaster/proto"
 )
 
 func findServer(name string) (string, int) {
@@ -19,9 +18,9 @@ func findServer(name string) (string, int) {
 	defer conn.Close()
 
 	registry := pbdi.NewDiscoveryServiceClient(conn)
-	rs, _ := registry.ListAllServices(context.Background(), &pbdi.Empty{})
+	rs, _ := registry.ListAllServices(context.Background(), &pbdi.ListRequest{})
 
-	for _, r := range rs.Services {
+	for _, r := range rs.Services.Services {
 		if r.Name == name {
 			return r.Ip, int(r.Port)
 		}
@@ -45,13 +44,6 @@ func main() {
 			}
 			defer conn.Close()
 
-			registry := pb.NewGoBuildMasterClient(conn)
-			res, err := registry.Compare(context.Background(), &pb.Empty{})
-			if err != nil {
-				log.Fatalf("Error doing compare job: %v", err)
-			}
-			fmt.Printf("Actual: %v\n", res.Current)
-			fmt.Printf("Desire: %v\n", res.Desired)
 		}
 	}
 }

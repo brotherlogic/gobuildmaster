@@ -39,20 +39,18 @@ type Server struct {
 
 type prodGetter struct{}
 
-func (g *prodGetter) getJobs(server *pbd.RegistryEntry) (*pbs.JobList, error) {
-	list := &pbs.JobList{}
-
+func (g *prodGetter) getJobs(server *pbd.RegistryEntry) ([]*pbs.JobAssignment, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	conn, err := grpc.Dial(server.GetIp()+":"+strconv.Itoa(int(server.GetPort())), grpc.WithInsecure())
 	defer conn.Close()
 	if err != nil {
-		return list, err
+		return nil, err
 	}
 
-	slave := pbs.NewGoBuildSlaveClient(conn)
-	r, err := slave.List(ctx, &pbs.Empty{}, grpc.FailFast(false))
-	return r, err
+	slave := pbs.NewBuildSlaveClient(conn)
+	r, err := slave.ListJobs(ctx, &pbs.ListRequest{})
+	return r.Jobs, err
 }
 
 func (s *Server) checkerThread(i *pb.Intent) {
@@ -388,9 +386,6 @@ func main() {
 	s.PrepServer()
 	s.GoServer.Killme = false
 	s.RegisterServer("gobuildmaster", false)
-	s.RegisterServingTask(s.MatchIntent)
-	s.RegisterServingTask(s.becomeMaster)
-	s.RegisterRepeatingTask(s.SetMaster, time.Second)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
 
 	for i := 0; i < len(s.config.GetIntents()); i++ {
