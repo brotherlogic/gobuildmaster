@@ -57,6 +57,23 @@ func (g *prodGetter) getJobs(server *pbd.RegistryEntry) ([]*pbs.JobAssignment, e
 	return r.Jobs, err
 }
 
+func (g *prodGetter) getConfig(server *pbd.RegistryEntry) ([]*pbs.Requirement, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	conn, err := grpc.Dial(server.GetIp()+":"+strconv.Itoa(int(server.GetPort())), grpc.WithInsecure())
+	defer conn.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	slave := pbs.NewBuildSlaveClient(conn)
+	r, err := slave.SlaveConfig(ctx, &pbs.ConfigRequest{})
+	if err != nil {
+		return nil, err
+	}
+	return r.Config.Requirements, err
+}
+
 func (s *Server) checkerThread(i *pb.NIntent) {
 	lastRun := int64(10)
 	for true {

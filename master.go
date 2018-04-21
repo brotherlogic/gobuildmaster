@@ -14,6 +14,7 @@ import (
 type getter interface {
 	getSlaves() (*pbd.ServiceList, error)
 	getJobs(*pbd.RegistryEntry) ([]*pbs.JobAssignment, error)
+	getConfig(*pbd.RegistryEntry) ([]*pbs.Requirement, error)
 }
 
 type checker interface {
@@ -84,7 +85,25 @@ func selectServer(job *pbs.Job, g getter) string {
 
 		}
 		if jobfine {
-			return services.Services[i].Identifier
+			requirements, err := g.getConfig(services.Services[i])
+			if err == nil {
+				allmatch := true
+				for _, req := range job.Requirements {
+					localmatch := false
+					for _, r := range requirements {
+						if r.Category == req.Category && r.Properties == req.Properties {
+							localmatch = true
+						}
+					}
+
+					if !localmatch {
+						allmatch = false
+					}
+				}
+				if allmatch {
+					return services.Services[i].Identifier
+				}
+			}
 		}
 	}
 	return ""
