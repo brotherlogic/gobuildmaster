@@ -27,14 +27,15 @@ const (
 // Server the main server type
 type Server struct {
 	*goserver.GoServer
-	config     *pb.Config
-	serving    bool
-	LastIntent time.Time
-	LastMaster time.Time
-	worldMutex *sync.Mutex
-	world      map[string]map[string]struct{}
-	getter     getter
-	mapString  string
+	config       *pb.Config
+	serving      bool
+	LastIntent   time.Time
+	LastMaster   time.Time
+	worldMutex   *sync.Mutex
+	world        map[string]map[string]struct{}
+	getter       getter
+	mapString    string
+	lastWorldRun int64
 }
 
 type prodGetter struct{}
@@ -50,17 +51,23 @@ func (g *prodGetter) getJobs(server *pbd.RegistryEntry) ([]*pbs.JobAssignment, e
 
 	slave := pbs.NewBuildSlaveClient(conn)
 	r, err := slave.ListJobs(ctx, &pbs.ListRequest{})
+	if err != nil {
+		return nil, err
+	}
 	return r.Jobs, err
 }
 
 func (s *Server) checkerThread(i *pb.NIntent) {
+	lastRun := int64(10)
 	for true {
 		time.Sleep(time.Minute)
-
-		if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
-			if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
-				s.runJob(i.GetJob())
+		if s.Registry.Master && lastRun < s.lastWorldRun {
+			if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
+				if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
+					s.runJob(i.GetJob())
+				}
 			}
+			lastRun = time.Now().Unix()
 		}
 	}
 }
@@ -333,6 +340,7 @@ func Init(config *pb.Config) *Server {
 		make(map[string]map[string]struct{}),
 		&prodGetter{},
 		"",
+		0,
 	}
 	return s
 }
@@ -368,6 +376,7 @@ func main() {
 	s.GoServer.Killme = false
 	s.RegisterServer("gobuildmaster", false)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
+	s.RegisterServingTask(s.becomeMaster)
 
 	for i := 0; i < len(s.config.GetNintents()); i++ {
 		go s.checkerThread(s.config.GetNintents()[i])

@@ -1,3 +1,10 @@
+nintents <
+  job <
+    name: "filecopier"
+    go_path: "github.com/brotherlogic/filecopier"
+  >
+  count: 1
+>
 intents <
   spec <
     name: "github.com/brotherlogic/keystore"
