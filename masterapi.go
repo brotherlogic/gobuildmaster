@@ -53,16 +53,13 @@ func (g *prodGetter) getJobs(server *pbd.RegistryEntry) ([]*pbs.JobAssignment, e
 	return r.Jobs, err
 }
 
-func (s *Server) checkerThread(i *pb.Intent) {
+func (s *Server) checkerThread(i *pb.NIntent) {
 	for true {
 		time.Sleep(time.Minute)
 
-		if len(s.world[i.GetSpec().GetName()]) != int(i.Count) {
-			s.Log(fmt.Sprintf("MISMATCH: %v, %v", i, s.world[i.GetSpec().GetName()]))
-			if len(s.world[i.GetSpec().GetName()]) < int(i.Count) {
-				s.Log(fmt.Sprintf("UP : %v", i.GetSpec().GetName()))
-			} else {
-				s.Log(fmt.Sprintf("DOWN : %v", i.GetSpec().GetName()))
+		if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
+			if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
+				s.runJob(i.GetJob())
 			}
 		}
 	}
@@ -168,7 +165,8 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 	return err == nil, err
 }
 
-func runJob(job *pbs.JobSpec, server string) {
+func (s *Server) runJob(job *pbs.Job) {
+	server := selectServer(job, s.getter)
 	if server != "" {
 		ip, port := getIP("gobuildslave", server)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -176,9 +174,8 @@ func runJob(job *pbs.JobSpec, server string) {
 		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
 		defer conn.Close()
 
-		slave := pbs.NewGoBuildSlaveClient(conn)
-		job.Server = server
-		slave.Run(ctx, job, grpc.FailFast(false))
+		slave := pbs.NewBuildSlaveClient(conn)
+		slave.RunJob(ctx, &pbs.RunRequest{Job: job}, grpc.FailFast(false))
 	}
 }
 
@@ -261,22 +258,6 @@ func getConfig(c checker) *pb.Config {
 	}
 
 	return config
-}
-
-// MatchIntent tries to match the intent with the state of production
-func (s *Server) MatchIntent() {
-	checker := &mainChecker{logger: s.Log}
-	for s.serving {
-		time.Sleep(intentWait)
-		s.LastIntent = time.Now()
-
-		state := getConfig(checker)
-		diff := configDiff(s.config, state)
-		joblist := runJobs(diff)
-		for _, job := range joblist {
-			runJob(job, chooseServer(job, checker))
-		}
-	}
 }
 
 // SetMaster sets up the master settings
@@ -388,8 +369,8 @@ func main() {
 	s.RegisterServer("gobuildmaster", false)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
 
-	for i := 0; i < len(s.config.GetIntents()); i++ {
-		go s.checkerThread(s.config.GetIntents()[i])
+	for i := 0; i < len(s.config.GetNintents()); i++ {
+		go s.checkerThread(s.config.GetNintents()[i])
 	}
 
 	err = s.Serve()
