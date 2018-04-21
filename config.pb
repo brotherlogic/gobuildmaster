@@ -39,9 +39,10 @@ intents <
   >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/recordgetter"
+nintents <
+  job <
+    name: "recordgetter"
+    go_path: "github.com/brotherlogic/recordgetter"
   >
   count: 1
 >
