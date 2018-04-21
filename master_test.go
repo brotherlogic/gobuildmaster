@@ -174,6 +174,7 @@ type testGetter struct {
 	failGetSlaves bool
 	failGetJobs   bool
 	running       map[string][]*pbs.JobAssignment
+	config        map[string][]*pbs.Requirement
 }
 
 func (t *testGetter) getSlaves() (*pbd.ServiceList, error) {
@@ -199,6 +200,13 @@ func (t *testGetter) getJobs(e *pbd.RegistryEntry) ([]*pbs.JobAssignment, error)
 	return make([]*pbs.JobAssignment, 0), nil
 }
 
+func (t *testGetter) getConfig(e *pbd.RegistryEntry) ([]*pbs.Requirement, error) {
+	if val, ok := t.config[e.Identifier]; ok {
+		return val, nil
+	}
+	return make([]*pbs.Requirement, 0), nil
+}
+
 func TestFirstSelect(t *testing.T) {
 	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
 	tg.running["badserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "runner"}}}
@@ -215,6 +223,28 @@ func TestNoSelect(t *testing.T) {
 	tg.running["badserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "runner"}}}
 
 	server := selectServer(&pbs.Job{Name: "runner"}, tg)
+	if server != "" {
+		t.Errorf("Wrong server selected: %v", server)
+	}
+}
+
+func TestReqSelect(t *testing.T) {
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment), config: make(map[string][]*pbs.Requirement)}
+	tg.running["goodserver"] = []*pbs.JobAssignment{}
+	tg.config["goodserver"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}
+
+	server := selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
+	if server != "goodserver" {
+		t.Errorf("Wrong server selected: %v", server)
+	}
+}
+
+func TestReqSelectFail(t *testing.T) {
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment), config: make(map[string][]*pbs.Requirement)}
+	tg.running["goodserver"] = []*pbs.JobAssignment{}
+	tg.config["goodserver"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisker"}}
+
+	server := selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
 	if server != "" {
 		t.Errorf("Wrong server selected: %v", server)
 	}
