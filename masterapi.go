@@ -394,6 +394,7 @@ func main() {
 	s.RegisterServer("gobuildmaster", false)
 	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
 	s.RegisterServingTask(s.becomeMaster)
+	s.RegisterRepeatingTask(s.SetMaster, time.Second)
 
 	for i := 0; i < len(s.config.GetNintents()); i++ {
 		go s.checkerThread(s.config.GetNintents()[i])
