@@ -11,14 +11,17 @@ func (s *Server) buildWorld() {
 	slaves, err := s.getter.getSlaves()
 	if err != nil {
 		s.Log(fmt.Sprintf("Error getting slaves: %v", err))
+		s.worldMutex.Unlock()
 		return
 	}
 
 	for _, server := range slaves.GetServices() {
 		jobs, err := s.getter.getJobs(server)
 		if err != nil {
+			s.worldMutex.Unlock()
 			return
 		}
+
 		for _, job := range jobs {
 			if _, ok := s.world[job.Job.GetName()]; !ok {
 				s.world[job.Job.GetName()] = make(map[string]struct{})
