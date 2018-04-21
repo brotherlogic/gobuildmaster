@@ -20,11 +20,10 @@ nintents <
   >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/keystore"
-    disk: 1048576
-    server: "framethree"
+nintents <
+  job <
+    name: "recordcollection"
+    go_path: "github.com/brotherlogic/recordcollection"
   >
   count: 1
 >
@@ -74,13 +73,6 @@ intents <
 intents <
   spec <
     name: "github.com/brotherlogic/recordcollection"
-   >
-  count: 1
->
-intents <
-  spec <
-    name: "github.com/brotherlogic/versionserver"
-    server: "runner"
    >
   count: 1
 >
