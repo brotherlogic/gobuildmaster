@@ -27,15 +27,17 @@ nintents <
   >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/beerserver"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/beerserver"
+    name: "beerserver"
   >
  count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/cardserver"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/cardserver"
+    name: "cardserver"
   >
   count: 1
 >
@@ -53,47 +55,40 @@ intents <
   >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/recordsorganiser"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordsorganiser"
+    name: "recordsorganiser"
    >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/githubcard"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/githubcard"
+    name: "githubcard"
    >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/reminders"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/reminders"
+    name: "reminders"
    >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/recordcollection"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordprocess"
+    name: "recordprocess"
    >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/recordprocess"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordmover"
+    name: "recordmover"
    >
   count: 1
->
-intents <
-  spec <
-    name: "github.com/brotherlogic/recordmover"
-   >
-  count: 3
->
-intents <
-  spec <
-    name: "github.com/brotherlogic/movelist"
-   >
-  count: 3
 >
 intents <
   spec <
@@ -102,21 +97,24 @@ intents <
   >
   count: 3
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/recordwants"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordwants"
+    name: "recordwants"
   >
-  count: 3
+  count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/recordalerting"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordalerting"
+    name: "recordalerting"
   >
-  count: 3
+  count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/filecopier"
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/filecopier"
+    name: "filecopier"
   >
   count: 1
 >
