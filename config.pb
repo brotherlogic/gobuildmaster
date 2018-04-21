@@ -1,7 +1,22 @@
 nintents <
   job <
-    name: "filecopier"
-    go_path: "github.com/brotherlogic/filecopier"
+    name: "keystore"
+    go_path: "github.com/brotherlogic/keystore"
+    requirements <
+      category: DISK
+      properties: "disk1"
+    >
+  >
+  count: 1
+>
+nintents <
+  job <
+    name: "versionserver"
+    go_path: "github.com/brotherlogic/versionserver"
+    requirements <
+      category: SERVER
+      properties: "runner"
+    >
   >
   count: 1
 >
