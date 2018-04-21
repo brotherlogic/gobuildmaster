@@ -69,6 +69,27 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 	return ""
 }
 
+// Find the first available server
+func selectServer(job *pbs.Job, g getter) string {
+	services, _ := g.getSlaves()
+	for i := range rand.Perm(len(services.Services)) {
+		jobs, _ := g.getJobs(services.Services[i])
+
+		//Don't accept a server which is already running this job
+		jobfine := true
+		for _, j := range jobs {
+			if j.Job.Name == job.Name {
+				jobfine = false
+			}
+
+		}
+		if jobfine {
+			return services.Services[i].Identifier
+		}
+	}
+	return ""
+}
+
 func configDiff(cm, cs *pb.Config) *pb.Config {
 	retConfig := &pb.Config{}
 

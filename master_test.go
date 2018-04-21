@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"log"
 	"testing"
 
@@ -166,5 +167,55 @@ func TestMissServer(t *testing.T) {
 	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
 	if server != "" {
 		t.Errorf("Found a server even though one is not there: %v", server)
+	}
+}
+
+type testGetter struct {
+	failGetSlaves bool
+	failGetJobs   bool
+	running       map[string][]*pbs.JobAssignment
+}
+
+func (t *testGetter) getSlaves() (*pbd.ServiceList, error) {
+	if t.failGetSlaves {
+		return &pbd.ServiceList{}, errors.New("Built to fail")
+	}
+
+	list := &pbd.ServiceList{}
+	for key := range t.running {
+		list.Services = append(list.Services, &pbd.RegistryEntry{Identifier: key})
+	}
+	return list, nil
+}
+
+func (t *testGetter) getJobs(e *pbd.RegistryEntry) ([]*pbs.JobAssignment, error) {
+	if t.failGetJobs {
+		return []*pbs.JobAssignment{}, errors.New("Built to fail")
+	}
+
+	if val, ok := t.running[e.Identifier]; ok {
+		return val, nil
+	}
+	return make([]*pbs.JobAssignment, 0), nil
+}
+
+func TestFirstSelect(t *testing.T) {
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
+	tg.running["badserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "runner"}}}
+	tg.running["goodserver"] = []*pbs.JobAssignment{}
+
+	server := selectServer(&pbs.Job{Name: "runner"}, tg)
+	if server != "goodserver" {
+		t.Errorf("Wrong server selected: %v", server)
+	}
+}
+
+func TestNoSelect(t *testing.T) {
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
+	tg.running["badserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "runner"}}}
+
+	server := selectServer(&pbs.Job{Name: "runner"}, tg)
+	if server != "" {
+		t.Errorf("Wrong server selected: %v", server)
 	}
 }
