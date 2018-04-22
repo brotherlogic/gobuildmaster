@@ -116,5 +116,5 @@ nintents <
     go_path: "github.com/brotherlogic/filecopier"
     name: "filecopier"
   >
-  count: 1
+  redundancy: GLOBAL
 >
