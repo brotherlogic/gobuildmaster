@@ -7,7 +7,7 @@ nintents <
       properties: "keystore"
     >
   >
-  count: 1
+  redundancy: GLOBAL
 >
 nintents <
   job <
