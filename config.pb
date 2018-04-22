@@ -4,7 +4,7 @@ nintents <
     go_path: "github.com/brotherlogic/keystore"
     requirements <
       category: DISK
-      properties: "disk1"
+      properties: "keystore"
     >
   >
   count: 1
