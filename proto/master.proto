@@ -9,6 +9,13 @@ message Config {
   repeated NIntent nintents = 2;
 }
 
+enum Redundancy {
+  UNKNOWN = 0;
+  SOLO = 1;
+  REDUNDANT = 2;
+  GLOBAL = 3;
+}
+
 message Intent {
   gobuildslave.JobSpec spec = 1;
   int32 count = 2;
@@ -17,6 +24,7 @@ message Intent {
 message NIntent {
   gobuildslave.Job job = 1;
   int32 count = 2;
+  Redundancy redundancy = 3;
 }
 
 message Empty {}

@@ -79,6 +79,9 @@ func (s *Server) checkerThread(i *pb.NIntent) {
 	for true {
 		time.Sleep(time.Minute)
 		if s.Registry.Master && lastRun < s.lastWorldRun {
+			if i.Redundancy == pb.Redundancy_GLOBAL {
+				s.runJob(i.GetJob())
+			}
 			if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
 				if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
 					s.runJob(i.GetJob())
