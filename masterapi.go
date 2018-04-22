@@ -307,9 +307,9 @@ func (s *Server) SetMaster() {
 			} else {
 				if entry.GetMaster() {
 					hasMaster[entry.GetName()] = 1
-					matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
 					masterMap[entry.GetName()] = entry.GetIdentifier()
 				}
+				matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
 			}
 		}
 	}
