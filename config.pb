@@ -125,3 +125,11 @@ nintents <
   >
   count: 1
 >
+nintents <
+  job <
+    name: "monitor"
+    go_path: "github.com/brotherlogic/monitor"
+  >
+  count: 1
+>
+
