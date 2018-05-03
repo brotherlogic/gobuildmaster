@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"time"
+
+	"golang.org/x/net/context"
 )
 
-func (s *Server) buildWorld() {
+func (s *Server) buildWorld(ctx context.Context) {
 	s.worldMutex.Lock()
 	s.world = make(map[string]map[string]struct{})
 	slaves, err := s.getter.getSlaves()

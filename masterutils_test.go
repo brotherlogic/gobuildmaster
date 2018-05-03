@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"testing"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
@@ -19,7 +20,7 @@ func TestBuildWorld(t *testing.T) {
 	g.running["testserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "testjob"}}}
 	s.getter = g
 
-	s.buildWorld()
+	s.buildWorld(context.Background())
 	if _, ok := s.world["testjob"]["testserver"]; !ok {
 		t.Fatalf("World has not been built correctly: %v", s.world)
 	}
@@ -31,7 +32,7 @@ func TestBuildWorldFailSlaves(t *testing.T) {
 	g.running["testserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "testjob"}}}
 	s.getter = g
 
-	s.buildWorld()
+	s.buildWorld(context.Background())
 	if len(s.world) != 0 {
 		t.Errorf("World has been built: %v", s.world)
 	}
@@ -43,7 +44,7 @@ func TestBuildWorldFailJobs(t *testing.T) {
 	g.running["testserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "testjob"}}}
 	s.getter = g
 
-	s.buildWorld()
+	s.buildWorld(context.Background())
 	if len(s.world) != 0 {
 		t.Errorf("World has been built: %v", s.world)
 	}
