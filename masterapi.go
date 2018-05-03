@@ -82,6 +82,11 @@ func (s *Server) checkerThread(i *pb.NIntent) {
 			if i.Redundancy == pb.Redundancy_GLOBAL {
 				s.runJob(i.GetJob())
 			}
+			if i.Redundancy == pb.Redundancy_REDUNDANT {
+				if len(s.world[i.GetJob().GetName()]) < 3 {
+					s.runJob(i.GetJob())
+				}
+			}
 			if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
 				if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
 					s.runJob(i.GetJob())
@@ -288,7 +293,7 @@ func getConfig(c checker) *pb.Config {
 }
 
 // SetMaster sets up the master settings
-func (s *Server) SetMaster() {
+func (s *Server) SetMaster(ctx context.Context) {
 	checker := &mainChecker{logger: s.Log}
 	s.LastMaster = time.Now()
 	masterMap := make(map[string]string)
@@ -365,7 +370,7 @@ func Init(config *pb.Config) *Server {
 	return s
 }
 
-func (s *Server) becomeMaster() {
+func (s *Server) becomeMaster(ctx context.Context) {
 	for true {
 		time.Sleep(time.Second * 5)
 		_, _, err := utils.Resolve("gobuildmaster")

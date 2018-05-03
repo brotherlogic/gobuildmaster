@@ -110,7 +110,7 @@ nintents <
     name: "recordalerting"
   >
   count: 1
->
+<>
 nintents <
   job <
     go_path: "github.com/brotherlogic/filecopier"
@@ -131,5 +131,12 @@ nintents <
     go_path: "github.com/brotherlogic/monitor"
   >
   count: 1
+>
+nintents <
+  job <
+    name: "buildserver"
+    go_path: "github.com/brotherlogic/buildserver"
+  >
+  redundancy: REDUNDANT
 >
 
