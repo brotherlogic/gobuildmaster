@@ -110,7 +110,7 @@ nintents <
     name: "recordalerting"
   >
   count: 1
-<>
+>
 nintents <
   job <
     go_path: "github.com/brotherlogic/filecopier"
