@@ -136,6 +136,11 @@ nintents <
   job <
     name: "buildserver"
     go_path: "github.com/brotherlogic/buildserver"
+    requirements <
+      category: DISK
+      properties: "scratch"
+    >
+
   >
   redundancy: REDUNDANT
 >
