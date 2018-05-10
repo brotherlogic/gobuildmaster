@@ -39,7 +39,7 @@ nintents <
     go_path: "github.com/brotherlogic/cardserver"
     name: "cardserver"
   >
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
