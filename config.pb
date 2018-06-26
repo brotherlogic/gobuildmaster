@@ -156,4 +156,11 @@ nintents <
   >
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "location"
+    go_path: "github.com/brotherlogic/location"
+  >
+  redundancy: REDUNDANT
+>
 
