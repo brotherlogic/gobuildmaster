@@ -27,15 +27,16 @@ const (
 // Server the main server type
 type Server struct {
 	*goserver.GoServer
-	config       *pb.Config
-	serving      bool
-	LastIntent   time.Time
-	LastMaster   time.Time
-	worldMutex   *sync.Mutex
-	world        map[string]map[string]struct{}
-	getter       getter
-	mapString    string
-	lastWorldRun int64
+	config            *pb.Config
+	serving           bool
+	LastIntent        time.Time
+	LastMaster        time.Time
+	worldMutex        *sync.Mutex
+	world             map[string]map[string]struct{}
+	getter            getter
+	mapString         string
+	lastWorldRun      int64
+	lastMasterSatisfy map[string]time.Time
 }
 
 type prodGetter struct{}
@@ -247,7 +248,8 @@ func (s Server) GetState() []*pbg.State {
 	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
 		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
 		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
-		&pbg.State{Key: "master", Text: s.mapString}}
+		&pbg.State{Key: "master", Text: s.mapString},
+		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)}}
 }
 
 //Compare compares current state to desired state
@@ -317,9 +319,9 @@ func (s *Server) SetMaster(ctx context.Context) {
 	}
 
 	for key, entries := range matcher {
+		seen := false
 		if hasMaster[key] > 1 {
 			hasMaster[key] = 1
-			seen := false
 			for _, entry := range entries {
 				if seen && entry.GetMaster() {
 					checker.master(entry, false)
@@ -330,7 +332,6 @@ func (s *Server) SetMaster(ctx context.Context) {
 		}
 
 		if hasMaster[key] == 0 {
-
 			if len(entries) == 0 {
 				masterMap[key] = "NONE_AVAILABLE"
 			}
@@ -340,12 +341,23 @@ func (s *Server) SetMaster(ctx context.Context) {
 				if val {
 					masterMap[entry.GetName()] = entry.GetIdentifier()
 					entry.Master = true
+					seen = true
 					break
 				} else {
 					masterMap[entry.GetName()] = fmt.Sprintf("%v", err)
 				}
 			}
+
 		}
+
+		_, ok := s.lastMasterSatisfy[key]
+		if ok && seen {
+			delete(s.lastMasterSatisfy, key)
+		}
+		if !ok && !seen {
+			s.lastMasterSatisfy[key] = time.Now()
+		}
+
 	}
 	s.mapString = fmt.Sprintf("%v", masterMap)
 }
@@ -363,6 +375,7 @@ func Init(config *pb.Config) *Server {
 		&prodGetter{},
 		"",
 		0,
+		make(map[string]time.Time),
 	}
 	return s
 }
