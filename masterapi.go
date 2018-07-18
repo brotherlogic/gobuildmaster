@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc"
 
 	pbd "github.com/brotherlogic/discovery/proto"
+	pbgh "github.com/brotherlogic/githubcard/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
 	pbg "github.com/brotherlogic/goserver/proto"
@@ -386,6 +387,23 @@ func (s *Server) becomeMaster(ctx context.Context) {
 		_, _, err := utils.Resolve("gobuildmaster")
 		if err != nil {
 			s.Registry.Master = true
+		}
+	}
+}
+
+func (s *Server) raiseIssue(ctx context.Context) {
+	for key, val := range s.lastMasterSatisfy {
+		if time.Now().Sub(val) > time.Hour {
+			ip, port := s.GetIP("githubcard")
+			if port > 0 {
+				conn, err := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+				if err == nil {
+					defer conn.Close()
+					client := pbgh.NewGithubClient(conn)
+					client.AddIssue(ctx, &pbgh.Issue{Service: key, Title: fmt.Sprintf("No Master Found - %v", key), Body: ""}, grpc.FailFast(false))
+				}
+			}
+
 		}
 	}
 }
