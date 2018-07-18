@@ -319,7 +319,7 @@ func (s *Server) SetMaster(ctx context.Context) {
 	}
 
 	for key, entries := range matcher {
-		seen := false
+		seen := hasMaster[key] == 1
 		if hasMaster[key] > 1 {
 			hasMaster[key] = 1
 			for _, entry := range entries {
