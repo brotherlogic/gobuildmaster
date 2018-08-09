@@ -47,7 +47,7 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 // Find the first available server
 func chooseServer(job *pbs.JobSpec, c checker) string {
 	services := c.discover().Services
-	for i := range rand.Perm(len(services)) {
+	for _, i := range rand.Perm(len(services)) {
 		service := services[i]
 		if service.Name == "gobuildslave" && (job.GetServer() == "" || job.GetServer() == service.GetIdentifier()) {
 			jobs, sc := c.assess(service.Identifier)
