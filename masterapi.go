@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc"
 
 	pbd "github.com/brotherlogic/discovery/proto"
+	pbgh "github.com/brotherlogic/githubcard/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
 	pbg "github.com/brotherlogic/goserver/proto"
@@ -27,15 +28,16 @@ const (
 // Server the main server type
 type Server struct {
 	*goserver.GoServer
-	config       *pb.Config
-	serving      bool
-	LastIntent   time.Time
-	LastMaster   time.Time
-	worldMutex   *sync.Mutex
-	world        map[string]map[string]struct{}
-	getter       getter
-	mapString    string
-	lastWorldRun int64
+	config            *pb.Config
+	serving           bool
+	LastIntent        time.Time
+	LastMaster        time.Time
+	worldMutex        *sync.Mutex
+	world             map[string]map[string]struct{}
+	getter            getter
+	mapString         string
+	lastWorldRun      int64
+	lastMasterSatisfy map[string]time.Time
 }
 
 type prodGetter struct{}
@@ -190,9 +192,6 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 
 	server := pbg.NewGoserverServiceClient(conn)
 	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
-	if err != nil {
-		t.logger(fmt.Sprintf("Master REJECT(%v): %v", entry, err))
-	}
 
 	return err == nil, err
 }
@@ -250,7 +249,8 @@ func (s Server) GetState() []*pbg.State {
 	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
 		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
 		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
-		&pbg.State{Key: "master", Text: s.mapString}}
+		&pbg.State{Key: "master", Text: s.mapString},
+		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)}}
 }
 
 //Compare compares current state to desired state
@@ -320,9 +320,9 @@ func (s *Server) SetMaster(ctx context.Context) {
 	}
 
 	for key, entries := range matcher {
+		seen := hasMaster[key] == 1
 		if hasMaster[key] > 1 {
 			hasMaster[key] = 1
-			seen := false
 			for _, entry := range entries {
 				if seen && entry.GetMaster() {
 					checker.master(entry, false)
@@ -333,7 +333,6 @@ func (s *Server) SetMaster(ctx context.Context) {
 		}
 
 		if hasMaster[key] == 0 {
-
 			if len(entries) == 0 {
 				masterMap[key] = "NONE_AVAILABLE"
 			}
@@ -343,12 +342,23 @@ func (s *Server) SetMaster(ctx context.Context) {
 				if val {
 					masterMap[entry.GetName()] = entry.GetIdentifier()
 					entry.Master = true
+					seen = true
 					break
 				} else {
 					masterMap[entry.GetName()] = fmt.Sprintf("%v", err)
 				}
 			}
+
 		}
+
+		_, ok := s.lastMasterSatisfy[key]
+		if ok && seen {
+			delete(s.lastMasterSatisfy, key)
+		}
+		if !ok && !seen {
+			s.lastMasterSatisfy[key] = time.Now()
+		}
+
 	}
 	s.mapString = fmt.Sprintf("%v", masterMap)
 }
@@ -366,6 +376,7 @@ func Init(config *pb.Config) *Server {
 		&prodGetter{},
 		"",
 		0,
+		make(map[string]time.Time),
 	}
 	return s
 }
@@ -376,6 +387,23 @@ func (s *Server) becomeMaster(ctx context.Context) {
 		_, _, err := utils.Resolve("gobuildmaster")
 		if err != nil {
 			s.Registry.Master = true
+		}
+	}
+}
+
+func (s *Server) raiseIssue(ctx context.Context) {
+	for key, val := range s.lastMasterSatisfy {
+		if time.Now().Sub(val) > time.Hour {
+			ip, port := s.GetIP("githubcard")
+			if port > 0 {
+				conn, err := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
+				if err == nil {
+					defer conn.Close()
+					client := pbgh.NewGithubClient(conn)
+					client.AddIssue(ctx, &pbgh.Issue{Service: key, Title: fmt.Sprintf("No Master Found - %v", key), Body: ""}, grpc.FailFast(false))
+				}
+			}
+
 		}
 	}
 }

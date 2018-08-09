@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"golang.org/x/net/context"
@@ -12,7 +11,6 @@ func (s *Server) buildWorld(ctx context.Context) {
 	s.world = make(map[string]map[string]struct{})
 	slaves, err := s.getter.getSlaves()
 	if err != nil {
-		s.Log(fmt.Sprintf("Error getting slaves: %v", err))
 		s.worldMutex.Unlock()
 		return
 	}
