@@ -170,4 +170,15 @@ nintents <
   >
   count: 1
 >
+nintents <
+  job <
+    name: "led"
+    go_path: "github.com/brotherlogic/led"
+    requirements <
+      category: SERVER
+      properties: "leddisplay"
+    >
+  >  
+  count: 1
+>
 
