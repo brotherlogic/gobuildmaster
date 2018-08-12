@@ -174,6 +174,7 @@ nintents <
   job <
     name: "led"
     go_path: "github.com/brotherlogic/led"
+    sudo: true
     requirements <
       category: SERVER
       properties: "leddisplay"
