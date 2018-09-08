@@ -108,6 +108,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordalerting"
     name: "recordalerting"
+    non_bootstrap: true
   >
   count: 1
 >
