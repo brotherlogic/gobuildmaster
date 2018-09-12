@@ -141,9 +141,8 @@ nintents <
       category: DISK
       properties: "scratch"
     >
-
   >
-  redundancy: REDUNDANT
+  count : 1
 >
 nintents <
   job <
