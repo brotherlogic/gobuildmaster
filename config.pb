@@ -167,6 +167,7 @@ nintents <
   job <
     name: "proxy"
     go_path: "github.com/brotherlogic/proxy"
+    external: true
   >
   count: 1
 >
