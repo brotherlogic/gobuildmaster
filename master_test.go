@@ -16,10 +16,11 @@ type testChecker struct {
 }
 
 func (t testChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
+	log.Printf("ASSESS %v", server)
 	if server == "server1" {
 		return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}, t.machines[0]
 	}
-	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test2"}}}}, t.machines[1]
+	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}, t.machines[1]
 }
 
 func (t testChecker) discover() *pbd.ServiceList {
@@ -90,6 +91,16 @@ func TestLoadMainConfig(t *testing.T) {
 
 	log.Printf("READ CONFIG")
 	log.Printf("%v", c)
+
+	found := false
+	for _, i := range c.Nintents {
+		if i.Job.Name == "led" {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("Cannot find led: %v", c.Nintents)
+	}
 }
 
 func TestRunJob(t *testing.T) {
@@ -131,6 +142,15 @@ func TestLoadOntoDiskMachine(t *testing.T) {
 
 	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
 	if server != "server2" {
+		t.Errorf("Failed to select correct server: %v", server)
+	}
+}
+
+func TestLoadOntoAlreadyRunning(t *testing.T) {
+	conf := &pbs.JobSpec{Name: "test1"}
+
+	server := chooseServer(conf, testChecker{machines: []*pbs.Config{&pbs.Config{Disk: 100}, &pbs.Config{Disk: 1000}}})
+	if server != "" {
 		t.Errorf("Failed to select correct server: %v", server)
 	}
 }
