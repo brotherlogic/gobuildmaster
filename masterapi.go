@@ -207,6 +207,8 @@ func (s *Server) runJob(job *pbs.Job) {
 
 		slave := pbs.NewBuildSlaveClient(conn)
 		slave.RunJob(ctx, &pbs.RunRequest{Job: job}, grpc.FailFast(false))
+	} else {
+		s.Log(fmt.Sprintf("Unable to find server for %v", job.Name))
 	}
 }
 
