@@ -51,7 +51,6 @@ nintents <
 intents <
   spec <
     name: "github.com/brotherlogic/monitor"
-    external: true
   >
   count: 1
 >
@@ -167,7 +166,10 @@ nintents <
   job <
     name: "proxy"
     go_path: "github.com/brotherlogic/proxy"
-    external: true
+    requirements <
+      category: EXTERNAL
+      properties: "external_ready"
+    >
   >
   count: 1
 >
