@@ -259,6 +259,17 @@ func TestReqSelect(t *testing.T) {
 	}
 }
 
+func TestReqSelectExternal(t *testing.T) {
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment), config: make(map[string][]*pbs.Requirement)}
+	tg.running["discover"] = []*pbs.JobAssignment{}
+	tg.config["discover"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_EXTERNAL, Properties: "external_ready"}}
+
+	server := selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_EXTERNAL, Properties: "external_ready"}}}, tg)
+	if server != "discover" {
+		t.Errorf("Wrong server selected: %v", server)
+	}
+}
+
 func TestReqSelectFail(t *testing.T) {
 	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment), config: make(map[string][]*pbs.Requirement)}
 	tg.running["goodserver"] = []*pbs.JobAssignment{}
