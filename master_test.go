@@ -94,12 +94,12 @@ func TestLoadMainConfig(t *testing.T) {
 
 	found := false
 	for _, i := range c.Nintents {
-		if i.Job.Name == "led" {
+		if i.Job.Name == "recordprinter" {
 			found = true
 		}
 	}
 	if !found {
-		t.Errorf("Cannot find led: %v", c.Nintents)
+		t.Errorf("Cannot find recordprinter: %v", c.Nintents)
 	}
 }
 
