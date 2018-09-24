@@ -196,3 +196,11 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "recordprinter"
+    go_path: "github.com/brotherlogic/recordprinter"
+    non_bootstrap: true
+  >  
+  count: 1
+>
