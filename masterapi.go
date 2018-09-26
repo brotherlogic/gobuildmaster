@@ -207,6 +207,8 @@ func (s *Server) runJob(job *pbs.Job) {
 
 		slave := pbs.NewBuildSlaveClient(conn)
 		slave.RunJob(ctx, &pbs.RunRequest{Job: job}, grpc.FailFast(false))
+	} else {
+		s.Log(fmt.Sprintf("Unable to find server for %v", job.Name))
 	}
 }
 
@@ -428,9 +430,9 @@ func main() {
 	s.PrepServer()
 	s.GoServer.Killme = false
 	s.RegisterServer("gobuildmaster", false)
-	s.RegisterRepeatingTask(s.buildWorld, time.Minute)
+	s.RegisterRepeatingTask(s.buildWorld, "build_world", time.Minute)
 	s.RegisterServingTask(s.becomeMaster)
-	s.RegisterRepeatingTask(s.SetMaster, time.Minute)
+	s.RegisterRepeatingTask(s.SetMaster, "set_master", time.Minute)
 
 	for i := 0; i < len(s.config.GetNintents()); i++ {
 		go s.checkerThread(s.config.GetNintents()[i])

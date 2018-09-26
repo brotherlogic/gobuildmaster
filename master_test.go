@@ -16,10 +16,11 @@ type testChecker struct {
 }
 
 func (t testChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
+	log.Printf("ASSESS %v", server)
 	if server == "server1" {
 		return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}, t.machines[0]
 	}
-	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test2"}}}}, t.machines[1]
+	return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}, t.machines[1]
 }
 
 func (t testChecker) discover() *pbd.ServiceList {
@@ -90,6 +91,16 @@ func TestLoadMainConfig(t *testing.T) {
 
 	log.Printf("READ CONFIG")
 	log.Printf("%v", c)
+
+	found := false
+	for _, i := range c.Nintents {
+		if i.Job.Name == "recordprinter" {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("Cannot find recordprinter: %v", c.Nintents)
+	}
 }
 
 func TestRunJob(t *testing.T) {
@@ -131,6 +142,15 @@ func TestLoadOntoDiskMachine(t *testing.T) {
 
 	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
 	if server != "server2" {
+		t.Errorf("Failed to select correct server: %v", server)
+	}
+}
+
+func TestLoadOntoAlreadyRunning(t *testing.T) {
+	conf := &pbs.JobSpec{Name: "test1"}
+
+	server := chooseServer(conf, testChecker{machines: []*pbs.Config{&pbs.Config{Disk: 100}, &pbs.Config{Disk: 1000}}})
+	if server != "" {
 		t.Errorf("Failed to select correct server: %v", server)
 	}
 }
@@ -235,6 +255,17 @@ func TestReqSelect(t *testing.T) {
 
 	server := selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
 	if server != "goodserver" {
+		t.Errorf("Wrong server selected: %v", server)
+	}
+}
+
+func TestReqSelectExternal(t *testing.T) {
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment), config: make(map[string][]*pbs.Requirement)}
+	tg.running["discover"] = []*pbs.JobAssignment{}
+	tg.config["discover"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_EXTERNAL, Properties: "external_ready"}}
+
+	server := selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_EXTERNAL, Properties: "external_ready"}}}, tg)
+	if server != "discover" {
 		t.Errorf("Wrong server selected: %v", server)
 	}
 }

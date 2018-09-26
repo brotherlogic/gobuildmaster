@@ -51,7 +51,6 @@ nintents <
 intents <
   spec <
     name: "github.com/brotherlogic/monitor"
-    external: true
   >
   redundancy: REDUNDANT
 >
@@ -167,6 +166,10 @@ nintents <
   job <
     name: "proxy"
     go_path: "github.com/brotherlogic/proxy"
+    requirements <
+      category: EXTERNAL
+      properties: "external_ready"
+    >
   >
   count: 1
 >
@@ -182,4 +185,22 @@ nintents <
   >  
   count: 1
 >
-
+nintents <
+  job <
+    name: "printer"
+    go_path: "github.com/brotherlogic/printer"
+    requirements <
+      category: SERVER
+      properties: "printer"
+    >
+  >  
+  count: 1
+>
+nintents <
+  job <
+    name: "recordprinter"
+    go_path: "github.com/brotherlogic/recordprinter"
+    non_bootstrap: true
+  >  
+  count: 1
+>
