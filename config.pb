@@ -53,7 +53,7 @@ intents <
     name: "github.com/brotherlogic/monitor"
     external: true
   >
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
