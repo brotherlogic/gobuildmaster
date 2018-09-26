@@ -52,7 +52,6 @@ intents <
   spec <
     name: "github.com/brotherlogic/monitor"
   >
-  redundancy: REDUNDANT
 >
 nintents <
   job <
@@ -130,7 +129,7 @@ nintents <
     name: "monitor"
     go_path: "github.com/brotherlogic/monitor"
   >
-  count: 1
+  redundancy: REDUNDANT	
 >
 nintents <
   job <
