@@ -203,3 +203,11 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "alerter"
+    go_path: "github.com/brotherlogic/alerter"
+    non_bootstrap: true
+  >  
+  count: 1
+>
