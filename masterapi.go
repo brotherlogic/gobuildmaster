@@ -41,6 +41,15 @@ type Server struct {
 	serverMap         map[string]bool
 }
 
+func (s *Server) alertOnMissingJob(ctx context.Context) {
+	for _, nin := range s.config.Nintents {
+		_, _, err := utils.Resolve(nin.Job.Name)
+		if err != nil {
+			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing", nin.Job.Name), false)
+		}
+	}
+}
+
 type prodGetter struct{}
 
 func (g *prodGetter) getJobs(server *pbd.RegistryEntry) ([]*pbs.JobAssignment, error) {
@@ -435,6 +444,7 @@ func main() {
 	s.RegisterRepeatingTask(s.buildWorld, "build_world", time.Minute)
 	s.RegisterServingTask(s.becomeMaster)
 	s.RegisterRepeatingTask(s.SetMaster, "set_master", time.Minute)
+	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Hour)
 
 	for i := 0; i < len(s.config.GetNintents()); i++ {
 		go s.checkerThread(s.config.GetNintents()[i])
