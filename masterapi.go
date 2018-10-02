@@ -38,6 +38,7 @@ type Server struct {
 	mapString         string
 	lastWorldRun      int64
 	lastMasterSatisfy map[string]time.Time
+	serverMap         map[string]bool
 }
 
 type prodGetter struct{}
@@ -379,6 +380,7 @@ func Init(config *pb.Config) *Server {
 		"",
 		0,
 		make(map[string]time.Time),
+		make(map[string]bool),
 	}
 	return s
 }

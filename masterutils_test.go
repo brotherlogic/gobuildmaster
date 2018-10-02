@@ -10,6 +10,7 @@ import (
 
 func InitTestServer() *Server {
 	s := Init(&pb.Config{})
+	s.PrepServer()
 	s.SkipLog = true
 	return s
 }
@@ -47,5 +48,24 @@ func TestBuildWorldFailJobs(t *testing.T) {
 	s.buildWorld(context.Background())
 	if len(s.world) != 0 {
 		t.Errorf("World has been built: %v", s.world)
+	}
+}
+
+func TestAlertOnMissingServer(t *testing.T) {
+	s := InitTestServer()
+	g := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
+	g.running["server1"] = []*pbs.JobAssignment{&pbs.JobAssignment{Server: "server1", Job: &pbs.Job{Name: "testjob"}}, &pbs.JobAssignment{Server: "server2", Job: &pbs.Job{Name: "testjob2"}}}
+	g.running["server2"] = []*pbs.JobAssignment{&pbs.JobAssignment{Server: "server1", Job: &pbs.Job{Name: "testjob"}}, &pbs.JobAssignment{Server: "server2", Job: &pbs.Job{Name: "testjob2"}}}
+
+	s.getter = g
+	s.buildWorld(context.Background())
+
+	g = &testGetter{running: make(map[string][]*pbs.JobAssignment)}
+	g.running["server1"] = []*pbs.JobAssignment{&pbs.JobAssignment{Server: "server1", Job: &pbs.Job{Name: "testjob"}}}
+	s.getter = g
+	s.buildWorld(context.Background())
+
+	if s.AlertsFired != 1 {
+		t.Errorf("No alert on missing server: %v", s.AlertsFired)
 	}
 }
