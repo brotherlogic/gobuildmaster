@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"testing"
+	"time"
 
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	pbs "github.com/brotherlogic/gobuildslave/proto"
@@ -59,10 +60,12 @@ func TestAlertOnMissingServer(t *testing.T) {
 
 	s.getter = g
 	s.buildWorld(context.Background())
+	time.Sleep(time.Second)
 
 	g = &testGetter{running: make(map[string][]*pbs.JobAssignment)}
 	g.running["server1"] = []*pbs.JobAssignment{&pbs.JobAssignment{Server: "server1", Job: &pbs.Job{Name: "testjob"}}}
 	s.getter = g
+	s.timeChange = time.Second
 	s.buildWorld(context.Background())
 
 	if s.AlertsFired != 1 {

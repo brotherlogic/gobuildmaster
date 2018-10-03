@@ -8,11 +8,6 @@ import (
 )
 
 func (s *Server) buildWorld(ctx context.Context) {
-	serversSeen := make(map[string]bool)
-	for server := range s.serverMap {
-		serversSeen[server] = false
-	}
-
 	s.worldMutex.Lock()
 	s.world = make(map[string]map[string]struct{})
 	slaves, err := s.getter.getSlaves()
@@ -22,12 +17,7 @@ func (s *Server) buildWorld(ctx context.Context) {
 	}
 
 	for _, server := range slaves.GetServices() {
-		_, ok := serversSeen[server.Identifier]
-		if ok {
-			serversSeen[server.Identifier] = true
-		} else {
-			s.serverMap[server.Identifier] = true
-		}
+		s.serverMap[server.Identifier] = time.Now()
 
 		jobs, err := s.getter.getJobs(server)
 		if err != nil {
@@ -46,8 +36,8 @@ func (s *Server) buildWorld(ctx context.Context) {
 	s.lastWorldRun = time.Now().Unix()
 	s.worldMutex.Unlock()
 
-	for server, seen := range serversSeen {
-		if seen == false {
+	for server, seen := range s.serverMap {
+		if time.Now().Sub(seen) > s.timeChange {
 			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing.", server), false)
 		}
 	}

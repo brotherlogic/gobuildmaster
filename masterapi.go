@@ -38,8 +38,9 @@ type Server struct {
 	mapString         string
 	lastWorldRun      int64
 	lastMasterSatisfy map[string]time.Time
-	serverMap         map[string]bool
+	serverMap         map[string]time.Time
 	lastSeen          map[string]time.Time
+	timeChange        time.Duration
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) {
@@ -400,8 +401,9 @@ func Init(config *pb.Config) *Server {
 		"",
 		0,
 		make(map[string]time.Time),
-		make(map[string]bool),
 		make(map[string]time.Time),
+		make(map[string]time.Time),
+		time.Hour,
 	}
 	return s
 }
