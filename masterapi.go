@@ -39,13 +39,22 @@ type Server struct {
 	lastWorldRun      int64
 	lastMasterSatisfy map[string]time.Time
 	serverMap         map[string]bool
+	lastSeen          map[string]time.Time
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) {
 	for _, nin := range s.config.Nintents {
 		_, _, err := utils.Resolve(nin.Job.Name)
 		if err != nil {
-			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing", nin.Job.Name), false)
+			if _, ok := s.lastSeen[nin.Job.Name]; !ok {
+				s.lastSeen[nin.Job.Name] = time.Now()
+			}
+
+			if time.Now().Sub(s.lastSeen[nin.Job.Name]) > time.Hour {
+				s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing", nin.Job.Name), false)
+			}
+		} else {
+			s.lastSeen[nin.Job.Name] = time.Now()
 		}
 	}
 }
@@ -390,6 +399,7 @@ func Init(config *pb.Config) *Server {
 		0,
 		make(map[string]time.Time),
 		make(map[string]bool),
+		make(map[string]time.Time),
 	}
 	return s
 }
