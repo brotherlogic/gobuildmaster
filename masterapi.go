@@ -271,7 +271,9 @@ func (s Server) GetState() []*pbg.State {
 		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
 		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
 		&pbg.State{Key: "master", Text: s.mapString},
-		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)}}
+		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)},
+		&pbg.State{Key: "servers", Text: fmt.Sprintf("%v", s.serverMap)},
+	}
 }
 
 //Compare compares current state to desired state
