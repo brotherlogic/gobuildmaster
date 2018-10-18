@@ -211,3 +211,11 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "recordsales"
+    go_path: "github.com/brotherlogic/recordsales"
+    non_bootstrap: true
+  >  
+  count: 1
+>
