@@ -219,3 +219,11 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "datacollector"
+    go_path: "github.com/brotherlogic/datacollector"
+    non_bootstrap: true
+  >  
+  count: 1
+>
