@@ -227,3 +227,11 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "dataviewer"
+    go_path: "github.com/brotherlogic/dataviewer"
+    non_bootstrap: true
+  >  
+  count: 1
+>
