@@ -459,7 +459,7 @@ func main() {
 	s.RegisterRepeatingTask(s.buildWorld, "build_world", time.Minute)
 	s.RegisterServingTask(s.becomeMaster)
 	s.RegisterRepeatingTask(s.SetMaster, "set_master", time.Minute)
-	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Hour)
+	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Minute*5)
 
 	for i := 0; i < len(s.config.GetNintents()); i++ {
 		go s.checkerThread(s.config.GetNintents()[i])
