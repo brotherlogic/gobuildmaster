@@ -64,6 +64,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/githubcard"
     name: "githubcard"
+    non_bootstrap: true
    >
   count: 1
 >
