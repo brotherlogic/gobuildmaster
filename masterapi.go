@@ -457,7 +457,7 @@ func main() {
 	s.GoServer.Killme = false
 	s.RegisterServer("gobuildmaster", false)
 	s.RegisterRepeatingTask(s.buildWorld, "build_world", time.Minute)
-	s.RegisterServingTask(s.becomeMaster)
+	s.RegisterServingTask(s.becomeMaster, "become_master")
 	s.RegisterRepeatingTask(s.SetMaster, "set_master", time.Minute)
 	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Minute*5)
 
