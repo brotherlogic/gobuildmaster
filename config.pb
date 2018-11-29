@@ -86,6 +86,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordmover"
     name: "recordmover"
+    non_bootstrap: true
    >
   count: 1
 >
