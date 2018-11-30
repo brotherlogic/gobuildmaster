@@ -73,6 +73,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/reminders"
     name: "reminders"
+    non_bootstrap: true
    >
   count: 1
 >
