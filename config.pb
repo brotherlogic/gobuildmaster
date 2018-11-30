@@ -24,6 +24,7 @@ nintents <
   job <
     name: "recordcollection"
     go_path: "github.com/brotherlogic/recordcollection"
+    non_bootstrap: true
   >
   count: 1
 >
