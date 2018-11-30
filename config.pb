@@ -58,6 +58,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordsorganiser"
     name: "recordsorganiser"
+    non_bootstramp: true
    >
   count: 1
 >
