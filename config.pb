@@ -83,6 +83,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordprocess"
     name: "recordprocess"
+    non_bootstrap: true
    >
   count: 1
 >
