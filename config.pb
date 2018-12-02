@@ -99,6 +99,7 @@ intents <
   spec <
     name: "github.com/brotherlogic/cdprocessor"
     cds: true
+    non_bootstrap: true
   >
   count: 3
 >
