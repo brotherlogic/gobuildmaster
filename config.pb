@@ -95,14 +95,6 @@ nintents <
    >
   count: 1
 >
-intents <
-  spec <
-    name: "github.com/brotherlogic/cdprocessor"
-    cds: true
-    non_bootstrap: true
-  >
-  count: 3
->
 nintents <
   job <
     go_path: "github.com/brotherlogic/recordwants"
@@ -154,6 +146,7 @@ nintents <
   job <
     name: "cdprocessor"
     go_path: "github.com/brotherlogic/cdprocessor"
+    non_bootstrap: true
     requirements <
       category: DISK
       properties: "music"
