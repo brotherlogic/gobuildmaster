@@ -99,6 +99,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordwants"
     name: "recordwants"
+    non_bootstrap: true
   >
   count: 1
 >
