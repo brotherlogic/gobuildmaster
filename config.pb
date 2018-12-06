@@ -48,7 +48,7 @@ nintents <
     go_path: "github.com/brotherlogic/recordgetter"
     non_bootstrap: true
   >
-  count: 1
+  redundancy: REDUNDANT
 >
 intents <
   spec <
