@@ -122,6 +122,7 @@ nintents <
   job <
     name: "tracer"
     go_path: "github.com/brotherlogic/tracer"
+    non_bootstrap: true
   >
   count: 1
 >
