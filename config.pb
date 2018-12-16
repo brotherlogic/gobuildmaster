@@ -238,3 +238,11 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "dropboxsync"
+    go_path: "github.com/brotherlogic/dropboxsync"
+    non_bootstrap: true
+  >  
+  count: 1
+>
