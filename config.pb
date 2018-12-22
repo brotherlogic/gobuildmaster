@@ -244,5 +244,5 @@ nintents <
     go_path: "github.com/brotherlogic/dropboxsync"
     non_bootstrap: true
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
