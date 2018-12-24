@@ -32,6 +32,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/beerserver"
     name: "beerserver"
+    non_bootstrap: true
   >
  count: 1
 >
