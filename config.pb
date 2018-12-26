@@ -228,6 +228,10 @@ nintents <
     name: "datacollector"
     go_path: "github.com/brotherlogic/datacollector"
     non_bootstrap: true
+    requirements <
+      category: DISK
+      properties: "scratch"
+    >
   >  
   count: 1
 >
