@@ -251,3 +251,11 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "wantslist"
+    go_path: "github.com/brotherlogic/wantslist"
+    non_bootstrap: true
+  >  
+  count: 1
+>
