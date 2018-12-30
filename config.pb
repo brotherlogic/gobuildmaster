@@ -24,7 +24,6 @@ nintents <
   job <
     name: "recordcollection"
     go_path: "github.com/brotherlogic/recordcollection"
-    non_bootstrap: true
   >
   count: 1
 >
@@ -32,7 +31,6 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/beerserver"
     name: "beerserver"
-    non_bootstrap: true
   >
  count: 1
 >
@@ -47,7 +45,6 @@ nintents <
   job <
     name: "recordgetter"
     go_path: "github.com/brotherlogic/recordgetter"
-    non_bootstrap: true
   >
   redundancy: REDUNDANT
 >
@@ -60,7 +57,6 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordsorganiser"
     name: "recordsorganiser"
-    non_bootstrap: true
    >
   count: 1
 >
@@ -68,7 +64,6 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/githubcard"
     name: "githubcard"
-    non_bootstrap: true
    >
   count: 1
 >
@@ -76,7 +71,6 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/reminders"
     name: "reminders"
-    non_bootstrap: true
    >
   count: 1
 >
@@ -84,7 +78,6 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordprocess"
     name: "recordprocess"
-    non_bootstrap: true
    >
   count: 1
 >
@@ -92,7 +85,6 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordmover"
     name: "recordmover"
-    non_bootstrap: true
    >
   count: 1
 >
@@ -100,7 +92,6 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordwants"
     name: "recordwants"
-    non_bootstrap: true
   >
   count: 1
 >
@@ -108,7 +99,6 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/recordalerting"
     name: "recordalerting"
-    non_bootstrap: true
   >
   count: 1
 >
@@ -116,6 +106,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/filecopier"
     name: "filecopier"
+    bootstrap: true
   >
   redundancy: GLOBAL
 >
@@ -123,7 +114,6 @@ nintents <
   job <
     name: "tracer"
     go_path: "github.com/brotherlogic/tracer"
-    non_bootstrap: true
   >
   count: 1
 >
@@ -138,6 +128,7 @@ nintents <
   job <
     name: "buildserver"
     go_path: "github.com/brotherlogic/buildserver"
+    bootstrap: true
     requirements <
       category: DISK
       properties: "scratch"
@@ -149,7 +140,6 @@ nintents <
   job <
     name: "cdprocessor"
     go_path: "github.com/brotherlogic/cdprocessor"
-    non_bootstrap: true
     requirements <
       category: DISK
       properties: "music"
@@ -181,6 +171,7 @@ nintents <
     name: "led"
     go_path: "github.com/brotherlogic/led"
     sudo: true
+    bootstrap: true
     requirements <
       category: SERVER
       properties: "leddisplay"
@@ -203,7 +194,6 @@ nintents <
   job <
     name: "recordprinter"
     go_path: "github.com/brotherlogic/recordprinter"
-    non_bootstrap: true
   >  
   count: 1
 >
@@ -211,7 +201,6 @@ nintents <
   job <
     name: "alerter"
     go_path: "github.com/brotherlogic/alerter"
-    non_bootstrap: true
   >  
   count: 1
 >
@@ -219,7 +208,6 @@ nintents <
   job <
     name: "recordsales"
     go_path: "github.com/brotherlogic/recordsales"
-    non_bootstrap: true
   >  
   count: 1
 >
@@ -227,7 +215,6 @@ nintents <
   job <
     name: "datacollector"
     go_path: "github.com/brotherlogic/datacollector"
-    non_bootstrap: true
     requirements <
       category: DISK
       properties: "scratch"
@@ -239,7 +226,6 @@ nintents <
   job <
     name: "dataviewer"
     go_path: "github.com/brotherlogic/dataviewer"
-    non_bootstrap: true
   >  
   count: 1
 >
@@ -247,7 +233,6 @@ nintents <
   job <
     name: "dropboxsync"
     go_path: "github.com/brotherlogic/dropboxsync"
-    non_bootstrap: true
   >  
   redundancy: REDUNDANT
 >
@@ -255,7 +240,6 @@ nintents <
   job <
     name: "wantslist"
     go_path: "github.com/brotherlogic/wantslist"
-    non_bootstrap: true
   >  
   count: 1
 >
