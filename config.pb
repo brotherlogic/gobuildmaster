@@ -93,7 +93,7 @@ nintents <
     go_path: "github.com/brotherlogic/recordwants"
     name: "recordwants"
   >
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
