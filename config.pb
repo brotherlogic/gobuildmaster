@@ -243,3 +243,10 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "executor"
+    go_path: "github.com/brotherlogic/executor"
+  >  
+  count: 1
+>
