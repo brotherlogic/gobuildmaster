@@ -248,5 +248,5 @@ nintents <
     name: "executor"
     go_path: "github.com/brotherlogic/executor"
   >  
-  count: 1
+  redundancy: GLOBAL
 >
