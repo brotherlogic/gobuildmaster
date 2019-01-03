@@ -241,7 +241,7 @@ nintents <
     name: "wantslist"
     go_path: "github.com/brotherlogic/wantslist"
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
