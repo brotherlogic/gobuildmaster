@@ -350,6 +350,7 @@ func (s *Server) SetMaster(ctx context.Context) {
 			hasMaster[key] = 1
 			for _, entry := range entries {
 				if seen && entry.GetMaster() {
+					s.Log(fmt.Sprintf("Setting %v master for %v", entry.Identifier, entry.Name))
 					checker.master(entry, false)
 				} else if entry.GetMaster() {
 					seen = true
