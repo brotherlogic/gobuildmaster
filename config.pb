@@ -168,19 +168,6 @@ nintents <
 >
 nintents <
   job <
-    name: "led"
-    go_path: "github.com/brotherlogic/led"
-    sudo: true
-    bootstrap: true
-    requirements <
-      category: SERVER
-      properties: "leddisplay"
-    >
-  >  
-  count: 1
->
-nintents <
-  job <
     name: "printer"
     go_path: "github.com/brotherlogic/printer"
     requirements <
