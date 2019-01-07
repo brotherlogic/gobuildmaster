@@ -65,7 +65,7 @@ nintents <
     go_path: "github.com/brotherlogic/githubcard"
     name: "githubcard"
    >
-  count: 1
+   redundancy: REDUNDANT
 >
 nintents <
   job <
