@@ -32,7 +32,7 @@ nintents <
     go_path: "github.com/brotherlogic/beerserver"
     name: "beerserver"
   >
- count: 1
+ redundancy: REDUNDANT
 >
 nintents <
   job <
