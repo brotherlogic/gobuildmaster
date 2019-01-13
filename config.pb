@@ -25,7 +25,7 @@ nintents <
     name: "recordcollection"
     go_path: "github.com/brotherlogic/recordcollection"
   >
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
