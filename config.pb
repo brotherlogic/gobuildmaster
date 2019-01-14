@@ -130,8 +130,8 @@ nintents <
     go_path: "github.com/brotherlogic/buildserver"
     bootstrap: true
     requirements <
-      category: DISK
-      properties: "scratch"
+      category: SERVER
+      properties: "framethree"
     >
   >
   count : 1
