@@ -459,7 +459,10 @@ func main() {
 	s.Register = s
 	s.PrepServer()
 	s.GoServer.Killme = false
-	s.RegisterServer("gobuildmaster", false)
+	err = s.RegisterServer("gobuildmaster", false)
+	if err != nil {
+		log.Fatalf("Unable to register: %v", err)
+	}
 	s.RegisterRepeatingTask(s.buildWorld, "build_world", time.Minute)
 	s.RegisterServingTask(s.becomeMaster, "become_master")
 	s.RegisterRepeatingTask(s.SetMaster, "set_master", time.Minute)
