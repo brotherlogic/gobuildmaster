@@ -41,6 +41,7 @@ type Server struct {
 	serverMap         map[string]time.Time
 	lastSeen          map[string]time.Time
 	timeChange        time.Duration
+	registerAttempts  int64
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) {
@@ -278,6 +279,7 @@ func (s Server) GetState() []*pbg.State {
 		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)},
 		&pbg.State{Key: "servers", Text: fmt.Sprintf("%v", s.serverMap)},
 		&pbg.State{Key: "seen_map", Text: fmt.Sprintf("%v", s.lastSeen)},
+		&pbg.State{Key: "register_attempts", Value: s.registerAttempts},
 	}
 }
 
@@ -409,6 +411,7 @@ func Init(config *pb.Config) *Server {
 		make(map[string]time.Time),
 		make(map[string]time.Time),
 		time.Hour,
+		int64(0),
 	}
 	return s
 }
@@ -416,9 +419,12 @@ func Init(config *pb.Config) *Server {
 func (s *Server) becomeMaster(ctx context.Context) {
 	for true {
 		time.Sleep(time.Second * 5)
-		_, _, err := utils.Resolve("gobuildmaster")
-		if err != nil {
-			s.Registry.Master = true
+		if !s.Registry.Master {
+			_, _, err := utils.Resolve("gobuildmaster")
+			if err != nil {
+				s.registerAttempts++
+				s.Registry.Master = true
+			}
 		}
 	}
 }
