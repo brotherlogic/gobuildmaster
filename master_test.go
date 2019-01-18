@@ -54,30 +54,6 @@ func TestFleetCount(t *testing.T) {
 	}
 }
 
-func TestLoadConfig(t *testing.T) {
-	f := "testdata/testconfig.pb"
-	c, err := loadConfig(f)
-	if err != nil {
-		t.Errorf("Config load failed: %v", err)
-	}
-
-	if len(c.Intents) != 2 {
-		t.Errorf("Config parsing failed: %v", c)
-	}
-}
-
-func TestLoadNamedConfig(t *testing.T) {
-	f := "testdata/config_test.pb"
-	c, err := loadConfig(f)
-	if err != nil {
-		t.Errorf("Config load failed: %v", err)
-	}
-
-	if len(c.Intents) != 1 || c.Intents[0].Spec.Name != "github.com/brotherlogic/cardserver" {
-		t.Errorf("Config parsing failed: %v", c)
-	}
-}
-
 func TestLoadMainConfig(t *testing.T) {
 	f := "config.pb"
 	c, err := loadConfig(f)
@@ -85,21 +61,14 @@ func TestLoadMainConfig(t *testing.T) {
 		t.Errorf("Config load failed: %v", err)
 	}
 
-	if len(c.Intents) == 0 {
-		t.Errorf("Config parsing failed: %v", c)
-	}
-
-	log.Printf("READ CONFIG")
-	log.Printf("%v", c)
-
 	found := false
 	for _, i := range c.Nintents {
-		if i.Job.Name == "recordprinter" {
+		if i.Job.Name == "filecopier" {
 			found = true
 		}
 	}
 	if !found {
-		t.Errorf("Cannot find recordprinter: %v", c.Nintents)
+		t.Errorf("Cannot find filecopier: %v", c.Nintents)
 	}
 }
 
