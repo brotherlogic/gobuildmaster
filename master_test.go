@@ -63,12 +63,12 @@ func TestLoadMainConfig(t *testing.T) {
 
 	found := false
 	for _, i := range c.Nintents {
-		if i.Job.Name == "filecopier" {
+		if i.Job.Name == "buildserver" {
 			found = true
 		}
 	}
 	if !found {
-		t.Errorf("Cannot find filecopier: %v", c.Nintents)
+		t.Errorf("Cannot find buildserver: %v", c.Nintents)
 	}
 }
 
