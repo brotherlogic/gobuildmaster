@@ -62,7 +62,7 @@ nintents <
     go_path: "github.com/brotherlogic/beerserver"
     name: "beerserver"
   >
- count: 1
+ redundancy: REDUNDANT
 >
 nintents <
   job <
@@ -83,28 +83,28 @@ nintents <
     go_path: "github.com/brotherlogic/recordsorganiser"
     name: "recordsorganiser"
    >
-  count: 1
+   redundancy: REDUNDANT
 >
 nintents <
   job <
     go_path: "github.com/brotherlogic/reminders"
     name: "reminders"
    >
-  count: 1
+   redundancy: REDUNDANT
 >
 nintents <
   job <
     go_path: "github.com/brotherlogic/recordprocess"
     name: "recordprocess"
    >
-  count: 1
+     redundancy: REDUNDANT
 >
 nintents <
   job <
     go_path: "github.com/brotherlogic/recordmover"
     name: "recordmover"
    >
-  count: 1
+   redundancy: REDUNDANT	
 >
 nintents <
   job <
@@ -118,7 +118,7 @@ nintents <
     go_path: "github.com/brotherlogic/recordalerting"
     name: "recordalerting"
   >
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
@@ -133,19 +133,15 @@ nintents <
     name: "tracer"
     go_path: "github.com/brotherlogic/tracer"
   >
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
     name: "buildserver"
     go_path: "github.com/brotherlogic/buildserver"
     bootstrap: true
-    requirements <
-      category: SERVER
-      properties: "framethree"
-    >
   >
-  count : 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
@@ -193,14 +189,14 @@ nintents <
     name: "recordprinter"
     go_path: "github.com/brotherlogic/recordprinter"
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
     name: "alerter"
     go_path: "github.com/brotherlogic/alerter"
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
@@ -218,14 +214,14 @@ nintents <
       properties: "scratch"
     >
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
     name: "dataviewer"
     go_path: "github.com/brotherlogic/dataviewer"
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
@@ -253,5 +249,5 @@ nintents <
     name: "backup"
     go_path: "github.com/brotherlogic/backup"
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
