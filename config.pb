@@ -3,6 +3,10 @@ nintents <
     name: "buildserver"
     go_path: "github.com/brotherlogic/buildserver"
     bootstrap: true
+    requirements <
+      category: DISK
+      properties: "scratch"
+    >
   >
   redundancy: REDUNDANT
 >
