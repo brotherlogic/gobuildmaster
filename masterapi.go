@@ -108,6 +108,7 @@ func (s *Server) checkerThread(i *pb.NIntent) {
 			if i.Redundancy == pb.Redundancy_GLOBAL {
 				s.runJob(i.GetJob())
 			}
+			s.worldMutex.Lock()
 			if i.Redundancy == pb.Redundancy_REDUNDANT {
 				if len(s.world[i.GetJob().GetName()]) < 3 {
 					s.runJob(i.GetJob())
@@ -118,6 +119,7 @@ func (s *Server) checkerThread(i *pb.NIntent) {
 					s.runJob(i.GetJob())
 				}
 			}
+			s.worldMutex.Unlock()
 			lastRun = time.Now().Unix()
 		}
 	}
