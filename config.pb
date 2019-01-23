@@ -141,14 +141,6 @@ nintents <
 >
 nintents <
   job <
-    name: "buildserver"
-    go_path: "github.com/brotherlogic/buildserver"
-    bootstrap: true
-  >
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "cdprocessor"
     go_path: "github.com/brotherlogic/cdprocessor"
     requirements <
