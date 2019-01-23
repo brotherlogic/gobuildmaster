@@ -102,6 +102,7 @@ func (s *Server) selectServer(job *pbs.Job, g getter) string {
 					}
 				}
 				if allmatch {
+					s.Log(fmt.Sprintf("MATCH %v and %v for %v on %v", job.Requirements, requirements, job.Name, services.Services[i].Identifier))
 					return services.Services[i].Identifier
 				}
 			}
