@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 
@@ -71,7 +72,7 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 }
 
 // Find the first available server
-func selectServer(job *pbs.Job, g getter) string {
+func (s *Server) selectServer(job *pbs.Job, g getter) string {
 	services, _ := g.getSlaves()
 	for _, i := range rand.Perm(len(services.Services)) {
 		jobs, _ := g.getJobs(services.Services[i])
@@ -92,6 +93,7 @@ func selectServer(job *pbs.Job, g getter) string {
 					for _, r := range requirements {
 						if r.Category == req.Category && r.Properties == req.Properties {
 							localmatch = true
+							s.Log(fmt.Sprintf("MATCH %v and %v for %v on %v", r, req, job.Name, services.Services[i].Identifier))
 						}
 					}
 

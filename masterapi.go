@@ -223,7 +223,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 }
 
 func (s *Server) runJob(job *pbs.Job) {
-	server := selectServer(job, s.getter)
+	server := s.selectServer(job, s.getter)
 	if server != "" {
 		s.Log(fmt.Sprintf("Running %v on %v", job.Name, server))
 		ip, port := getIP("gobuildslave", server)
