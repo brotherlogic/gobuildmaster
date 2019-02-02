@@ -249,5 +249,5 @@ nintents <
       properties: "stack1"
     >
   >  
-  redundancy: REDUNDANT
+  redundancy: GLOBAL
 >
