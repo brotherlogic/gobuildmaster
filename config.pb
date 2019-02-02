@@ -244,10 +244,6 @@ nintents <
   job <
     name: "backup"
     go_path: "github.com/brotherlogic/backup"
-    requirements <
-      category: SERVER
-      properties: "stack1"
-    >
   >  
   redundancy: GLOBAL
 >
