@@ -199,7 +199,7 @@ nintents <
     name: "recordsales"
     go_path: "github.com/brotherlogic/recordsales"
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
