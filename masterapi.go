@@ -268,6 +268,11 @@ func (s Server) ReportHealth() bool {
 	return true
 }
 
+// Shutdown does the shutdown
+func (s Server) Shutdown(ctx context.Context) error {
+	return nil
+}
+
 // Mote promotes/demotes this server
 func (s Server) Mote(ctx context.Context, master bool) error {
 	return nil
