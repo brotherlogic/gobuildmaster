@@ -70,13 +70,6 @@ nintents <
 >
 nintents <
   job <
-    go_path: "github.com/brotherlogic/cardserver"
-    name: "cardserver"
-  >
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "recordgetter"
     go_path: "github.com/brotherlogic/recordgetter"
   >
