@@ -328,7 +328,7 @@ func getConfig(ctx context.Context, c checker) *pb.Config {
 
 // SetMaster sets up the master settings
 func (s *Server) SetMaster(ctx context.Context) {
-	checker := &mainChecker{logger: s.Log}
+	checker := &mainChecker{logger: s.Log, dial: s.DialServer, dialEntry: s.DoDial}
 	s.LastMaster = time.Now()
 	masterMap := make(map[string]string)
 
