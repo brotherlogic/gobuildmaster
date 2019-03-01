@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"log"
 	"testing"
@@ -15,7 +16,7 @@ type testChecker struct {
 	running  bool
 }
 
-func (t testChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
+func (t testChecker) assess(ctx context.Context, server string) (*pbs.JobList, *pbs.Config) {
 	log.Printf("ASSESS %v", server)
 	if server == "server1" {
 		return &pbs.JobList{Details: []*pbs.JobDetails{&pbs.JobDetails{Spec: &pbs.JobSpec{Name: "test1"}}}}, t.machines[0]
@@ -35,20 +36,20 @@ func (t testChecker) setprev(v []string) {
 	// Do nothing
 }
 
-func (t testChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error) {
+func (t testChecker) master(ctx context.Context, entry *pbd.RegistryEntry, master bool) (bool, error) {
 	// Do nothing
 	return true, nil
 }
 
 func TestPullData(t *testing.T) {
-	status, _ := getFleetStatus(&testChecker{machines: []*pbs.Config{&pbs.Config{}, &pbs.Config{}}})
+	status, _ := getFleetStatus(context.Background(), &testChecker{machines: []*pbs.Config{&pbs.Config{}, &pbs.Config{}}})
 	if val, ok := status["server1"]; !ok || len(val.Details) != 1 {
 		t.Errorf("Status has come back bad: %v", status)
 	}
 }
 
 func TestFleetCount(t *testing.T) {
-	status, _ := getFleetStatus(&testChecker{machines: []*pbs.Config{&pbs.Config{}, &pbs.Config{}}, running: false})
+	status, _ := getFleetStatus(context.Background(), &testChecker{machines: []*pbs.Config{&pbs.Config{}, &pbs.Config{}}, running: false})
 	if val, ok := status["server2"]; !ok || len(val.Details) != 1 {
 		t.Errorf("Status has come back good when not running: %v", val)
 	}
@@ -109,7 +110,7 @@ func TestLoadOntoDiskMachine(t *testing.T) {
 	machine1 := &pbs.Config{Disk: 100}
 	machine2 := &pbs.Config{Disk: 2000}
 
-	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
+	server := chooseServer(context.Background(), conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
 	if server != "server2" {
 		t.Errorf("Failed to select correct server: %v", server)
 	}
@@ -118,7 +119,7 @@ func TestLoadOntoDiskMachine(t *testing.T) {
 func TestLoadOntoAlreadyRunning(t *testing.T) {
 	conf := &pbs.JobSpec{Name: "test1"}
 
-	server := chooseServer(conf, testChecker{machines: []*pbs.Config{&pbs.Config{Disk: 100}, &pbs.Config{Disk: 1000}}})
+	server := chooseServer(context.Background(), conf, testChecker{machines: []*pbs.Config{&pbs.Config{Disk: 100}, &pbs.Config{Disk: 1000}}})
 	if server != "" {
 		t.Errorf("Failed to select correct server: %v", server)
 	}
@@ -130,7 +131,7 @@ func TestLoadOntoExternalMachine(t *testing.T) {
 	machine1 := &pbs.Config{Disk: 100, External: false}
 	machine2 := &pbs.Config{Disk: 100, External: true}
 
-	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
+	server := chooseServer(context.Background(), conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
 	if server != "server2" {
 		t.Errorf("Failed to select correct server: %v", server)
 	}
@@ -140,7 +141,7 @@ func TestDoubleLoadServer(t *testing.T) {
 	conf := &pbs.JobSpec{Name: "test1"}
 	machine1 := &pbs.Config{Disk: 100}
 	machine2 := &pbs.Config{Disk: 100}
-	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
+	server := chooseServer(context.Background(), conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
 
 	if server == "server1" {
 		t.Errorf("Loaded on server1 even though job was running there: %v", server)
@@ -153,7 +154,7 @@ func TestMissServer(t *testing.T) {
 	machine1 := &pbs.Config{Disk: 100}
 	machine2 := &pbs.Config{Disk: 100}
 
-	server := chooseServer(conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
+	server := chooseServer(context.Background(), conf, testChecker{machines: []*pbs.Config{machine1, machine2}})
 	if server != "" {
 		t.Errorf("Found a server even though one is not there: %v", server)
 	}
@@ -178,7 +179,7 @@ func (t *testGetter) getSlaves() (*pbd.ServiceList, error) {
 	return list, nil
 }
 
-func (t *testGetter) getJobs(e *pbd.RegistryEntry) ([]*pbs.JobAssignment, error) {
+func (t *testGetter) getJobs(ctx context.Context, e *pbd.RegistryEntry) ([]*pbs.JobAssignment, error) {
 	if t.failGetJobs {
 		return []*pbs.JobAssignment{}, errors.New("Built to fail")
 	}
@@ -189,7 +190,7 @@ func (t *testGetter) getJobs(e *pbd.RegistryEntry) ([]*pbs.JobAssignment, error)
 	return make([]*pbs.JobAssignment, 0), nil
 }
 
-func (t *testGetter) getConfig(e *pbd.RegistryEntry) ([]*pbs.Requirement, error) {
+func (t *testGetter) getConfig(ctx context.Context, e *pbd.RegistryEntry) ([]*pbs.Requirement, error) {
 	if val, ok := t.config[e.Identifier]; ok {
 		return val, nil
 	}
@@ -202,7 +203,7 @@ func TestFirstSelect(t *testing.T) {
 	tg.running["badserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "runner"}}}
 	tg.running["goodserver"] = []*pbs.JobAssignment{}
 
-	server := s.selectServer(&pbs.Job{Name: "runner"}, tg)
+	server := s.selectServer(context.Background(), &pbs.Job{Name: "runner"}, tg)
 	if server != "goodserver" {
 		t.Errorf("Wrong server selected: %v", server)
 	}
@@ -214,7 +215,7 @@ func TestDiskSelect(t *testing.T) {
 	tg.running["badserver"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "runner"}}}
 	tg.running["goodserver"] = []*pbs.JobAssignment{}
 
-	server := s.selectServer(&pbs.Job{Name: "runner"}, tg)
+	server := s.selectServer(context.Background(), &pbs.Job{Name: "runner"}, tg)
 	if server != "goodserver" {
 		t.Errorf("Wrong server selected: %v", server)
 	}
@@ -227,7 +228,7 @@ func TestReqSelectWithLimits(t *testing.T) {
 	tg.running["goodserver"] = []*pbs.JobAssignment{}
 	tg.config["goodserver"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "backup"}}
 
-	server := s.selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
+	server := s.selectServer(context.Background(), &pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
 	if server != "" {
 		t.Errorf("Wrong server selected: %v", server)
 	}
@@ -239,7 +240,7 @@ func TestReqSelect(t *testing.T) {
 	tg.running["goodserver"] = []*pbs.JobAssignment{}
 	tg.config["goodserver"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}
 
-	server := s.selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
+	server := s.selectServer(context.Background(), &pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
 	if server != "goodserver" {
 		t.Errorf("Wrong server selected: %v", server)
 	}
@@ -251,7 +252,7 @@ func TestReqSelectExternal(t *testing.T) {
 	tg.running["discover"] = []*pbs.JobAssignment{}
 	tg.config["discover"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_EXTERNAL, Properties: "external_ready"}}
 
-	server := s.selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_EXTERNAL, Properties: "external_ready"}}}, tg)
+	server := s.selectServer(context.Background(), &pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_EXTERNAL, Properties: "external_ready"}}}, tg)
 	if server != "discover" {
 		t.Errorf("Wrong server selected: %v", server)
 	}
@@ -263,7 +264,7 @@ func TestReqSelectFail(t *testing.T) {
 	tg.running["goodserver"] = []*pbs.JobAssignment{}
 	tg.config["goodserver"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisker"}}
 
-	server := s.selectServer(&pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
+	server := s.selectServer(context.Background(), &pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
 	if server != "" {
 		t.Errorf("Wrong server selected: %v", server)
 	}
