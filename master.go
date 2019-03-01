@@ -6,6 +6,7 @@ import (
 	"math/rand"
 
 	"github.com/golang/protobuf/proto"
+	"golang.org/x/net/context"
 
 	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
@@ -14,19 +15,19 @@ import (
 
 type getter interface {
 	getSlaves() (*pbd.ServiceList, error)
-	getJobs(*pbd.RegistryEntry) ([]*pbs.JobAssignment, error)
-	getConfig(*pbd.RegistryEntry) ([]*pbs.Requirement, error)
+	getJobs(context.Context, *pbd.RegistryEntry) ([]*pbs.JobAssignment, error)
+	getConfig(context.Context, *pbd.RegistryEntry) ([]*pbs.Requirement, error)
 }
 
 type checker interface {
-	assess(server string) (*pbs.JobList, *pbs.Config)
+	assess(ctx context.Context, server string) (*pbs.JobList, *pbs.Config)
 	discover() *pbd.ServiceList
-	master(entry *pbd.RegistryEntry, master bool) (bool, error)
+	master(ctx context.Context, entry *pbd.RegistryEntry, master bool) (bool, error)
 	setprev([]string)
 	getprev() []string
 }
 
-func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config) {
+func getFleetStatus(ctx context.Context, c checker) (map[string]*pbs.JobList, map[string]*pbs.Config) {
 	resJ := make(map[string]*pbs.JobList)
 	resC := make(map[string]*pbs.Config)
 
@@ -34,7 +35,7 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 	for _, service := range c.discover().Services {
 		if service.Name == "gobuildslave" {
 			curr = append(curr, service.Identifier)
-			joblist, config := c.assess(service.Identifier)
+			joblist, config := c.assess(ctx, service.Identifier)
 			resJ[service.Identifier] = joblist
 			resC[service.Identifier] = config
 		}
@@ -46,12 +47,12 @@ func getFleetStatus(c checker) (map[string]*pbs.JobList, map[string]*pbs.Config)
 }
 
 // Find the first available server
-func chooseServer(job *pbs.JobSpec, c checker) string {
+func chooseServer(ctx context.Context, job *pbs.JobSpec, c checker) string {
 	services := c.discover().Services
 	for _, i := range rand.Perm(len(services)) {
 		service := services[i]
 		if service.Name == "gobuildslave" && (job.GetServer() == "" || job.GetServer() == service.GetIdentifier()) {
-			jobs, sc := c.assess(service.Identifier)
+			jobs, sc := c.assess(ctx, service.Identifier)
 
 			//Don't accept a server which is already running this job
 			jobfine := true
@@ -72,10 +73,10 @@ func chooseServer(job *pbs.JobSpec, c checker) string {
 }
 
 // Find the first available server
-func (s *Server) selectServer(job *pbs.Job, g getter) string {
+func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) string {
 	services, _ := g.getSlaves()
 	for _, i := range rand.Perm(len(services.Services)) {
-		jobs, _ := g.getJobs(services.Services[i])
+		jobs, _ := g.getJobs(ctx, services.Services[i])
 		//Don't accept a server which is already running this job
 		jobfine := true
 		for _, j := range jobs {
@@ -85,7 +86,7 @@ func (s *Server) selectServer(job *pbs.Job, g getter) string {
 
 		}
 		if jobfine {
-			requirements, err := g.getConfig(services.Services[i])
+			requirements, err := g.getConfig(ctx, services.Services[i])
 			if err == nil {
 				allmatch := true
 				for _, req := range job.Requirements {

@@ -64,16 +64,16 @@ func (s *Server) alertOnMissingJob(ctx context.Context) {
 	}
 }
 
-type prodGetter struct{}
+type prodGetter struct {
+	dial func(entry *pbd.RegistryEntry) (*grpc.ClientConn, error)
+}
 
-func (g *prodGetter) getJobs(server *pbd.RegistryEntry) ([]*pbs.JobAssignment, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	conn, err := grpc.Dial(server.GetIp()+":"+strconv.Itoa(int(server.GetPort())), grpc.WithInsecure())
-	defer conn.Close()
+func (g *prodGetter) getJobs(ctx context.Context, server *pbd.RegistryEntry) ([]*pbs.JobAssignment, error) {
+	conn, err := g.dial(server)
 	if err != nil {
 		return nil, err
 	}
+	defer conn.Close()
 
 	slave := pbs.NewBuildSlaveClient(conn)
 	r, err := slave.ListJobs(ctx, &pbs.ListRequest{})
@@ -83,14 +83,12 @@ func (g *prodGetter) getJobs(server *pbd.RegistryEntry) ([]*pbs.JobAssignment, e
 	return r.Jobs, err
 }
 
-func (g *prodGetter) getConfig(server *pbd.RegistryEntry) ([]*pbs.Requirement, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	conn, err := grpc.Dial(server.GetIp()+":"+strconv.Itoa(int(server.GetPort())), grpc.WithInsecure())
-	defer conn.Close()
+func (g *prodGetter) getConfig(ctx context.Context, server *pbd.RegistryEntry) ([]*pbs.Requirement, error) {
+	conn, err := g.dial(server)
 	if err != nil {
 		return nil, err
 	}
+	defer conn.Close()
 
 	slave := pbs.NewBuildSlaveClient(conn)
 	r, err := slave.SlaveConfig(ctx, &pbs.ConfigRequest{})
@@ -104,19 +102,21 @@ func (s *Server) checkerThread(i *pb.NIntent) {
 	lastRun := int64(10)
 	for true {
 		time.Sleep(time.Minute)
+		ctx, cancel := utils.BuildContext("gobuildmaster", "gobuildmaster")
+		defer cancel()
 		if s.Registry.Master && lastRun < s.lastWorldRun {
 			if i.Redundancy == pb.Redundancy_GLOBAL {
-				s.runJob(i.GetJob())
+				s.runJob(ctx, i.GetJob())
 			}
 			s.worldMutex.Lock()
 			if i.Redundancy == pb.Redundancy_REDUNDANT {
 				if len(s.world[i.GetJob().GetName()]) < 3 {
-					s.runJob(i.GetJob())
+					s.runJob(ctx, i.GetJob())
 				}
 			}
 			if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
 				if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
-					s.runJob(i.GetJob())
+					s.runJob(ctx, i.GetJob())
 				}
 			}
 			s.worldMutex.Unlock()
@@ -152,8 +152,10 @@ func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 }
 
 type mainChecker struct {
-	prev   []string
-	logger func(string)
+	prev      []string
+	logger    func(string)
+	dial      func(server, host string) (*grpc.ClientConn, error)
+	dialEntry func(*pbd.RegistryEntry) (*grpc.ClientConn, error)
 }
 
 func getIP(servertype, servername string) (string, int) {
@@ -183,57 +185,51 @@ func (t *mainChecker) setprev(v []string) {
 	t.prev = v
 }
 
-func (t *mainChecker) assess(server string) (*pbs.JobList, *pbs.Config) {
-	list := &pbs.JobList{}
-	conf := &pbs.Config{}
-
-	ip, port := getIP("gobuildslave", server)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	conn, err := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
-	defer conn.Close()
+func (t *mainChecker) assess(ctx context.Context, server string) (*pbs.JobList, *pbs.Config) {
+	conn, err := t.dial("gobuildslave", server)
 	if err != nil {
-		return list, conf
+		return nil, nil
 	}
+	defer conn.Close()
 
 	slave := pbs.NewGoBuildSlaveClient(conn)
 	r, err := slave.List(ctx, &pbs.Empty{}, grpc.FailFast(false))
 	if err != nil {
-		return list, conf
+		return nil, nil
 	}
 
 	r2, err := slave.GetConfig(ctx, &pbs.Empty{}, grpc.FailFast(false))
 	if err != nil {
-		return list, conf
+		return nil, nil
 	}
 
 	return r, r2
 }
 
-func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-	conn, _ := grpc.Dial(entry.GetIp()+":"+strconv.Itoa(int(entry.GetPort())), grpc.WithInsecure())
+func (t *mainChecker) master(ctx context.Context, entry *pbd.RegistryEntry, master bool) (bool, error) {
+	conn, err := t.dialEntry(entry)
+	if err != nil {
+		return false, err
+	}
 	defer conn.Close()
 
 	server := pbg.NewGoserverServiceClient(conn)
-	_, err := server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
+	_, err = server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
 
 	return err == nil, err
 }
 
-func (s *Server) runJob(job *pbs.Job) {
-	server := s.selectServer(job, s.getter)
+func (s *Server) runJob(ctx context.Context, job *pbs.Job) {
+	server := s.selectServer(ctx, job, s.getter)
 	if server != "" {
 		s.Log(fmt.Sprintf("Running %v on %v", job.Name, server))
-		ip, port := getIP("gobuildslave", server)
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		conn, _ := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
-		defer conn.Close()
+		conn, err := s.DialServer("gobuildslave", server)
+		if err == nil {
+			defer conn.Close()
 
-		slave := pbs.NewBuildSlaveClient(conn)
-		slave.RunJob(ctx, &pbs.RunRequest{Job: job}, grpc.FailFast(false))
+			slave := pbs.NewBuildSlaveClient(conn)
+			slave.RunJob(ctx, &pbs.RunRequest{Job: job}, grpc.FailFast(false))
+		}
 	} else {
 		s.Log(fmt.Sprintf("Unable to find server for %v", job.Name))
 	}
@@ -294,7 +290,7 @@ func (s Server) GetState() []*pbg.State {
 //Compare compares current state to desired state
 func (s Server) Compare(ctx context.Context, in *pb.Empty) (*pb.CompareResponse, error) {
 	resp := &pb.CompareResponse{}
-	list, _ := getFleetStatus(&mainChecker{logger: s.Log})
+	list, _ := getFleetStatus(ctx, &mainChecker{logger: s.Log, dial: s.DialServer, dialEntry: s.DoDial})
 	cc := &pb.Config{}
 	for _, jlist := range list {
 		for _, job := range jlist.GetDetails() {
@@ -307,8 +303,8 @@ func (s Server) Compare(ctx context.Context, in *pb.Empty) (*pb.CompareResponse,
 	return resp, nil
 }
 
-func getConfig(c checker) *pb.Config {
-	list, _ := getFleetStatus(c)
+func getConfig(ctx context.Context, c checker) *pb.Config {
+	list, _ := getFleetStatus(ctx, c)
 	config := &pb.Config{}
 
 	for _, jlist := range list {
@@ -364,7 +360,7 @@ func (s *Server) SetMaster(ctx context.Context) {
 			for _, entry := range entries {
 				if seen && entry.GetMaster() {
 					s.Log(fmt.Sprintf("Setting %v master for %v", entry.Identifier, entry.Name))
-					checker.master(entry, false)
+					checker.master(ctx, entry, false)
 				} else if entry.GetMaster() {
 					seen = true
 				}
@@ -377,7 +373,7 @@ func (s *Server) SetMaster(ctx context.Context) {
 			}
 
 			for _, entry := range entries {
-				val, err := checker.master(entry, true)
+				val, err := checker.master(ctx, entry, true)
 				if val {
 					masterMap[entry.GetName()] = entry.GetIdentifier()
 					entry.Master = true
@@ -421,6 +417,8 @@ func Init(config *pb.Config) *Server {
 		time.Hour,
 		int64(0),
 	}
+	s.getter = &prodGetter{s.DoDial}
+
 	return s
 }
 
@@ -440,14 +438,11 @@ func (s *Server) becomeMaster(ctx context.Context) {
 func (s *Server) raiseIssue(ctx context.Context) {
 	for key, val := range s.lastMasterSatisfy {
 		if time.Now().Sub(val) > time.Hour {
-			ip, port := s.GetIP("githubcard")
-			if port > 0 {
-				conn, err := grpc.Dial(ip+":"+strconv.Itoa(port), grpc.WithInsecure())
-				if err == nil {
-					defer conn.Close()
-					client := pbgh.NewGithubClient(conn)
-					client.AddIssue(ctx, &pbgh.Issue{Service: key, Title: fmt.Sprintf("No Master Found - %v", key), Body: ""}, grpc.FailFast(false))
-				}
+			conn, err := s.DialMaster("githubcard")
+			if err == nil {
+				defer conn.Close()
+				client := pbgh.NewGithubClient(conn)
+				client.AddIssue(ctx, &pbgh.Issue{Service: key, Title: fmt.Sprintf("No Master Found - %v", key), Body: ""}, grpc.FailFast(false))
 			}
 
 		}

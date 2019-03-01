@@ -19,7 +19,7 @@ func (s *Server) buildWorld(ctx context.Context) {
 	for _, server := range slaves.GetServices() {
 		s.serverMap[server.Identifier] = time.Now()
 
-		jobs, err := s.getter.getJobs(server)
+		jobs, err := s.getter.getJobs(ctx, server)
 		if err != nil {
 			s.worldMutex.Unlock()
 			return
