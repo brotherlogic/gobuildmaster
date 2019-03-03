@@ -276,6 +276,8 @@ func (s Server) Mote(ctx context.Context, master bool) error {
 
 //GetState gets the state of the server
 func (s Server) GetState() []*pbg.State {
+	s.worldMutex.Lock()
+	defer s.worldMutex.Unlock()
 	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
 		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
 		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
