@@ -43,6 +43,8 @@ type Server struct {
 	timeChange        time.Duration
 	registerAttempts  int64
 	lastMasterRunTime time.Duration
+	lastJob           string
+	lastTrack         string
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) {
@@ -279,7 +281,11 @@ func (s Server) Mote(ctx context.Context, master bool) error {
 func (s Server) GetState() []*pbg.State {
 	s.worldMutex.Lock()
 	defer s.worldMutex.Unlock()
-	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
+	return []*pbg.State{
+		&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
+		&pbg.State{Key: "last_job", Text: s.lastJob},
+		&pbg.State{Key: "last_track", Text: s.lastTrack},
+		&pbg.State{Key: "last_state", TimeValue: s.LastMaster.Unix()},
 		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
 		&pbg.State{Key: "last_master_time", TimeDuration: s.lastMasterRunTime.Nanoseconds()},
 		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
@@ -339,6 +345,7 @@ func (s *Server) SetMaster(ctx context.Context) {
 	fleet := checker.discover()
 	matcher := make(map[string][]*pbd.RegistryEntry)
 	hasMaster := make(map[string]int)
+	s.lastTrack = "Building Mapping"
 	for _, entry := range fleet.GetServices() {
 		if !entry.GetIgnoresMaster() {
 			if _, ok := matcher[entry.GetName()]; !ok {
@@ -357,12 +364,15 @@ func (s *Server) SetMaster(ctx context.Context) {
 		}
 	}
 
+	s.lastTrack = "Processing Mapping"
 	for key, entries := range matcher {
+		s.lastJob = key
 		seen := hasMaster[key] == 1
 		if hasMaster[key] > 1 {
 			hasMaster[key] = 1
 			for _, entry := range entries {
 				if seen && entry.GetMaster() {
+					s.lastTrack = fmt.Sprintf("%v master for %v", entry.Identifier, entry.Name)
 					s.Log(fmt.Sprintf("Setting %v master for %v", entry.Identifier, entry.Name))
 					checker.master(ctx, entry, false)
 				} else if entry.GetMaster() {
@@ -377,6 +387,7 @@ func (s *Server) SetMaster(ctx context.Context) {
 			}
 
 			for _, entry := range entries {
+				s.lastTrack = fmt.Sprintf("%v master for %v", entry.Identifier, entry.Name)
 				val, err := checker.master(ctx, entry, true)
 				if val {
 					masterMap[entry.GetName()] = entry.GetIdentifier()
@@ -422,6 +433,8 @@ func Init(config *pb.Config) *Server {
 		time.Hour,
 		int64(0),
 		0,
+		"",
+		"",
 	}
 	s.getter = &prodGetter{s.DoDial}
 
