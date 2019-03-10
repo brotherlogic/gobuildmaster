@@ -42,6 +42,7 @@ type Server struct {
 	lastSeen          map[string]time.Time
 	timeChange        time.Duration
 	registerAttempts  int64
+	lastMasterRunTime time.Duration
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) {
@@ -280,6 +281,7 @@ func (s Server) GetState() []*pbg.State {
 	defer s.worldMutex.Unlock()
 	return []*pbg.State{&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
 		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
+		&pbg.State{Key: "last_master_time", TimeDuration: s.lastMasterRunTime.Nanoseconds()},
 		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
 		&pbg.State{Key: "master", Text: s.mapString},
 		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)},
@@ -398,6 +400,7 @@ func (s *Server) SetMaster(ctx context.Context) {
 
 	}
 	s.mapString = fmt.Sprintf("%v", masterMap)
+	s.lastMasterRunTime = time.Now().Sub(s.LastMaster)
 }
 
 //Init builds up the server
@@ -418,6 +421,7 @@ func Init(config *pb.Config) *Server {
 		make(map[string]time.Time),
 		time.Hour,
 		int64(0),
+		0,
 	}
 	s.getter = &prodGetter{s.DoDial}
 
