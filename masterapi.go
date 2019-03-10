@@ -433,6 +433,8 @@ func Init(config *pb.Config) *Server {
 		time.Hour,
 		int64(0),
 		0,
+		"",
+		"",
 	}
 	s.getter = &prodGetter{s.DoDial}
 
