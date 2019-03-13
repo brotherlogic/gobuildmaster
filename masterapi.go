@@ -140,7 +140,7 @@ func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	registry := pbd.NewDiscoveryServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{}, grpc.FailFast(false))
+	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{})
 	if err != nil {
 		return ret, err
 	}
@@ -168,7 +168,7 @@ func getIP(servertype, servername string) (string, int) {
 	registry := pbd.NewDiscoveryServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{}, grpc.FailFast(false))
+	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{})
 	if err != nil {
 		return "", -1
 	}
@@ -196,12 +196,12 @@ func (t *mainChecker) assess(ctx context.Context, server string) (*pbs.JobList, 
 	defer conn.Close()
 
 	slave := pbs.NewGoBuildSlaveClient(conn)
-	r, err := slave.List(ctx, &pbs.Empty{}, grpc.FailFast(false))
+	r, err := slave.List(ctx, &pbs.Empty{})
 	if err != nil {
 		return nil, nil
 	}
 
-	r2, err := slave.GetConfig(ctx, &pbs.Empty{}, grpc.FailFast(false))
+	r2, err := slave.GetConfig(ctx, &pbs.Empty{})
 	if err != nil {
 		return nil, nil
 	}
@@ -217,7 +217,7 @@ func (t *mainChecker) master(ctx context.Context, entry *pbd.RegistryEntry, mast
 	defer conn.Close()
 
 	server := pbg.NewGoserverServiceClient(conn)
-	_, err = server.Mote(ctx, &pbg.MoteRequest{Master: master}, grpc.FailFast(false))
+	_, err = server.Mote(ctx, &pbg.MoteRequest{Master: master})
 
 	return err == nil, err
 }
@@ -231,7 +231,7 @@ func (s *Server) runJob(ctx context.Context, job *pbs.Job) {
 			defer conn.Close()
 
 			slave := pbs.NewBuildSlaveClient(conn)
-			slave.RunJob(ctx, &pbs.RunRequest{Job: job}, grpc.FailFast(false))
+			slave.RunJob(ctx, &pbs.RunRequest{Job: job})
 		}
 	} else {
 		s.Log(fmt.Sprintf("Unable to find server for %v", job.Name))
@@ -247,7 +247,7 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 	registry := pbd.NewDiscoveryServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{}, grpc.FailFast(false))
+	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{})
 	if err == nil {
 		for _, s := range r.GetServices().Services {
 			ret.Services = append(ret.Services, s)
@@ -461,7 +461,7 @@ func (s *Server) raiseIssue(ctx context.Context) {
 			if err == nil {
 				defer conn.Close()
 				client := pbgh.NewGithubClient(conn)
-				client.AddIssue(ctx, &pbgh.Issue{Service: key, Title: fmt.Sprintf("No Master Found - %v", key), Body: ""}, grpc.FailFast(false))
+				client.AddIssue(ctx, &pbgh.Issue{Service: key, Title: fmt.Sprintf("No Master Found - %v", key), Body: ""})
 			}
 
 		}
