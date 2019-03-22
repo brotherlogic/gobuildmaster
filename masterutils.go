@@ -15,26 +15,27 @@ func (s *Server) buildWorld(ctx context.Context) {
 		s.worldMutex.Unlock()
 		return
 	}
+	s.worldMutex.Unlock()
 
 	for _, server := range slaves.GetServices() {
 		s.serverMap[server.Identifier] = time.Now()
 
 		jobs, err := s.getter.getJobs(ctx, server)
 		if err != nil {
-			s.worldMutex.Unlock()
 			return
 		}
 
+		s.worldMutex.Lock()
 		for _, job := range jobs {
 			if _, ok := s.world[job.Job.GetName()]; !ok {
 				s.world[job.Job.GetName()] = make(map[string]struct{})
 			}
 			s.world[job.Job.GetName()][server.GetIdentifier()] = struct{}{}
 		}
+		s.worldMutex.Unlock()
 	}
 
 	s.lastWorldRun = time.Now().Unix()
-	s.worldMutex.Unlock()
 
 	for server, seen := range s.serverMap {
 		if time.Now().Sub(seen) > s.timeChange {
