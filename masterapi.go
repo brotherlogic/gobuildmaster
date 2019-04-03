@@ -47,7 +47,7 @@ type Server struct {
 	lastTrack         string
 }
 
-func (s *Server) alertOnMissingJob(ctx context.Context) {
+func (s *Server) alertOnMissingJob(ctx context.Context) error {
 	for _, nin := range s.config.Nintents {
 		_, _, err := utils.Resolve(nin.Job.Name)
 		if err != nil {
@@ -65,6 +65,8 @@ func (s *Server) alertOnMissingJob(ctx context.Context) {
 			s.lastSeen[nin.Job.Name] = time.Now()
 		}
 	}
+
+	return nil
 }
 
 type prodGetter struct {
@@ -337,7 +339,7 @@ func getConfig(ctx context.Context, c checker) *pb.Config {
 }
 
 // SetMaster sets up the master settings
-func (s *Server) SetMaster(ctx context.Context) {
+func (s *Server) SetMaster(ctx context.Context) error {
 	checker := &mainChecker{logger: s.Log, dial: s.DialServer, dialEntry: s.DoDial}
 	s.LastMaster = time.Now()
 	masterMap := make(map[string]string)
@@ -412,6 +414,8 @@ func (s *Server) SetMaster(ctx context.Context) {
 	}
 	s.mapString = fmt.Sprintf("%v", masterMap)
 	s.lastMasterRunTime = time.Now().Sub(s.LastMaster)
+
+	return nil
 }
 
 //Init builds up the server
@@ -441,7 +445,7 @@ func Init(config *pb.Config) *Server {
 	return s
 }
 
-func (s *Server) becomeMaster(ctx context.Context) {
+func (s *Server) becomeMaster(ctx context.Context) error {
 	for true {
 		time.Sleep(time.Second * 5)
 		if !s.Registry.Master {
@@ -452,9 +456,11 @@ func (s *Server) becomeMaster(ctx context.Context) {
 			}
 		}
 	}
+
+	return nil
 }
 
-func (s *Server) raiseIssue(ctx context.Context) {
+func (s *Server) raiseIssue(ctx context.Context) error {
 	for key, val := range s.lastMasterSatisfy {
 		if time.Now().Sub(val) > time.Hour {
 			conn, err := s.DialMaster("githubcard")
@@ -466,6 +472,8 @@ func (s *Server) raiseIssue(ctx context.Context) {
 
 		}
 	}
+
+	return nil
 }
 
 func main() {
