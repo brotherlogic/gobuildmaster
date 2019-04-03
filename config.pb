@@ -38,6 +38,13 @@ nintents <
 >
 nintents <
   job <
+    name: "solver"
+    go_path: "github.com/brotherlogic/solver"
+  >
+  redundancy: GLOBAL
+>
+nintents <
+  job <
     name: "monitor"
     go_path: "github.com/brotherlogic/monitor"
   >

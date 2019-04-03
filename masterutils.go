@@ -7,13 +7,13 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (s *Server) buildWorld(ctx context.Context) {
+func (s *Server) buildWorld(ctx context.Context) error {
 	s.worldMutex.Lock()
 	s.world = make(map[string]map[string]struct{})
 	slaves, err := s.getter.getSlaves()
 	if err != nil {
 		s.worldMutex.Unlock()
-		return
+		return err
 	}
 	s.worldMutex.Unlock()
 
@@ -22,7 +22,7 @@ func (s *Server) buildWorld(ctx context.Context) {
 
 		jobs, err := s.getter.getJobs(ctx, server)
 		if err != nil {
-			return
+			return err
 		}
 
 		s.worldMutex.Lock()
@@ -42,4 +42,6 @@ func (s *Server) buildWorld(ctx context.Context) {
 			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing.", server), false)
 		}
 	}
+
+	return nil
 }
