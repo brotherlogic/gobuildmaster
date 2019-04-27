@@ -239,6 +239,13 @@ nintents <
 >
 nintents <
   job <
+    name: "recordbackup"
+    go_path: "github.com/brotherlogic/recordbackup"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "executor"
     go_path: "github.com/brotherlogic/executor"
   >  
