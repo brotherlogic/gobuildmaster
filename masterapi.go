@@ -501,7 +501,9 @@ func main() {
 	}
 	s.RegisterRepeatingTask(s.buildWorld, "build_world", time.Minute)
 	s.RegisterServingTask(s.becomeMaster, "become_master")
-	s.RegisterRepeatingTask(s.SetMaster, "set_master", time.Minute)
+
+	// Don't trace out master requests - they can take a while
+	s.RegisterRepeatingTaskNoTrace(s.SetMaster, "set_master", time.Minute)
 	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Minute*5)
 
 	for i := 0; i < len(s.config.GetNintents()); i++ {
