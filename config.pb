@@ -7,6 +7,10 @@ nintents <
       category: DISK
       properties: "scratch"
     >
+    requirements <
+      category: NETWORK
+      properties: "433.3"
+    >
   >
   redundancy: REDUNDANT
 >
