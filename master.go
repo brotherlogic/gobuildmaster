@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/rand"
 
 	"github.com/golang/protobuf/proto"
@@ -72,6 +73,21 @@ func chooseServer(ctx context.Context, job *pbs.JobSpec, c checker) string {
 	return ""
 }
 
+func (s *Server) addAccessPoint(ap string) {
+	switch ap {
+	case "70:3A:CB:17:CF:BB":
+		s.accessPoints["LR2"] = true
+	case "70:3A:CB:17:CC:D3":
+		s.accessPoints["Bedroom"] = true
+	case "70:3A:CB:17:CE:E3":
+		s.accessPoints["LR"] = true
+	case "70:3A:CB:17:CF:BF":
+		s.accessPoints["LR2"] = true
+	default:
+		log.Fatalf("Unknown access point: %v", ap)
+	}
+}
+
 // Find the first available server
 func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) string {
 	services, _ := g.getSlaves()
@@ -93,7 +109,7 @@ func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) strin
 					localmatch := false
 					for _, r := range requirements {
 						if r.Category == pbs.RequirementCategory_ACCESS_POINT {
-							s.accessPoints[r.Properties] = true
+							s.addAccessPoint(r.Properties)
 						}
 						if r.Category == req.Category && r.Properties == req.Properties {
 							localmatch = true
