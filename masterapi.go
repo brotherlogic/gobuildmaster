@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -45,6 +46,7 @@ type Server struct {
 	lastMasterRunTime time.Duration
 	lastJob           string
 	lastTrack         string
+	accessPoints      map[string]bool
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) error {
@@ -283,7 +285,13 @@ func (s Server) Mote(ctx context.Context, master bool) error {
 func (s Server) GetState() []*pbg.State {
 	s.worldMutex.Lock()
 	defer s.worldMutex.Unlock()
+	aps := make([]string, 0)
+	for ap := range s.accessPoints {
+		aps = append(aps, ap)
+	}
+	sort.Strings(aps)
 	return []*pbg.State{
+		&pbg.State{Key: "access_points", Text: fmt.Sprintf("%v", aps)},
 		&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
 		&pbg.State{Key: "last_job", Text: s.lastJob},
 		&pbg.State{Key: "last_track", Text: s.lastTrack},
@@ -439,6 +447,7 @@ func Init(config *pb.Config) *Server {
 		0,
 		"",
 		"",
+		make(map[string]bool),
 	}
 	s.getter = &prodGetter{s.DoDial}
 
