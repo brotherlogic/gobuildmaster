@@ -93,7 +93,7 @@ func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) strin
 					localmatch := false
 					for _, r := range requirements {
 						if r.Category == pbs.RequirementCategory_ACCESS_POINT {
-							s.accessPoints[req.Properties] = true
+							s.accessPoints[r.Properties] = true
 						}
 						if r.Category == req.Category && r.Properties == req.Properties {
 							localmatch = true
