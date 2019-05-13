@@ -92,6 +92,9 @@ func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) strin
 				for _, req := range job.Requirements {
 					localmatch := false
 					for _, r := range requirements {
+						if r.Category == pbs.RequirementCategory_ACCESS_POINT {
+							s.accessPoints[req.Properties] = true
+						}
 						if r.Category == req.Category && r.Properties == req.Properties {
 							localmatch = true
 							s.Log(fmt.Sprintf("MATCH %v and %v for %v on %v", r, req, job.Name, services.Services[i].Identifier))
