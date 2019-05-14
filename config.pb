@@ -250,6 +250,13 @@ nintents <
 >
 nintents <
   job <
+    name: "recordmatcher"
+    go_path: "github.com/brotherlogic/recordmatcher"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "executor"
     go_path: "github.com/brotherlogic/executor"
   >  
