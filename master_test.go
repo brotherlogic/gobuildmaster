@@ -262,10 +262,17 @@ func TestReqSelectFail(t *testing.T) {
 	s := InitTestServer()
 	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment), config: make(map[string][]*pbs.Requirement)}
 	tg.running["goodserver"] = []*pbs.JobAssignment{}
-	tg.config["goodserver"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisker"}}
+	tg.config["goodserver"] = []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisker"}, &pbs.Requirement{Category: pbs.RequirementCategory_ACCESS_POINT, Properties: "70:3A:CB:17:CF:BB"}}
 
 	server := s.selectServer(context.Background(), &pbs.Job{Name: "runner", Requirements: []*pbs.Requirement{&pbs.Requirement{Category: pbs.RequirementCategory_DISK, Properties: "maindisk"}}}, tg)
 	if server != "" {
 		t.Errorf("Wrong server selected: %v", server)
+	}
+}
+
+func TestAddAccessPoints(t *testing.T) {
+	s := InitTestServer()
+	for _, str := range []string{"70:3A:CB:17:CF:BB", "70:3A:CB:17:CC:D3", "70:3A:CB:17:CE:E3", "70:3A:CB:17:CF:BF", "blah"} {
+		s.addAccessPoint(str)
 	}
 }

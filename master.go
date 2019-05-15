@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math/rand"
 
 	"github.com/golang/protobuf/proto"
@@ -74,6 +73,8 @@ func chooseServer(ctx context.Context, job *pbs.JobSpec, c checker) string {
 }
 
 func (s *Server) addAccessPoint(ap string) {
+	s.accessPointsMutex.Lock()
+	defer s.accessPointsMutex.Unlock()
 	switch ap {
 	case "70:3A:CB:17:CF:BB":
 		s.accessPoints["LR2"] = true
@@ -84,7 +85,7 @@ func (s *Server) addAccessPoint(ap string) {
 	case "70:3A:CB:17:CF:BF":
 		s.accessPoints["LR2"] = true
 	default:
-		log.Fatalf("Unknown access point: %v", ap)
+		s.Log(fmt.Sprintf("Unknown %v", ap))
 	}
 }
 
