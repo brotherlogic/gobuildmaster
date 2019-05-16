@@ -47,6 +47,7 @@ type Server struct {
 	lastJob           string
 	lastTrack         string
 	accessPoints      map[string]bool
+	accessPointsMutex *sync.Mutex
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) error {
@@ -286,6 +287,8 @@ func (s Server) GetState() []*pbg.State {
 	s.worldMutex.Lock()
 	defer s.worldMutex.Unlock()
 	aps := make([]string, 0)
+	s.accessPointsMutex.Lock()
+	defer s.accessPointsMutex.Unlock()
 	for ap := range s.accessPoints {
 		aps = append(aps, ap)
 	}
@@ -448,6 +451,7 @@ func Init(config *pb.Config) *Server {
 		"",
 		"",
 		make(map[string]bool),
+		&sync.Mutex{},
 	}
 	s.getter = &prodGetter{s.DoDial}
 
