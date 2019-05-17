@@ -304,7 +304,7 @@ func (s Server) GetState() []*pbg.State {
 		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
 		&pbg.State{Key: "master", Text: s.mapString},
 		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)},
-		&pbg.State{Key: "servers", Text: fmt.Sprintf("%v", s.serverMap)},
+		&pbg.State{Key: "servers", Text: fmt.Sprintf("%v", s.serverMap["stack4"])},
 		&pbg.State{Key: "seen_map", Text: fmt.Sprintf("%v", s.lastSeen)},
 		&pbg.State{Key: "register_attempts", Value: s.registerAttempts},
 	}
