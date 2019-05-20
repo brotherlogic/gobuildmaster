@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
@@ -72,18 +73,25 @@ func chooseServer(ctx context.Context, job *pbs.JobSpec, c checker) string {
 	return ""
 }
 
-func (s *Server) addAccessPoint(ap string) {
+func (s *Server) addAccessPoint(ctx context.Context, ap string) {
 	s.accessPointsMutex.Lock()
 	defer s.accessPointsMutex.Unlock()
+
+	for key, val := range s.accessPoints {
+		if time.Now().Sub(val) > time.Hour {
+			s.RaiseIssue(ctx, fmt.Sprintf("Access point Missing"), fmt.Sprintf("%v is missing", key), false)
+		}
+	}
+
 	switch ap {
 	case "70:3A:CB:17:CF:BB":
-		s.accessPoints["LR2"] = true
+		s.accessPoints["LR2"] = time.Now()
 	case "70:3A:CB:17:CC:D3":
-		s.accessPoints["Bedroom"] = true
+		s.accessPoints["Bedroom"] = time.Now()
 	case "70:3A:CB:17:CE:E3":
-		s.accessPoints["LR"] = true
+		s.accessPoints["LR"] = time.Now()
 	case "70:3A:CB:17:CF:BF":
-		s.accessPoints["LR2"] = true
+		s.accessPoints["LR2"] = time.Now()
 	default:
 		s.Log(fmt.Sprintf("Unknown %v", ap))
 	}
@@ -110,7 +118,7 @@ func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) strin
 					localmatch := false
 					for _, r := range requirements {
 						if r.Category == pbs.RequirementCategory_ACCESS_POINT {
-							s.addAccessPoint(r.Properties)
+							s.addAccessPoint(ctx, r.Properties)
 						}
 						if r.Category == req.Category && r.Properties == req.Properties {
 							localmatch = true
