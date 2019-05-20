@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"testing"
+	"time"
 
 	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
@@ -272,7 +273,8 @@ func TestReqSelectFail(t *testing.T) {
 
 func TestAddAccessPoints(t *testing.T) {
 	s := InitTestServer()
+	s.accessPoints["blah"] = time.Now().Add(-time.Hour * 2)
 	for _, str := range []string{"70:3A:CB:17:CF:BB", "70:3A:CB:17:CC:D3", "70:3A:CB:17:CE:E3", "70:3A:CB:17:CF:BF", "blah"} {
-		s.addAccessPoint(str)
+		s.addAccessPoint(context.Background(), str)
 	}
 }

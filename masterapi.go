@@ -46,7 +46,7 @@ type Server struct {
 	lastMasterRunTime time.Duration
 	lastJob           string
 	lastTrack         string
-	accessPoints      map[string]bool
+	accessPoints      map[string]time.Time
 	accessPointsMutex *sync.Mutex
 }
 
@@ -450,7 +450,7 @@ func Init(config *pb.Config) *Server {
 		0,
 		"",
 		"",
-		make(map[string]bool),
+		make(map[string]time.Time),
 		&sync.Mutex{},
 	}
 	s.getter = &prodGetter{s.DoDial}
