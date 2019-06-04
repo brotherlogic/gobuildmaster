@@ -39,7 +39,7 @@ func (s *Server) buildWorld(ctx context.Context) error {
 
 	for server, seen := range s.serverMap {
 		if time.Now().Sub(seen) > s.timeChange {
-			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing.", server), false)
+			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing duration: %v.", server, time.Now().Sub(seen)), false)
 		}
 	}
 
