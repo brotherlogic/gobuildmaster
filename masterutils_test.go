@@ -54,6 +54,7 @@ func TestBuildWorldFailJobs(t *testing.T) {
 
 func TestAlertOnMissingServer(t *testing.T) {
 	s := InitTestServer()
+	s.Register = s
 	g := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
 	g.running["server1"] = []*pbs.JobAssignment{&pbs.JobAssignment{Server: "server1", Job: &pbs.Job{Name: "testjob"}}, &pbs.JobAssignment{Server: "server2", Job: &pbs.Job{Name: "testjob2"}}}
 	g.running["server2"] = []*pbs.JobAssignment{&pbs.JobAssignment{Server: "server1", Job: &pbs.Job{Name: "testjob"}}, &pbs.JobAssignment{Server: "server2", Job: &pbs.Job{Name: "testjob2"}}}

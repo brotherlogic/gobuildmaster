@@ -84,6 +84,10 @@ func (g *prodGetter) getJobs(ctx context.Context, server *pbd.RegistryEntry) ([]
 	defer conn.Close()
 
 	slave := pbs.NewBuildSlaveClient(conn)
+
+	// Set a tighter rpc deadline for listing jobs.
+	ctx, cancel := utils.ManualContext("getJobs", "gobuildmaster", time.Minute)
+	defer cancel()
 	r, err := slave.ListJobs(ctx, &pbs.ListRequest{})
 	if err != nil {
 		return nil, err
@@ -143,7 +147,7 @@ func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{})
 	if err != nil {
@@ -304,7 +308,7 @@ func (s Server) GetState() []*pbg.State {
 		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
 		&pbg.State{Key: "master", Text: s.mapString},
 		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)},
-		&pbg.State{Key: "servers", Text: fmt.Sprintf("%v", s.serverMap["stack4"])},
+		&pbg.State{Key: "servers", Text: fmt.Sprintf("%v", s.serverMap)},
 		&pbg.State{Key: "seen_map", Text: fmt.Sprintf("%v", s.lastSeen)},
 		&pbg.State{Key: "register_attempts", Value: s.registerAttempts},
 	}
@@ -445,7 +449,7 @@ func Init(config *pb.Config) *Server {
 		make(map[string]time.Time),
 		make(map[string]time.Time),
 		make(map[string]time.Time),
-		time.Hour,
+		time.Hour, // time.Change
 		int64(0),
 		0,
 		"",
