@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	pb "github.com/brotherlogic/goserver/proto"
 	"golang.org/x/net/context"
 )
 
@@ -39,7 +40,12 @@ func (s *Server) buildWorld(ctx context.Context) error {
 
 	for server, seen := range s.serverMap {
 		if time.Now().Sub(seen) > s.timeChange {
-			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing duration: %v.", server, time.Now().Sub(seen)), false)
+			info, _ := s.State(ctx, &pb.Empty{})
+			infoString := ""
+			for _, str := range info.GetStates() {
+				infoString += fmt.Sprintf("%v = %v\n", str.Key, str)
+			}
+			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing duration: %v.\n%v", server, time.Now().Sub(seen), infoString), false)
 		}
 	}
 
