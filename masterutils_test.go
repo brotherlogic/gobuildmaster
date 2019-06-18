@@ -73,3 +73,21 @@ func TestAlertOnMissingServer(t *testing.T) {
 		t.Errorf("No alert on missing server: %v", s.AlertsFired)
 	}
 }
+
+func TestBuildWorldWithCountAlert(t *testing.T) {
+	s := InitTestServer()
+	s.config.Nintents = append(s.config.Nintents, &pb.NIntent{
+		Count: 1,
+		Job:   &pbs.Job{Name: "testjob"},
+	})
+	g := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
+	g.running["testserver1"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "testjob"}}}
+	g.running["testserver2"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "testjob"}}}
+	g.running["testserver3"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "testjob"}}}
+	s.getter = g
+
+	s.buildWorld(context.Background())
+	if _, ok := s.world["testjob"]["testserver1"]; !ok {
+		t.Fatalf("World has not been built correctly: %v", s.world)
+	}
+}
