@@ -269,3 +269,10 @@ nintents <
   >  
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    name: "githubreceiver"
+    go_path: "github.com/brotherlogic/githubreceiver"
+  >  
+  count: 1
+>
