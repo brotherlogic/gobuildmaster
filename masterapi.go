@@ -218,12 +218,15 @@ func (t *mainChecker) assess(ctx context.Context, server string) (*pbs.JobList, 
 	return r, r2
 }
 
-func (t *mainChecker) master(ctx context.Context, entry *pbd.RegistryEntry, master bool) (bool, error) {
+func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error) {
 	conn, err := t.dialEntry(entry)
 	if err != nil {
 		return false, err
 	}
 	defer conn.Close()
+
+	ctx, cancel := utils.ManualContext("gobuildmaster-mote", "gobuildmaster", time.Minute*5)
+	defer cancel()
 
 	server := pbg.NewGoserverServiceClient(conn)
 	_, err = server.Mote(ctx, &pbg.MoteRequest{Master: master})
@@ -391,7 +394,7 @@ func (s *Server) SetMaster(ctx context.Context) error {
 				if seen && entry.GetMaster() {
 					s.lastTrack = fmt.Sprintf("%v master for %v", entry.Identifier, entry.Name)
 					s.Log(fmt.Sprintf("Setting %v master for %v", entry.Identifier, entry.Name))
-					checker.master(ctx, entry, false)
+					checker.master(entry, false)
 				} else if entry.GetMaster() {
 					seen = true
 				}
@@ -405,7 +408,7 @@ func (s *Server) SetMaster(ctx context.Context) error {
 
 			for _, entry := range entries {
 				s.lastTrack = fmt.Sprintf("%v master for %v", entry.Identifier, entry.Name)
-				val, err := checker.master(ctx, entry, true)
+				val, err := checker.master(entry, true)
 				if val {
 					masterMap[entry.GetName()] = entry.GetIdentifier()
 					entry.Master = true
