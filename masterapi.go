@@ -496,6 +496,24 @@ func (s *Server) raiseIssue(ctx context.Context) error {
 	return nil
 }
 
+func (s *Server) registerJobs(ctx context.Context) error {
+	conn, err := s.DialMaster("githubcard")
+	if err != nil {
+		return nil
+	}
+	defer conn.Close()
+
+	client := pbgh.NewGithubClient(conn)
+	for _, job := range s.config.Nintents {
+		_, err := client.RegisterJob(ctx, &pbgh.RegisterRequest{Job: job.GetJob().GetName()})
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func main() {
 	config, err := loadConfig("config.pb")
 	if err != nil {
@@ -525,6 +543,7 @@ func main() {
 	// Don't trace out master requests - they can take a while
 	s.RegisterRepeatingTaskNoTrace(s.SetMaster, "set_master", time.Minute)
 	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Minute*5)
+	s.RegisterRepeatingTask(s.registerJobs, "register_jobs", time.Minute)
 
 	for i := 0; i < len(s.config.GetNintents()); i++ {
 		go s.checkerThread(s.config.GetNintents()[i])
