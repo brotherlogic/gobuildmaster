@@ -37,7 +37,7 @@ func (t testChecker) setprev(v []string) {
 	// Do nothing
 }
 
-func (t testChecker) master(ctx context.Context, entry *pbd.RegistryEntry, master bool) (bool, error) {
+func (t testChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error) {
 	// Do nothing
 	return true, nil
 }
