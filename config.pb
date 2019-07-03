@@ -19,6 +19,7 @@ nintents <
     go_path: "github.com/brotherlogic/filecopier"
     name: "filecopier"
     bootstrap: true
+    breakout: true
   >
   redundancy: GLOBAL
 >
@@ -259,6 +260,7 @@ nintents <
   job <
     name: "executor"
     go_path: "github.com/brotherlogic/executor"
+    breakout: true
   >  
   redundancy: GLOBAL
 >
