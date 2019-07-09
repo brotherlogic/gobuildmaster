@@ -225,7 +225,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 	}
 	defer conn.Close()
 
-	ctx, cancel := utils.ManualContext("gobuildmaster-mote", "gobuildmaster", time.Minute*5)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*5)
 	defer cancel()
 
 	server := pbg.NewGoserverServiceClient(conn)
