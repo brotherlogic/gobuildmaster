@@ -278,3 +278,10 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "frametracker"
+    go_path: "github.com/brotherlogic/frametracker"
+  >  
+  count: 1
+>
