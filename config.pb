@@ -287,6 +287,13 @@ nintents <
 >
 nintents <
   job <
+    name: "pullrequester"
+    go_path: "github.com/brotherlogic/pullrequester"
+  >  
+  count: 1
+>
+nintents <
+  job <
     name: "keystorebackup"
     go_path: "github.com/brotherlogic/keystorebackup"
     requirements <
