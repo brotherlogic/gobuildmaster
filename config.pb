@@ -297,7 +297,7 @@ nintents <
     name: "networkspeed"
     go_path: "github.com/brotherlogic/networkspeed"
   >  
-  count: 1
+  count: 2
 >
 nintents <
   job <
