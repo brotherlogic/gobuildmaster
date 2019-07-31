@@ -297,7 +297,7 @@ nintents <
     name: "networkspeed"
     go_path: "github.com/brotherlogic/networkspeed"
   >  
-  count: 2
+  redundancy: GLOBAL
 >
 nintents <
   job <
