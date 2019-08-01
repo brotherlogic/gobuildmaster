@@ -4,9 +4,29 @@ import (
 	"fmt"
 	"time"
 
+	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/goserver/proto"
 	"golang.org/x/net/context"
 )
+
+func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) error {
+	s.serverMap[server.Identifier] = time.Now()
+
+	jobs, err := s.getter.getJobs(ctx, server)
+	if err != nil {
+		return err
+	}
+
+	s.worldMutex.Lock()
+	for _, job := range jobs {
+		if _, ok := s.world[job.Job.GetName()]; !ok {
+			s.world[job.Job.GetName()] = make(map[string]struct{})
+		}
+		s.world[job.Job.GetName()][server.GetIdentifier()] = struct{}{}
+	}
+	s.worldMutex.Unlock()
+	return nil
+}
 
 func (s *Server) buildWorld(ctx context.Context) error {
 	s.worldMutex.Lock()
@@ -19,21 +39,10 @@ func (s *Server) buildWorld(ctx context.Context) error {
 	s.worldMutex.Unlock()
 
 	for _, server := range slaves.GetServices() {
-		s.serverMap[server.Identifier] = time.Now()
-
-		jobs, err := s.getter.getJobs(ctx, server)
+		err := s.updateWorld(ctx, server)
 		if err != nil {
 			return err
 		}
-
-		s.worldMutex.Lock()
-		for _, job := range jobs {
-			if _, ok := s.world[job.Job.GetName()]; !ok {
-				s.world[job.Job.GetName()] = make(map[string]struct{})
-			}
-			s.world[job.Job.GetName()][server.GetIdentifier()] = struct{}{}
-		}
-		s.worldMutex.Unlock()
 	}
 
 	s.lastWorldRun = time.Now().Unix()
