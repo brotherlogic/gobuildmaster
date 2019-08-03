@@ -35,6 +35,7 @@ type Server struct {
 	LastMaster        time.Time
 	worldMutex        *sync.Mutex
 	world             map[string]map[string]struct{}
+	slaveMap          map[string][]string
 	getter            getter
 	mapString         string
 	lastWorldRun      int64
@@ -446,6 +447,7 @@ func Init(config *pb.Config) *Server {
 		time.Now(),
 		&sync.Mutex{},
 		make(map[string]map[string]struct{}),
+		make(map[string][]string),
 		&prodGetter{},
 		"",
 		0,
