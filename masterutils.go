@@ -17,14 +17,10 @@ func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) err
 		return err
 	}
 
-	s.worldMutex.Lock()
+	s.slaveMap[server.GetIdentifier()] = []string{}
 	for _, job := range jobs {
-		if _, ok := s.world[job.Job.GetName()]; !ok {
-			s.world[job.Job.GetName()] = make(map[string]struct{})
-		}
-		s.world[job.Job.GetName()][server.GetIdentifier()] = struct{}{}
+		s.slaveMap[server.GetIdentifier()] = append(s.slaveMap[server.GetIdentifier()], job.GetJob().GetName())
 	}
-	s.worldMutex.Unlock()
 	return nil
 }
 
@@ -44,6 +40,18 @@ func (s *Server) buildWorld(ctx context.Context) error {
 			return err
 		}
 	}
+
+	// Rebuild world
+	s.worldMutex.Lock()
+	for server, jobs := range s.slaveMap {
+		for _, job := range jobs {
+			if _, ok := s.world[job]; !ok {
+				s.world[job] = make(map[string]struct{})
+			}
+			s.world[job][server] = struct{}{}
+		}
+	}
+	s.worldMutex.Unlock()
 
 	s.lastWorldRun = time.Now().Unix()
 
