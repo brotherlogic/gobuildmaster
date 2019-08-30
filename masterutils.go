@@ -64,16 +64,10 @@ func (s *Server) buildWorld(ctx context.Context) error {
 
 	for job, versions := range s.world {
 		count := int32(0)
-		found := false
 		for _, cjob := range s.config.Nintents {
 			if cjob.Job.Name == job {
-				found = true
 				count = cjob.Count
 			}
-		}
-
-		if !found {
-			s.Log(fmt.Sprintf("Could not find %v", job))
 		}
 
 		if count > 0 && int32(len(versions))-count > 1 {

@@ -238,7 +238,6 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 func (s *Server) runJob(ctx context.Context, job *pbs.Job) {
 	server := s.selectServer(ctx, job, s.getter)
 	if server != "" {
-		s.Log(fmt.Sprintf("Running %v on %v", job.Name, server))
 		conn, err := s.DialServer("gobuildslave", server)
 		if err == nil {
 			defer conn.Close()
@@ -246,8 +245,6 @@ func (s *Server) runJob(ctx context.Context, job *pbs.Job) {
 			slave := pbs.NewBuildSlaveClient(conn)
 			slave.RunJob(ctx, &pbs.RunRequest{Job: job})
 		}
-	} else {
-		s.Log(fmt.Sprintf("Unable to find server for %v", job.Name))
 	}
 }
 
@@ -394,7 +391,6 @@ func (s *Server) SetMaster(ctx context.Context) error {
 			for _, entry := range entries {
 				if seen && entry.GetMaster() {
 					s.lastTrack = fmt.Sprintf("%v master for %v", entry.Identifier, entry.Name)
-					s.Log(fmt.Sprintf("Setting %v master for %v", entry.Identifier, entry.Name))
 					checker.master(entry, false)
 				} else if entry.GetMaster() {
 					seen = true

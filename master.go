@@ -92,8 +92,6 @@ func (s *Server) addAccessPoint(ctx context.Context, ap string) {
 		s.accessPoints["LR"] = time.Now()
 	case "70:3A:CB:17:CF:BF":
 		s.accessPoints["LR2"] = time.Now()
-	default:
-		s.Log(fmt.Sprintf("Unknown %v", ap))
 	}
 }
 
@@ -122,7 +120,7 @@ func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) strin
 						}
 						if r.Category == req.Category && r.Properties == req.Properties {
 							localmatch = true
-							s.Log(fmt.Sprintf("MATCH %v and %v for %v on %v", r, req, job.Name, services.Services[i].Identifier))
+
 						}
 					}
 
@@ -131,7 +129,6 @@ func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) strin
 					}
 				}
 				if allmatch {
-					s.Log(fmt.Sprintf("MATCH %v and %v for %v on %v", job.Requirements, requirements, job.Name, services.Services[i].Identifier))
 					return services.Services[i].Identifier
 				}
 			}
