@@ -290,7 +290,7 @@ nintents <
     name: "pullrequester"
     go_path: "github.com/brotherlogic/pullrequester"
   >  
-  count: 1
+  count: 3
 >
 nintents <
   job <
