@@ -86,7 +86,7 @@ nintents <
     name: "githubreceiver"
     go_path: "github.com/brotherlogic/githubreceiver"
   >  
-  count: REDUNDANT
+  redundancy: REDUNDANT
 >
 nintents <
   job <
