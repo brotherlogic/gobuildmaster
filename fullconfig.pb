@@ -169,17 +169,6 @@ nintents <
 >
 nintents <
   job <
-    name: "proxy"
-    go_path: "github.com/brotherlogic/proxy"
-    requirements <
-      category: EXTERNAL
-      properties: "external_ready"
-    >
-  >
-  count: 1
->
-nintents <
-  job <
     name: "printer"
     go_path: "github.com/brotherlogic/printer"
     requirements <
@@ -270,13 +259,6 @@ nintents <
     go_path: "github.com/brotherlogic/backup"
   >  
   redundancy: GLOBAL
->
-nintents <
-  job <
-    name: "githubreceiver"
-    go_path: "github.com/brotherlogic/githubreceiver"
-  >  
-  count: 1
 >
 nintents <
   job <
