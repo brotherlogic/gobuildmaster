@@ -72,6 +72,8 @@ func TestLoadMainConfig(t *testing.T) {
 	if !found {
 		t.Errorf("Cannot find buildserver: %v", c.Nintents)
 	}
+
+	log.Printf("CONFIG = %v", c)
 }
 
 func TestRunJob(t *testing.T) {
