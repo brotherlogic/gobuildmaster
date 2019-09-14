@@ -240,14 +240,6 @@ nintents <
 >
 nintents <
   job <
-    name: "executor"
-    go_path: "github.com/brotherlogic/executor"
-    breakout: true
-  >  
-  redundancy: GLOBAL
->
-nintents <
-  job <
     name: "backup"
     go_path: "github.com/brotherlogic/backup"
   >  
