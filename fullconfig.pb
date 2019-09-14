@@ -254,13 +254,6 @@ nintents <
 >
 nintents <
   job <
-    name: "pullrequester"
-    go_path: "github.com/brotherlogic/pullrequester"
-  >  
-  count: 3
->
-nintents <
-  job <
     name: "networkspeed"
     go_path: "github.com/brotherlogic/networkspeed"
   >  
