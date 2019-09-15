@@ -110,3 +110,10 @@ nintents <
   >  
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/beerserver"
+    name: "beerserver"
+  >
+ redundancy: REDUNDANT
+>
