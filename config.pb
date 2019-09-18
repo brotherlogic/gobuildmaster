@@ -35,8 +35,8 @@ nintents <
     name: "keystore"
     go_path: "github.com/brotherlogic/keystore"
     requirements <
-      category: DISK
-      properties: "keystore"
+      category: SERVER
+      properties: "runner"
     >
   >
   redundancy: GLOBAL
