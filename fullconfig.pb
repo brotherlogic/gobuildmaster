@@ -72,31 +72,6 @@ nintents <
 >
 nintents <
   job <
-    name: "proxy"
-    go_path: "github.com/brotherlogic/proxy"
-    requirements <
-      category: EXTERNAL
-      properties: "external_ready"
-    >
-  >
-  count: 1
->
-nintents <
-  job <
-    name: "pullrequester"
-    go_path: "github.com/brotherlogic/pullrequester"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
-    name: "githubreceiver"
-    go_path: "github.com/brotherlogic/githubreceiver"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "recordgetter"
     go_path: "github.com/brotherlogic/recordgetter"
   >
@@ -244,13 +219,6 @@ nintents <
 >
 nintents <
   job <
-    name: "dropboxsync"
-    go_path: "github.com/brotherlogic/dropboxsync"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "wantslist"
     go_path: "github.com/brotherlogic/wantslist"
   >  
@@ -276,13 +244,6 @@ nintents <
     go_path: "github.com/brotherlogic/backup"
   >  
   redundancy: GLOBAL
->
-nintents <
-  job <
-    name: "frametracker"
-    go_path: "github.com/brotherlogic/frametracker"
-  >  
-  count: 1
 >
 nintents <
   job <

@@ -70,3 +70,42 @@ nintents <
   >
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "dropboxsync"
+    go_path: "github.com/brotherlogic/dropboxsync"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
+    name: "frametracker"
+    go_path: "github.com/brotherlogic/frametracker"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
+    name: "proxy"
+    go_path: "github.com/brotherlogic/proxy"
+    requirements <
+      category: EXTERNAL
+      properties: "external_ready"
+    >
+  >
+  count: 1
+>
+nintents <
+  job <
+    name: "githubreceiver"
+    go_path: "github.com/brotherlogic/githubreceiver"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
+    name: "pullrequester"
+    go_path: "github.com/brotherlogic/pullrequester"
+  >  
+  redundancy: REDUNDANT
+>
