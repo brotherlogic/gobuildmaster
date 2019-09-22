@@ -30,6 +30,10 @@ func (s *Server) buildWorld(ctx context.Context) error {
 		return err
 	}
 
+	if len(slaves.GetServices()) == 0 {
+		return fmt.Errorf("Unable to locate any slaves")
+	}
+
 	for _, server := range slaves.GetServices() {
 		err := s.updateWorld(ctx, server)
 		if err != nil {

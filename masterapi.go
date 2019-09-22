@@ -148,7 +148,7 @@ func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancel := utils.ManualContext("getSlaves", "gobuildmaster", time.Minute)
 	defer cancel()
 	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{})
 	if err != nil {
