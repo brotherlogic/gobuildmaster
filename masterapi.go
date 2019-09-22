@@ -53,7 +53,7 @@ type Server struct {
 
 func (s *Server) alertOnMissingJob(ctx context.Context) error {
 	for _, nin := range s.config.Nintents {
-		_, _, err := utils.Resolve(nin.Job.Name)
+		_, _, err := utils.Resolve(nin.Job.Name, "gobuildmaster-alertonjob")
 		if err != nil {
 			if _, ok := s.lastSeen[nin.Job.Name]; !ok {
 				s.lastSeen[nin.Job.Name] = time.Now()
@@ -467,7 +467,7 @@ func (s *Server) becomeMaster(ctx context.Context) error {
 	for true {
 		time.Sleep(time.Second * 5)
 		if !s.Registry.Master {
-			_, _, err := utils.Resolve("gobuildmaster")
+			_, _, err := utils.Resolve("gobuildmaster", "gobuildmaster-become")
 			if err != nil {
 				s.registerAttempts++
 				s.Registry.Master = true
