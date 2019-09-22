@@ -72,31 +72,6 @@ nintents <
 >
 nintents <
   job <
-    name: "proxy"
-    go_path: "github.com/brotherlogic/proxy"
-    requirements <
-      category: EXTERNAL
-      properties: "external_ready"
-    >
-  >
-  count: 1
->
-nintents <
-  job <
-    name: "pullrequester"
-    go_path: "github.com/brotherlogic/pullrequester"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
-    name: "githubreceiver"
-    go_path: "github.com/brotherlogic/githubreceiver"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "recordgetter"
     go_path: "github.com/brotherlogic/recordgetter"
   >
