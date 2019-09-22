@@ -70,3 +70,17 @@ nintents <
   >
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "dropboxsync"
+    go_path: "github.com/brotherlogic/dropboxsync"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
+    name: "frametracker"
+    go_path: "github.com/brotherlogic/frametracker"
+  >  
+  redundancy: REDUNDANT
+>

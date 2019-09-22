@@ -244,13 +244,6 @@ nintents <
 >
 nintents <
   job <
-    name: "dropboxsync"
-    go_path: "github.com/brotherlogic/dropboxsync"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "wantslist"
     go_path: "github.com/brotherlogic/wantslist"
   >  
@@ -276,13 +269,6 @@ nintents <
     go_path: "github.com/brotherlogic/backup"
   >  
   redundancy: GLOBAL
->
-nintents <
-  job <
-    name: "frametracker"
-    go_path: "github.com/brotherlogic/frametracker"
-  >  
-  count: 1
 >
 nintents <
   job <
