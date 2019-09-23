@@ -28,6 +28,17 @@ func TestBuildWorld(t *testing.T) {
 	}
 }
 
+func TestBuildEmptyWorld(t *testing.T) {
+	s := InitTestServer()
+	g := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
+	s.getter = g
+
+	err := s.buildWorld(context.Background())
+	if err == nil {
+		t.Errorf("Should have been empty")
+	}
+}
+
 func TestBuildWorldFailSlaves(t *testing.T) {
 	s := InitTestServer()
 	g := &testGetter{failGetSlaves: true, running: make(map[string][]*pbs.JobAssignment)}
