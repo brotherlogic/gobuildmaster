@@ -72,13 +72,6 @@ nintents <
 >
 nintents <
   job <
-    name: "recordgetter"
-    go_path: "github.com/brotherlogic/recordgetter"
-  >
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "executor"
     go_path: "github.com/brotherlogic/executor"
     breakout: true
