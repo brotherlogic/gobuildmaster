@@ -101,13 +101,6 @@ nintents <
 >
 nintents <
   job <
-    go_path: "github.com/brotherlogic/reminders"
-    name: "reminders"
-   >
-   redundancy: REDUNDANT
->
-nintents <
-  job <
     go_path: "github.com/brotherlogic/recordprocess"
     name: "recordprocess"
    >
