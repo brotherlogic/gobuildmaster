@@ -302,3 +302,10 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "recordadder"
+    go_path: "github.com/brotherlogic/recordadder"
+  >  
+  redundancy: REDUNDANT
+>
