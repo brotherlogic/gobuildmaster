@@ -58,7 +58,7 @@ func (s *Server) buildWorld(ctx context.Context) error {
 	for server, seen := range s.serverMap {
 		if time.Now().Sub(seen) > s.timeChange {
 			info, _ := s.State(ctx, &pb.Empty{})
-			infoString := ""
+			infoString := fmt.Sprintf("%v\n\n", slaves)
 			for _, str := range info.GetStates() {
 				infoString += fmt.Sprintf("%v = %v\n", str.Key, str)
 			}
