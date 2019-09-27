@@ -86,7 +86,7 @@ func (s *Server) addAccessPoint(ctx context.Context, ap string) {
 	switch ap {
 	case "70:3A:CB:17:CF:BB":
 		s.accessPoints["LR2"] = time.Now()
-	case "70:3A:CB:17:CC:D3":
+	case "70:3A:CB:17:CC:CF":
 		s.accessPoints["Bedroom"] = time.Now()
 	case "70:3A:CB:17:CE:E3":
 		s.accessPoints["LR"] = time.Now()
