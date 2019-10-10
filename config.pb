@@ -67,10 +67,6 @@ nintents <
   job <
     name: "recordcollection"
     go_path: "github.com/brotherlogic/recordcollection"
-    requirements <
-      category: SERVER
-      properties: "runner"
-    >
   >
   redundancy: REDUNDANT
 >
