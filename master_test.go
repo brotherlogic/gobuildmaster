@@ -275,7 +275,7 @@ func TestReqSelectFail(t *testing.T) {
 
 func TestAddAccessPoints(t *testing.T) {
 	s := InitTestServer()
-	s.accessPoints["blah"] = time.Now().Add(-time.Hour * 2)
+	s.accessPoints["blah"] = time.Now().Add(-time.Hour * 25)
 	for _, str := range []string{"70:3A:CB:17:CF:BB", "70:3A:CB:17:CC:D3", "70:3A:CB:17:CE:E3", "70:3A:CB:17:CF:BF", "blah", "70:3A:CB:17:CC:CF"} {
 		s.addAccessPoint(context.Background(), str)
 	}
