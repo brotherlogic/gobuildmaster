@@ -78,7 +78,7 @@ func (s *Server) addAccessPoint(ctx context.Context, ap string) {
 	defer s.accessPointsMutex.Unlock()
 
 	for key, val := range s.accessPoints {
-		if time.Now().Sub(val) > time.Hour {
+		if time.Now().Sub(val) > time.Hour*24 {
 			s.RaiseIssue(ctx, fmt.Sprintf("Access point Missing"), fmt.Sprintf("%v has been missing since %v", key, val), false)
 		}
 	}
