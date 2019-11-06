@@ -316,3 +316,11 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "versiontracker"
+    go_path: "github.com/brotherlogic/versiontracker"
+    partial_bootstrap: true
+  >
+  redundancy: REDUNDANT
+>
