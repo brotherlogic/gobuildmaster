@@ -321,6 +321,7 @@ nintents <
     name: "versiontracker"
     go_path: "github.com/brotherlogic/versiontracker"
     partial_bootstrap: true
+    breakout: true
   >
   redundancy: GLOBAL
 >
