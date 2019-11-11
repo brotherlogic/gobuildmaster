@@ -365,7 +365,7 @@ func (s *Server) SetMaster(ctx context.Context) error {
 	hasMaster := make(map[string]int)
 	s.lastTrack = "Building Mapping"
 	for _, entry := range fleet.GetServices() {
-		if !entry.GetIgnoresMaster() {
+		if !entry.GetIgnoresMaster() && entry.GetVersion() == pbd.RegistryEntry_V1 {
 			if _, ok := matcher[entry.GetName()]; !ok {
 				if entry.GetMaster() {
 					hasMaster[entry.GetName()]++
