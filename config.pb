@@ -2,7 +2,7 @@ nintents <
   job <
     name: "buildserver"
     go_path: "github.com/brotherlogic/buildserver"
-    bootstrap: true
+    partial_bootstrap: true
     requirements <
       category: DISK
       properties: "scratch"
@@ -18,7 +18,7 @@ nintents <
   job <
     go_path: "github.com/brotherlogic/filecopier"
     name: "filecopier"
-    bootstrap: true
+    partial_bootstrap: true
     breakout: true
   >
   redundancy: GLOBAL
