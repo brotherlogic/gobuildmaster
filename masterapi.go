@@ -54,7 +54,7 @@ type Server struct {
 func (s *Server) alertOnMissingJob(ctx context.Context) error {
 	for _, nin := range s.config.Nintents {
 		_, _, err := utils.Resolve(nin.Job.Name, "gobuildmaster-alertonjob")
-		if err != nil {
+		if err != nil && !nin.GetNoMaster() {
 			if _, ok := s.lastSeen[nin.Job.Name]; !ok {
 				s.lastSeen[nin.Job.Name] = time.Now()
 			}
