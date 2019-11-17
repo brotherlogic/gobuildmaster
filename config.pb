@@ -22,6 +22,7 @@ nintents <
     breakout: true
   >
   redundancy: GLOBAL
+  no_master: true
 >
 nintents <
   job <
@@ -324,4 +325,5 @@ nintents <
     breakout: true
   >
   redundancy: GLOBAL
+  no_master: true
 >

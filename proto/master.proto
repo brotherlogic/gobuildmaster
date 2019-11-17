@@ -25,6 +25,7 @@ message NIntent {
   gobuildslave.Job job = 1;
   int32 count = 2;
   Redundancy redundancy = 3;
+  bool no_master = 4;
 }
 
 message Empty {}
