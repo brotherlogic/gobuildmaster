@@ -531,7 +531,7 @@ func main() {
 	s.Register = s
 	s.PrepServer()
 	s.GoServer.Killme = false
-	err = s.RegisterServer("gobuildmaster", false)
+	err = s.RegisterServerV2("gobuildmaster", false)
 	if err != nil {
 		log.Fatalf("Unable to register: %v", err)
 	}
