@@ -539,7 +539,6 @@ func main() {
 	s.RegisterServingTask(s.becomeMaster, "become_master")
 
 	// Don't trace out master requests - they can take a while
-	s.RegisterRepeatingTaskNoTrace(s.SetMaster, "set_master", time.Minute)
 	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Minute*5)
 	s.RegisterRepeatingTask(s.registerJobs, "register_jobs", time.Minute)
 
