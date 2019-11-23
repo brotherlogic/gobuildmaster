@@ -513,7 +513,7 @@ func (s *Server) registerJobs(ctx context.Context) error {
 }
 
 func main() {
-	config, err := loadConfig("config.pb")
+	config, err := loadConfig()
 	if err != nil {
 		log.Fatalf("Fatal loading of config: %v", err)
 	}

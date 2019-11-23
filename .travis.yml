@@ -18,4 +18,4 @@ before_install:
 
 script:
 - fgt golint $(find . | grep .go$ | grep -v master.pb.go)
-- $HOME/gopath/bin/goveralls -service=travis-ci -ignore=masterapi.go -package github.com/brotherlogic/gobuildmaster
+- $HOME/gopath/bin/goveralls -service=travis-ci -ignore=config.go,masterapi.go -package github.com/brotherlogic/gobuildmaster

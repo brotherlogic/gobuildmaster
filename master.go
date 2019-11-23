@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"time"
 
@@ -158,11 +157,11 @@ func configDiff(cm, cs *pb.Config) *pb.Config {
 	return retConfig
 }
 
-func loadConfig(f string) (*pb.Config, error) {
+func loadConfig() (*pb.Config, error) {
 	toload := &pb.Config{}
-	bytes, _ := ioutil.ReadFile(f)
-	proto.UnmarshalText(string(bytes), toload)
-	return toload, nil
+	data, _ := Asset("config.pb")
+	err := proto.UnmarshalText(string(data), toload)
+	return toload, err
 }
 
 func runJobs(c *pb.Config) []*pbs.JobSpec {
