@@ -160,7 +160,7 @@ func configDiff(cm, cs *pb.Config) *pb.Config {
 func loadConfig() (*pb.Config, error) {
 	toload := &pb.Config{}
 	data, _ := Asset("config.pb")
-	err = proto.UnmarshalText(string(data), toload)
+	err := proto.UnmarshalText(string(data), toload)
 	return toload, err
 }
 
