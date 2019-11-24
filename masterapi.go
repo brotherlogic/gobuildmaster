@@ -141,21 +141,21 @@ func (s *Server) checkerThread(i *pb.NIntent) {
 func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	ret := &pbd.ServiceList{}
 
-	conn, err := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
+	conn, err := grpc.Dial("127.0.0.1:"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
 	if err != nil {
 		return ret, err
 	}
 	defer conn.Close()
 
-	registry := pbd.NewDiscoveryServiceClient(conn)
+	registry := pbd.NewDiscoveryServiceV2Client(conn)
 	ctx, cancel := utils.ManualContext("getSlaves", "gobuildmaster", time.Minute)
 	defer cancel()
-	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{})
+	r, err := registry.Get(ctx, &pbd.GetRequest{Job: "gobuildslave"})
 	if err != nil {
 		return ret, err
 	}
 
-	for _, s := range r.GetServices().Services {
+	for _, s := range r.GetServices() {
 		if s.GetName() == "gobuildslave" {
 			ret.Services = append(ret.Services, s)
 		}
