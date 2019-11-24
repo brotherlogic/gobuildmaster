@@ -299,6 +299,7 @@ func (s Server) GetState() []*pbg.State {
 	}
 	sort.Strings(aps)
 	return []*pbg.State{
+		&pbg.State{Key: "num_jobs", Value: int64(len(s.config.Nintents))},
 		&pbg.State{Key: "access_points", Text: fmt.Sprintf("%v", aps)},
 		&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
 		&pbg.State{Key: "last_job", Text: s.lastJob},
