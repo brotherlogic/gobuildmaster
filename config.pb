@@ -41,3 +41,14 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "versionserver"
+    go_path: "github.com/brotherlogic/versionserver"
+    requirements <
+      category: SERVER
+      properties: "runner"
+    >
+  >
+  count: 1
+>
