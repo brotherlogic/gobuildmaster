@@ -52,3 +52,14 @@ nintents <
   >
   count: 1
 >
+nintents <
+  job <
+    name: "keystore"
+    go_path: "github.com/brotherlogic/keystore"
+    requirements <
+      category: SERVER
+      properties: "runner"
+    >
+  >
+  redundancy: GLOBAL
+>
