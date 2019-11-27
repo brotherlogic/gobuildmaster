@@ -102,3 +102,14 @@ nintents <
    >
    redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "monitor"
+    go_path: "github.com/brotherlogic/monitor"
+    requirements <
+      category: DISK
+      properties: "scratch"
+    >
+  >
+  redundancy: REDUNDANT	
+>
