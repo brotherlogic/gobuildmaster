@@ -13,6 +13,8 @@ import (
 	"github.com/brotherlogic/goserver"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	pbd "github.com/brotherlogic/discovery/proto"
 	pbgh "github.com/brotherlogic/githubcard/proto"
@@ -534,6 +536,10 @@ func main() {
 
 	err = s.RegisterServerV2("gobuildmaster", false, false)
 	if err != nil {
+		if c := status.Convert(err); c.Code() == codes.FailedPrecondition {
+			// this is expected if disc is not ready
+			return
+		}
 		log.Fatalf("Unable to register: %v", err)
 	}
 	s.RegisterRepeatingTask(s.buildWorld, "build_world", time.Minute)
@@ -549,6 +555,7 @@ func main() {
 
 	err = s.Serve()
 	if err != nil {
+
 		log.Fatalf("Serve error: %v", err)
 	}
 }
