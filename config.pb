@@ -121,3 +121,10 @@ nintents <
   >  
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    name: "tracer"
+    go_path: "github.com/brotherlogic/tracer"
+  >
+  redundancy: REDUNDANT
+>
