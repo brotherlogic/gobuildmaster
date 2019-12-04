@@ -9,7 +9,7 @@ nintents <
     >
     requirements <
       category: SERVER
-      properties: "tasklist"
+      properties: "framethree"
     >
   >
   redundancy: REDUNDANT
