@@ -37,7 +37,7 @@ func (s *Server) buildWorld(ctx context.Context) error {
 	for _, server := range slaves.GetServices() {
 		err := s.updateWorld(ctx, server)
 		if err != nil {
-			return err
+			s.Log(fmt.Sprintf("Error getting world: %v", err))
 		}
 	}
 
