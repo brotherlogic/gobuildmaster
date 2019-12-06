@@ -128,3 +128,28 @@ nintents <
   >
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "printer"
+    go_path: "github.com/brotherlogic/printer"
+    requirements <
+      category: SERVER
+      properties: "printer"
+    >
+  >  
+  count: 1
+>
+nintents <
+  job <
+    name: "frametracker"
+    go_path: "github.com/brotherlogic/frametracker"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/beerserver"
+    name: "beerserver"
+  >
+ redundancy: REDUNDANT
+>
