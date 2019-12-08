@@ -7,10 +7,6 @@ nintents <
       category: DISK
       properties: "scratch"
     >
-    requirements <
-      category: SERVER
-      properties: "framethree"
-    >
   >
   redundancy: REDUNDANT
 >
