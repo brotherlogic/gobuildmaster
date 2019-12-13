@@ -113,31 +113,22 @@ func (g *prodGetter) getConfig(ctx context.Context, server *pbd.RegistryEntry) (
 	return r.Config.Requirements, err
 }
 
-func (s *Server) checkerThread(i *pb.NIntent) {
-	lastRun := int64(10)
-	for true {
-		time.Sleep(time.Minute)
-		ctx, cancel := utils.BuildContext("gobuildmaster", "gobuildmaster")
-		defer cancel()
-		if s.Registry.Master && lastRun < s.lastWorldRun {
-			if i.Redundancy == pb.Redundancy_GLOBAL {
-				s.runJob(ctx, i.GetJob())
-			}
-			s.worldMutex.Lock()
-			if i.Redundancy == pb.Redundancy_REDUNDANT {
-				if len(s.world[i.GetJob().GetName()]) < 3 {
-					s.runJob(ctx, i.GetJob())
-				}
-			}
-			if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
-				if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
-					s.runJob(ctx, i.GetJob())
-				}
-			}
-			s.worldMutex.Unlock()
-			lastRun = time.Now().Unix()
+func (s *Server) checkerThread(ctx context.Context, i *pb.NIntent) {
+	if i.Redundancy == pb.Redundancy_GLOBAL {
+		s.runJob(ctx, i.GetJob())
+	}
+	s.worldMutex.Lock()
+	if i.Redundancy == pb.Redundancy_REDUNDANT {
+		if len(s.world[i.GetJob().GetName()]) < 3 {
+			s.runJob(ctx, i.GetJob())
 		}
 	}
+	if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
+		if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
+			s.runJob(ctx, i.GetJob())
+		}
+	}
+	s.worldMutex.Unlock()
 }
 
 func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
@@ -515,6 +506,13 @@ func (s *Server) registerJobs(ctx context.Context) error {
 	return nil
 }
 
+func (s *Server) checkTasks(ctx context.Context) error {
+	for _, job := range s.config.Nintents {
+		s.checkerThread(ctx, job)
+	}
+	return nil
+}
+
 func main() {
 	config, err := loadConfig()
 	if err != nil {
@@ -548,10 +546,7 @@ func main() {
 	// Don't trace out master requests - they can take a while
 	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Minute*5)
 	s.RegisterRepeatingTask(s.registerJobs, "register_jobs", time.Minute)
-
-	for i := 0; i < len(s.config.GetNintents()); i++ {
-		go s.checkerThread(s.config.GetNintents()[i])
-	}
+	s.RegisterRepeatingTask(s.checkTasks, "check_tasks", time.Minute)
 
 	err = s.Serve()
 	if err != nil {
