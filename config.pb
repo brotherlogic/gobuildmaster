@@ -149,3 +149,14 @@ nintents <
   >
  redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "keystorebackup"
+    go_path: "github.com/brotherlogic/keystorebackup"
+    requirements <
+      category: DISK
+      properties: "raid1"
+    >
+  >  
+  count: 1
+>
