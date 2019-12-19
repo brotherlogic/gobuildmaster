@@ -63,7 +63,8 @@ func (s *Server) alertOnMissingJob(ctx context.Context) error {
 
 			if time.Now().Sub(s.lastSeen[nin.Job.Name]) > time.Hour*2 {
 				if nin.Job.Name == "githubcard" {
-					panic(fmt.Errorf("Unable to locate githubcard"))
+					fmt.Printf("Unable to locate githubcard\n")
+					log.Exit(1)
 				}
 				s.RaiseIssue(ctx, "Missing Job", fmt.Sprintf("%v is missing - last seen %v (%v)", nin.Job.Name, time.Now().Sub(s.lastSeen[nin.Job.Name]), err), false)
 			}
