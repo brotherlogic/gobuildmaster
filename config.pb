@@ -160,3 +160,10 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "recordcollection"
+    go_path: "github.com/brotherlogic/recordcollection"
+  >
+  redundancy: REDUNDANT
+>
