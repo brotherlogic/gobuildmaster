@@ -174,3 +174,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "recordgetter"
+    go_path: "github.com/brotherlogic/recordgetter"
+  >
+  redundancy: REDUNDANT
+>
