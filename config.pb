@@ -181,3 +181,17 @@ nintents <
   >
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordwants"
+    name: "recordwants"
+  >
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
+    name: "wantslist"
+    go_path: "github.com/brotherlogic/wantslist"
+  >  
+  redundancy: REDUNDANT
+>
