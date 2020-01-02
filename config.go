@@ -66,7 +66,7 @@ func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
 
-var _configPb = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xaa\x00\x04\x00\x00\xff\xff\x83\x16\xdc\x8c\x01\x00\x00\x00")
+var _configPb = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
 
 func configPbBytes() ([]byte, error) {
 	return bindataRead(
@@ -81,7 +81,7 @@ func configPb() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "config.pb", size: 1, mode: os.FileMode(436), modTime: time.Unix(1577942991, 0)}
+	info := bindataFileInfo{name: "config.pb", size: 0, mode: os.FileMode(436), modTime: time.Unix(1577962144, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
