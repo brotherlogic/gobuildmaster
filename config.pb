@@ -10,3 +10,23 @@ nintents <
   >
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/filecopier"
+    name: "filecopier"
+    partial_bootstrap: true
+    breakout: true
+  >
+  redundancy: GLOBAL
+  no_master: true
+>
+nintents <
+  job <
+    name: "versiontracker"
+    go_path: "github.com/brotherlogic/versiontracker"
+    partial_bootstrap: true
+    breakout: true
+  >
+  redundancy: GLOBAL
+  no_master: true
+>
