@@ -209,3 +209,31 @@ nintents <
    >
    redundancy: REDUNDANT
 >
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordprocess"
+    name: "recordprocess"
+   >
+     redundancy: REDUNDANT
+>
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordmover"
+    name: "recordmover"
+   >
+   redundancy: REDUNDANT	
+>
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordalerting"
+    name: "recordalerting"
+  >
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/recordprinter"
+    name: "recordprinter"
+  >
+  redundancy: REDUNDANT
+>
