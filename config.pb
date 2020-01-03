@@ -244,3 +244,14 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "cdprocessor"
+    go_path: "github.com/brotherlogic/cdprocessor"
+    requirements <
+      category: DISK
+      properties: "music"
+    >
+  >
+  redundancy: REDUNDANT
+>
