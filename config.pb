@@ -255,3 +255,10 @@ nintents <
   >
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "githubtasks"
+    go_path: "github.com/brotherlogic/githubtasks"
+  >  
+  redundancy: REDUNDANT
+>
