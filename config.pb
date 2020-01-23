@@ -269,3 +269,14 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "backup"
+    go_path: "github.com/brotherlogic/backup"
+    requirements <
+      category: DISK
+      properties: "raid1"
+    >
+  >  
+  count: 1
+>
