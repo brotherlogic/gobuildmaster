@@ -280,3 +280,14 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "store"
+    go_path: "github.com/brotherlogic/store"
+    requirements <
+      category: DISK
+      properties: "scratch"
+    >
+  >
+  redundancy: GLOBAL
+>
