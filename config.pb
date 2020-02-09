@@ -291,3 +291,14 @@ nintents <
   >
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    name: "login"
+    go_path: "github.com/brotherlogic/login"
+    requirements <
+      category: EXTERNAL
+      properties: "external_ready"
+    >
+  >
+  count: 1
+>
