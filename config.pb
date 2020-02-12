@@ -302,3 +302,10 @@ nintents <
   >
   count: 1
 >
+nintents <
+  job <
+    name: "secureproxy"
+    go_path: "github.com/brotherlogic/secureproxy"
+  >  
+  redundancy: REDUNDANT
+>
