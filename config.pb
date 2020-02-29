@@ -306,6 +306,10 @@ nintents <
   job <
     name: "secureproxy"
     go_path: "github.com/brotherlogic/secureproxy"
+    requirements <
+      category: EXTERNAL
+      properties: "external_ready"
+    >
   >  
   redundancy: REDUNDANT
 >
