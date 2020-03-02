@@ -1,4 +1,4 @@
-import os
+macimport os
 import subprocess
 
 name = "gobuildmaster"
