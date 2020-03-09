@@ -111,6 +111,17 @@ nintents <
 >
 nintents <
   job <
+    name: "logging"
+    go_path: "github.com/brotherlogic/logging"
+    requirements <
+      category: DISK
+      properties: "scratch"
+    >
+  >
+  redundancy: REDUNDANT	
+>
+nintents <
+  job <
     name: "executor"
     go_path: "github.com/brotherlogic/executor"
     breakout: true
