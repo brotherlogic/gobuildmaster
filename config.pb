@@ -320,3 +320,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "dirsync"
+    go_path: "github.com/brotherlogic/dirsync"
+  >
+  redundancy: GLOBAL
+>
