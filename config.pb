@@ -1,5 +1,13 @@
 nintents <
   job <
+    name: "discovery"
+    go_path: "github.com/brotherlogic/discovery"
+    breakout: true
+  >  
+  redundancy: GLOBAL
+>
+nintents <
+  job <
     name: "buildserver"
     go_path: "github.com/brotherlogic/buildserver"
     partial_bootstrap: true
