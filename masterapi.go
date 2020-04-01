@@ -67,7 +67,11 @@ func (s *Server) alertOnMissingJob(ctx context.Context) error {
 					fmt.Printf("Unable to locate githubcard\n")
 					os.Exit(1)
 				}
-				s.RaiseIssue(ctx, "Missing Job", fmt.Sprintf("%v is missing - last seen %v (%v)", nin.Job.Name, time.Now().Sub(s.lastSeen[nin.Job.Name]), err), false)
+
+				// Discovery does not show up in discovery
+				if nin.Job.Name != "discovery" {
+					s.RaiseIssue(ctx, "Missing Job", fmt.Sprintf("%v is missing - last seen %v (%v)", nin.Job.Name, time.Now().Sub(s.lastSeen[nin.Job.Name]), err), false)
+				}
 			}
 		} else {
 			s.lastSeen[nin.Job.Name] = time.Now()
