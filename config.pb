@@ -326,6 +326,13 @@ nintents <
 >
 nintents <
   job <
+    name: "euler"
+    go_path: "github.com/brotherlogic/euler"
+  >
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "secureproxy"
     go_path: "github.com/brotherlogic/secureproxy"
     requirements <
