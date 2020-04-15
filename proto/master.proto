@@ -4,6 +4,8 @@ package gobuildmaster;
 
 import "github.com/brotherlogic/gobuildslave/proto/slave.proto";
 
+option go_package = ".;gobuildmaster";
+
 message Config {
   repeated Intent intents = 1;
   repeated NIntent nintents = 2;
