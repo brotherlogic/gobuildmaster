@@ -354,5 +354,5 @@ nintents <
     name: "beertracker"
     go_path: "github.com/brotherlogic/beertracker"
   >
-  redundancy: REDUNDANT
+  redundancy: GLOBAL
 >
