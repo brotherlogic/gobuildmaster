@@ -349,3 +349,10 @@ nintents <
   >
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    name: "beertracker"
+    go_path: "github.com/brotherlogic/beertracker"
+  >
+  redundancy: REDUNDANT
+>
