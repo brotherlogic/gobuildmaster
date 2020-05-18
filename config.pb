@@ -356,3 +356,10 @@ nintents <
   >
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    name: "basicjob"
+    go_path: "github.com/brotherlogic/basicjob"
+  >
+  redundancy: REDUNDANT
+>
