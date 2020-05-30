@@ -119,6 +119,18 @@ nintents <
 >
 nintents <
   job <
+    name: "datastore"
+    go_path: "github.com/brotherlogic/datastore"
+    requirements <
+      category: DISK
+      properties: "datastore"
+    >
+  >
+  redundancy: GLOBAL	
+>
+
+nintents <
+  job <
     name: "logging"
     go_path: "github.com/brotherlogic/logging"
     requirements <
