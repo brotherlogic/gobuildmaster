@@ -242,6 +242,7 @@ func (s *Server) runJob(ctx context.Context, job *pbs.Job) {
 			defer conn.Close()
 
 			slave := pbs.NewBuildSlaveClient(conn)
+			s.Log(fmt.Sprintf("Attempting to run %v on %v", job, server))
 			slave.RunJob(ctx, &pbs.RunRequest{Job: job})
 		}
 	}
