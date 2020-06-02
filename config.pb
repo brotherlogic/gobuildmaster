@@ -382,3 +382,10 @@ nintents <
   >
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "housefinder"
+    go_path: "github.com/brotherlogic/housefinder"
+  >
+  redundancy: REDUNDANT
+>
