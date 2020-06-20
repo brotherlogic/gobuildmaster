@@ -70,7 +70,7 @@ func (s *Server) alertOnMissingJob(ctx context.Context) error {
 
 				// Discovery does not show up in discovery
 				if nin.Job.Name != "discovery" {
-					s.RaiseIssue(ctx, "Missing Job", fmt.Sprintf("%v is missing - last seen %v (%v)", nin.Job.Name, time.Now().Sub(s.lastSeen[nin.Job.Name]), err), false)
+					s.RaiseIssue("Missing Job", fmt.Sprintf("%v is missing - last seen %v (%v)", nin.Job.Name, time.Now().Sub(s.lastSeen[nin.Job.Name]), err))
 				}
 			}
 		} else {
@@ -95,7 +95,7 @@ func (g *prodGetter) getJobs(ctx context.Context, server *pbd.RegistryEntry) ([]
 	slave := pbs.NewBuildSlaveClient(conn)
 
 	// Set a tighter rpc deadline for listing jobs.
-	ctx, cancel := utils.ManualContext("getJobs", "gobuildmaster", time.Minute)
+	ctx, cancel := utils.ManualContext("getJobs", "gobuildmaster", time.Minute, true)
 	defer cancel()
 	r, err := slave.ListJobs(ctx, &pbs.ListRequest{})
 	if err != nil {
@@ -147,7 +147,7 @@ func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceV2Client(conn)
-	ctx, cancel := utils.ManualContext("getSlaves", "gobuildmaster", time.Minute)
+	ctx, cancel := utils.ManualContext("getSlaves", "gobuildmaster", time.Minute, true)
 	defer cancel()
 	r, err := registry.Get(ctx, &pbd.GetRequest{Job: "gobuildslave"})
 	if err != nil {
@@ -225,7 +225,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 	}
 	defer conn.Close()
 
-	ctx, cancel := utils.ManualContext("mastermaster", "mastermaster", time.Minute*5)
+	ctx, cancel := utils.ManualContext("mastermaster", "mastermaster", time.Minute*5, true)
 	defer cancel()
 
 	server := pbg.NewGoserverServiceClient(conn)
@@ -495,10 +495,10 @@ func (s *Server) raiseIssue(ctx context.Context) error {
 	return nil
 }
 
-func (s *Server) registerJobs(ctx context.Context) error {
+func (s *Server) registerJobs(ctx context.Context) (time.Time, error) {
 	conn, err := s.DialMaster("githubcard")
 	if err != nil {
-		return nil
+		return time.Now().Add(time.Hour), nil
 	}
 	defer conn.Close()
 
@@ -506,18 +506,18 @@ func (s *Server) registerJobs(ctx context.Context) error {
 	for _, job := range s.config.Nintents {
 		_, err := client.RegisterJob(ctx, &pbgh.RegisterRequest{Job: job.GetJob().GetName()})
 		if err != nil {
-			return err
+			return time.Now().Add(time.Hour), err
 		}
 	}
 
-	return nil
+	return time.Now().Add(time.Hour), nil
 }
 
-func (s *Server) checkTasks(ctx context.Context) error {
+func (s *Server) checkTasks(ctx context.Context) (time.Time, error) {
 	for _, job := range s.config.Nintents {
 		s.checkerThread(ctx, job)
 	}
-	return nil
+	return time.Now().Add(time.Minute), nil
 }
 
 func main() {
@@ -539,7 +539,7 @@ func main() {
 	s.Register = s
 	s.PrepServer()
 
-	err = s.RegisterServerV2("gobuildmaster", false, false)
+	err = s.RegisterServerV2("gobuildmaster", false, true)
 	if err != nil {
 		if c := status.Convert(err); c.Code() == codes.FailedPrecondition {
 			// this is expected if disc is not ready
@@ -547,13 +547,14 @@ func main() {
 		}
 		log.Fatalf("Unable to register: %v", err)
 	}
-	s.RegisterRepeatingTask(s.buildWorld, "build_world", time.Minute)
+
+	s.RegisterRepeatingTaskNonMaster(s.buildWorld, "build_world", time.Minute*5)
 	s.RegisterServingTask(s.becomeMaster, "become_master")
 
 	// Don't trace out master requests - they can take a while
-	s.RegisterRepeatingTask(s.alertOnMissingJob, "alert_on_missing_job", time.Minute*5)
-	s.RegisterRepeatingTask(s.registerJobs, "register_jobs", time.Minute)
-	s.RegisterRepeatingTask(s.checkTasks, "check_tasks", time.Minute)
+	s.RegisterRepeatingTaskNonMaster(s.alertOnMissingJob, "alert_on_missing_job", time.Minute*5)
+	s.RegisterLockingTask(s.registerJobs, "register_jobs")
+	s.RegisterLockingTask(s.checkTasks, "check_tasks")
 
 	err = s.Serve()
 	if err != nil {
