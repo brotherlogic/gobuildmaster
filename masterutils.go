@@ -62,7 +62,7 @@ func (s *Server) buildWorld(ctx context.Context) error {
 			for _, str := range info.GetStates() {
 				infoString += fmt.Sprintf("%v = %v\n", str.Key, str)
 			}
-			s.RaiseIssue(ctx, "Missing Server", fmt.Sprintf("%v is missing duration: %v.\n%v", server, time.Now().Sub(seen), infoString), false)
+			s.RaiseIssue("Missing Server", fmt.Sprintf("%v is missing duration: %v.\n%v", server, time.Now().Sub(seen), infoString))
 		}
 	}
 
@@ -75,7 +75,7 @@ func (s *Server) buildWorld(ctx context.Context) error {
 		}
 
 		if count > 0 && int32(len(versions))-count > 1 {
-			s.RaiseIssue(ctx, "Too many jobs", fmt.Sprintf("%v has too many versions running", job), false)
+			s.RaiseIssue("Too many jobs", fmt.Sprintf("%v has too many versions running", job))
 		}
 	}
 
