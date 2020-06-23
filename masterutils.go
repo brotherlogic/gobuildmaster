@@ -34,7 +34,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 		}
 	}
 	if ourSlave == nil {
-		return fmt.Errorf("Cannot locate local gbs")
+		return fmt.Errorf("Cannot locate local gbs from %v", slaves)
 	}
 
 	if len(slaves.GetServices()) == 0 {
