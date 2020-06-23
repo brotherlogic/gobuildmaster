@@ -18,11 +18,13 @@ func InitTestServer() *Server {
 	tg.running["server1"] = []*pbs.JobAssignment{}
 	s.Registry = &pbd.RegistryEntry{Identifier: "server1"}
 	s.getter = tg
+	s.testing = true
 	return s
 }
 
 func TestAdjust(t *testing.T) {
 	s := InitTestServer()
+	s.config.Nintents = append(s.config.Nintents, &pb.NIntent{Job: &pbs.Job{Name: "blah"}, Redundancy: pb.Redundancy_GLOBAL})
 	err := s.adjustWorld(context.Background())
 	if err != nil {
 		t.Errorf("Bad adjust on empty config: %v", err)

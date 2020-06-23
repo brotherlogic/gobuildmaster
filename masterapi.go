@@ -52,6 +52,7 @@ type Server struct {
 	lastTrack         string
 	accessPoints      map[string]time.Time
 	accessPointsMutex *sync.Mutex
+	testing           bool
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) error {
@@ -217,6 +218,9 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 }
 
 func (s *Server) runJob(ctx context.Context, job *pbs.Job, localSlave *pbd.RegistryEntry) error {
+	if s.testing {
+		return nil
+	}
 	conn, err := s.FDial(fmt.Sprintf("%v:%v", localSlave.GetIdentifier(), localSlave.GetPort()))
 	if err == nil {
 		defer conn.Close()
@@ -438,6 +442,7 @@ func Init(config *pb.Config) *Server {
 		"",
 		make(map[string]time.Time),
 		&sync.Mutex{},
+		false,
 	}
 	s.getter = &prodGetter{s.DoDial}
 
