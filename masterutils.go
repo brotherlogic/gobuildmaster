@@ -2,81 +2,101 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	pbd "github.com/brotherlogic/discovery/proto"
-	pb "github.com/brotherlogic/goserver/proto"
+	pb "github.com/brotherlogic/gobuildmaster/proto"
 	"golang.org/x/net/context"
 )
 
-func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) error {
-	s.serverMap[server.Identifier] = time.Now()
-
+func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]string, error) {
 	jobs, err := s.getter.getJobs(ctx, server)
 	if err != nil {
-		return err
+		return []string{}, err
 	}
 
-	s.slaveMap[server.GetIdentifier()] = []string{}
+	slaveMap := []string{}
 	for _, job := range jobs {
-		s.slaveMap[server.GetIdentifier()] = append(s.slaveMap[server.GetIdentifier()], job.GetJob().GetName())
+		slaveMap = append(slaveMap, job.GetJob().GetName())
 	}
-	return nil
+	return slaveMap, nil
 }
 
-func (s *Server) buildWorld(ctx context.Context) error {
+func (s *Server) adjustWorld(ctx context.Context) error {
 	slaves, err := s.getter.getSlaves()
 	if err != nil {
 		return err
+	}
+
+	var ourSlave *pbd.RegistryEntry
+	for _, slave := range slaves.GetServices() {
+		if slave.Identifier == s.Registry.Identifier {
+			ourSlave = slave
+		}
+	}
+	if ourSlave == nil {
+		return fmt.Errorf("Cannot locate local gbs from %v", slaves)
 	}
 
 	if len(slaves.GetServices()) == 0 {
 		return fmt.Errorf("Unable to locate any slaves")
 	}
 
+	jobCount := make(map[string]int)
 	for _, server := range slaves.GetServices() {
-		err := s.updateWorld(ctx, server)
+		slaves, err := s.updateWorld(ctx, server)
 		if err != nil {
-			s.Log(fmt.Sprintf("Error getting world: %v", err))
+			return err
+		}
+
+		for _, j := range slaves {
+			jobCount[j]++
 		}
 	}
 
-	// Rebuild world
-	s.worldMutex.Lock()
-	s.world = make(map[string]map[string]struct{})
-	for server, jobs := range s.slaveMap {
-		for _, job := range jobs {
-			if _, ok := s.world[job]; !ok {
-				s.world[job] = make(map[string]struct{})
-			}
-			s.world[job][server] = struct{}{}
-		}
-	}
-	s.worldMutex.Unlock()
-	s.lastWorldRun = time.Now().Unix()
-
-	for server, seen := range s.serverMap {
-		if time.Now().Sub(seen) > s.timeChange {
-			info, _ := s.State(ctx, &pb.Empty{})
-			infoString := fmt.Sprintf("%v\n\n", slaves)
-			for _, str := range info.GetStates() {
-				infoString += fmt.Sprintf("%v = %v\n", str.Key, str)
-			}
-			s.RaiseIssue("Missing Server", fmt.Sprintf("%v is missing duration: %v.\n%v", server, time.Now().Sub(seen), infoString))
-		}
+	localConfig, err := s.getter.getConfig(ctx, ourSlave)
+	if err != nil {
+		return err
 	}
 
-	for job, versions := range s.world {
-		count := int32(0)
-		for _, cjob := range s.config.Nintents {
-			if cjob.Job.Name == job {
-				count = cjob.Count
+	for _, intent := range s.config.Nintents {
+		allmatch := true
+		for _, req := range intent.GetJob().GetRequirements() {
+			localmatch := false
+			for _, r := range localConfig {
+				if r.Category == req.Category && r.Properties == req.Properties {
+					localmatch = true
+				}
+			}
+
+			if !localmatch {
+				allmatch = false
 			}
 		}
 
-		if count > 0 && int32(len(versions))-count > 1 {
-			s.RaiseIssue("Too many jobs", fmt.Sprintf("%v has too many versions running", job))
+		if allmatch {
+			err := s.check(ctx, intent, jobCount, ourSlave)
+			if err != nil {
+				return err
+			}
 		}
+	}
+
+	return nil
+}
+
+func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int, ls *pbd.RegistryEntry) error {
+	if i.Redundancy == pb.Redundancy_GLOBAL {
+		return s.runJob(ctx, i.GetJob(), ls)
+	}
+
+	if i.Redundancy == pb.Redundancy_REDUNDANT {
+		if counts[i.GetJob().GetName()] < 3 {
+			return s.runJob(ctx, i.GetJob(), ls)
+		}
+	}
+
+	if counts[i.GetJob().GetName()] < int(i.Count) {
+		return s.runJob(ctx, i.GetJob(), ls)
 	}
 
 	return nil
