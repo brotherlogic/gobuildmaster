@@ -57,7 +57,7 @@ func TestFleetCount(t *testing.T) {
 }
 
 func TestLoadMainConfig(t *testing.T) {
-	c, err := loadConfig()
+	_, err := loadConfig()
 	if err != nil {
 		t.Errorf("Config load failed: %v", err)
 	}
