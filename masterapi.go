@@ -119,24 +119,6 @@ func (g *prodGetter) getConfig(ctx context.Context, server *pbd.RegistryEntry) (
 	return r.Config.Requirements, err
 }
 
-func (s *Server) checkerThread(ctx context.Context, i *pb.NIntent) {
-	if i.Redundancy == pb.Redundancy_GLOBAL {
-		s.runJob(ctx, i.GetJob())
-	}
-	s.worldMutex.Lock()
-	if i.Redundancy == pb.Redundancy_REDUNDANT {
-		if len(s.world[i.GetJob().GetName()]) < 3 {
-			s.runJob(ctx, i.GetJob())
-		}
-	}
-	if len(s.world[i.GetJob().GetName()]) != int(i.Count) {
-		if len(s.world[i.GetJob().GetName()]) < int(i.Count) {
-			s.runJob(ctx, i.GetJob())
-		}
-	}
-	s.worldMutex.Unlock()
-}
-
 func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	ret := &pbd.ServiceList{}
 
@@ -234,18 +216,16 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 	return err == nil, err
 }
 
-func (s *Server) runJob(ctx context.Context, job *pbs.Job) {
-	server := s.selectServer(ctx, job, s.getter)
-	if server != "" {
-		conn, err := s.DialServer("gobuildslave", server)
-		if err == nil {
-			defer conn.Close()
+func (s *Server) runJob(ctx context.Context, job *pbs.Job, localSlave *pbd.RegistryEntry) error {
+	conn, err := s.FDial(fmt.Sprintf("%v:%v", localSlave.GetIdentifier(), localSlave.GetPort()))
+	if err == nil {
+		defer conn.Close()
 
-			slave := pbs.NewBuildSlaveClient(conn)
-			s.Log(fmt.Sprintf("Attempting to run %v on %v", job, server))
-			slave.RunJob(ctx, &pbs.RunRequest{Job: job})
-		}
+		slave := pbs.NewBuildSlaveClient(conn)
+		s.Log(fmt.Sprintf("Attempting to run %v", job))
+		_, err = slave.RunJob(ctx, &pbs.RunRequest{Job: job})
 	}
+	return err
 }
 
 func (t *mainChecker) discover() *pbd.ServiceList {
@@ -513,13 +493,6 @@ func (s *Server) registerJobs(ctx context.Context) (time.Time, error) {
 	return time.Now().Add(time.Hour), nil
 }
 
-func (s *Server) checkTasks(ctx context.Context) (time.Time, error) {
-	for _, job := range s.config.Nintents {
-		s.checkerThread(ctx, job)
-	}
-	return time.Now().Add(time.Minute), nil
-}
-
 func main() {
 	config, err := loadConfig()
 	if err != nil {
@@ -548,6 +521,12 @@ func main() {
 		log.Fatalf("Unable to register: %v", err)
 	}
 
+	ctx, cancel := utils.ManualContext("gobuildmaster", "gobuildmaster", time.Minute, true)
+	err = s.adjustWorld(ctx)
+	if err != nil {
+		log.Fatalf("Cannot run jobs: %v", err)
+	}
+	cancel()
 	err = s.Serve()
 	if err != nil {
 		log.Fatalf("Serve error: %v", err)
