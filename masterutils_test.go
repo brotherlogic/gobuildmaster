@@ -22,6 +22,18 @@ func InitTestServer() *Server {
 	return s
 }
 
+func TestFailGetJobs(t *testing.T) {
+	s := InitTestServer()
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment),
+		failGetJobs: true}
+	s.getter = tg
+
+	_, err := s.updateWorld(context.Background(), &pbd.RegistryEntry{})
+	if err == nil {
+		t.Errorf("Did not fail")
+	}
+}
+
 func TestAdjust(t *testing.T) {
 	s := InitTestServer()
 	s.config.Nintents = append(s.config.Nintents, &pb.NIntent{Job: &pbs.Job{Name: "blah"}, Redundancy: pb.Redundancy_GLOBAL})
