@@ -61,18 +61,6 @@ func TestLoadMainConfig(t *testing.T) {
 	if err != nil {
 		t.Errorf("Config load failed: %v", err)
 	}
-
-	found := false
-	for _, i := range c.Nintents {
-		if i.Job.Name == "buildserver" {
-			found = true
-		}
-	}
-	if !found {
-		t.Errorf("Cannot find buildserver: %v", c.Nintents)
-	}
-
-	log.Printf("CONFIG = %v", c)
 }
 
 func TestRunJob(t *testing.T) {
