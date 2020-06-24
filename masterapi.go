@@ -83,11 +83,11 @@ func (s *Server) alertOnMissingJob(ctx context.Context) error {
 }
 
 type prodGetter struct {
-	dial func(entry *pbd.RegistryEntry) (*grpc.ClientConn, error)
+	dial func(entry string) (*grpc.ClientConn, error)
 }
 
 func (g *prodGetter) getJobs(ctx context.Context, server *pbd.RegistryEntry) ([]*pbs.JobAssignment, error) {
-	conn, err := g.dial(server)
+	conn, err := g.dial(fmt.Sprintf("%v:%v", server.GetIdentifier(), server.GetPort()))
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +106,7 @@ func (g *prodGetter) getJobs(ctx context.Context, server *pbd.RegistryEntry) ([]
 }
 
 func (g *prodGetter) getConfig(ctx context.Context, server *pbd.RegistryEntry) ([]*pbs.Requirement, error) {
-	conn, err := g.dial(server)
+	conn, err := g.dial(fmt.Sprintf("%v:%v", server.GetIdentifier(), server.GetPort()))
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (g *prodGetter) getConfig(ctx context.Context, server *pbd.RegistryEntry) (
 func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	ret := &pbd.ServiceList{}
 
-	conn, err := grpc.Dial("127.0.0.1:"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
+	conn, err := g.dial("127.0.0.1:" + strconv.Itoa(utils.RegistryPort))
 	if err != nil {
 		return ret, err
 	}
@@ -444,7 +444,7 @@ func Init(config *pb.Config) *Server {
 		&sync.Mutex{},
 		false,
 	}
-	s.getter = &prodGetter{s.DoDial}
+	s.getter = &prodGetter{s.FDial}
 
 	return s
 }
