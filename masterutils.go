@@ -18,6 +18,7 @@ func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]
 	for _, job := range jobs {
 		slaveMap = append(slaveMap, job.GetJob().GetName())
 	}
+
 	return slaveMap, nil
 }
 

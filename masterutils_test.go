@@ -36,6 +36,10 @@ func TestFailGetJobs(t *testing.T) {
 
 func TestAdjust(t *testing.T) {
 	s := InitTestServer()
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
+	tg.running["server1"] = []*pbs.JobAssignment{&pbs.JobAssignment{Job: &pbs.Job{Name: "test"}}}
+	s.getter = tg
+
 	s.config.Nintents = append(s.config.Nintents, &pb.NIntent{Job: &pbs.Job{Name: "blah"}, Redundancy: pb.Redundancy_GLOBAL})
 	err := s.adjustWorld(context.Background())
 	if err != nil {
