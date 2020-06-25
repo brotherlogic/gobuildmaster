@@ -20,3 +20,13 @@ nintents <
   redundancy: GLOBAL
   no_master: true
 >
+nintents <
+  job <
+    name: "versiontracker"
+    go_path: "github.com/brotherlogic/versiontracker"
+    partial_bootstrap: true
+    breakout: true
+  >
+  redundancy: GLOBAL
+  no_master: true
+>

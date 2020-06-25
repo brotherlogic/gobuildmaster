@@ -34,6 +34,18 @@ func TestFailGetJobs(t *testing.T) {
 	}
 }
 
+func TestFailGetSlaves(t *testing.T) {
+	s := InitTestServer()
+	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment),
+		failGetSlaves: true}
+	s.getter = tg
+
+	err := s.adjustWorld(context.Background())
+	if err == nil {
+		t.Errorf("Did not fail")
+	}
+}
+
 func TestAdjust(t *testing.T) {
 	s := InitTestServer()
 	tg := &testGetter{running: make(map[string][]*pbs.JobAssignment)}
