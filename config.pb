@@ -52,3 +52,10 @@ nintents <
   >
   redundancy: GLOBAL	
 >
+nintents <
+  job <
+    go_path: "github.com/brotherlogic/githubcard"
+    name: "githubcard"
+   >
+   redundancy: REDUNDANT
+>
