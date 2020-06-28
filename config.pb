@@ -41,3 +41,14 @@ nintents <
   >
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    name: "datastore"
+    go_path: "github.com/brotherlogic/datastore"
+    requirements <
+      category: DISK
+      properties: "keystore"
+    >
+  >
+  redundancy: GLOBAL	
+>
