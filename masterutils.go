@@ -43,6 +43,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	}
 
 	jobCount := make(map[string]int)
+	ourjobs := make(map[string]bool)
 	for _, server := range slaves.GetServices() {
 		slaves, err := s.updateWorld(ctx, server)
 		if err != nil {
@@ -51,6 +52,9 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 
 		for _, j := range slaves {
 			jobCount[j]++
+			if server.Identifier == s.Registry.Identifier {
+				ourjobs[j] = true
+			}
 		}
 	}
 
@@ -60,24 +64,26 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	}
 
 	for _, intent := range s.config.Nintents {
-		allmatch := true
-		for _, req := range intent.GetJob().GetRequirements() {
-			localmatch := false
-			for _, r := range localConfig {
-				if r.Category == req.Category && r.Properties == req.Properties {
-					localmatch = true
+		if !ourjobs[intent.GetJob().GetName()] {
+			allmatch := true
+			for _, req := range intent.GetJob().GetRequirements() {
+				localmatch := false
+				for _, r := range localConfig {
+					if r.Category == req.Category && r.Properties == req.Properties {
+						localmatch = true
+					}
+				}
+
+				if !localmatch {
+					allmatch = false
 				}
 			}
 
-			if !localmatch {
-				allmatch = false
-			}
-		}
-
-		if allmatch {
-			err := s.check(ctx, intent, jobCount, ourSlave)
-			if err != nil {
-				return err
+			if allmatch {
+				err := s.check(ctx, intent, jobCount, ourSlave)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
