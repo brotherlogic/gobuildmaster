@@ -66,3 +66,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "frametracker"
+    go_path: "github.com/brotherlogic/frametracker"
+  >  
+  redundancy: REDUNDANT
+>
