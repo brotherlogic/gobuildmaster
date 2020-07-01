@@ -73,3 +73,14 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "proxy"
+    go_path: "github.com/brotherlogic/proxy"
+    requirements <
+      category: EXTERNAL
+      properties: "external_ready"
+    >
+  >
+  count: 1
+>
