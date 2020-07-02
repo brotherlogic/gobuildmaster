@@ -84,3 +84,14 @@ nintents <
   >
   count: 1
 >
+nintents <
+  job <
+    name: "logging"
+    go_path: "github.com/brotherlogic/logging"
+    requirements <
+      category: DISK
+      properties: "scratch"
+    >
+  >
+  redundancy: REDUNDANT	
+>
