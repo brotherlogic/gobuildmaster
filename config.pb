@@ -122,6 +122,7 @@ nintents <
   job <
     name: "printer"
     go_path: "github.com/brotherlogic/printer"
+    partial_bootstrap: true
     requirements <
       category: SERVER
       properties: "printer"
