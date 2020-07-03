@@ -95,3 +95,10 @@ nintents <
   >
   redundancy: REDUNDANT	
 >
+nintents <
+  job <
+    name: "beerserver"
+    go_path: "github.com/brotherlogic/beerserver"
+  >  
+  redundancy: REDUNDANT
+>
