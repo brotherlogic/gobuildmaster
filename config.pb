@@ -110,3 +110,11 @@ nintents <
   >  
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    name: "provisioner"
+    go_path: "github.com/brotherlogic/provisioner"
+    breakout: true
+  >  
+  redundancy: GLOBAL
+>
