@@ -118,3 +118,14 @@ nintents <
   >  
   redundancy: GLOBAL
 >
+nintents <
+  job <
+    name: "printer"
+    go_path: "github.com/brotherlogic/printer"
+    requirements <
+      category: SERVER
+      properties: "printer"
+    >
+  >  
+  count: 1
+>
