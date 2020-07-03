@@ -102,3 +102,11 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "executor"
+    go_path: "github.com/brotherlogic/executor"
+    breakout: true
+  >  
+  redundancy: GLOBAL
+>
