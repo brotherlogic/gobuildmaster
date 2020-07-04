@@ -115,6 +115,7 @@ nintents <
     name: "provisioner"
     go_path: "github.com/brotherlogic/provisioner"
     breakout: true
+    sudo: true
   >  
   redundancy: GLOBAL
 >
