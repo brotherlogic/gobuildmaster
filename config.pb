@@ -131,3 +131,10 @@ nintents <
   >  
   count: 1
 >
+nintents <
+  job <
+    name: "beertracker"
+    go_path: "github.com/brotherlogic/beertracker"
+  >  
+  redundancy: GLOBAL
+>
