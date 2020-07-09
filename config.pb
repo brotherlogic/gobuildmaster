@@ -159,3 +159,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "reminders"
+    go_path: "github.com/brotherlogic/reminders"
+  >  
+  redundancy: REDUNDANT
+>
