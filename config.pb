@@ -173,3 +173,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "recordsorganiser"
+    go_path: "github.com/brotherlogic/recordsorganiser"
+  >  
+  redundancy: REDUNDANT
+>
