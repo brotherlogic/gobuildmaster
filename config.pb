@@ -180,3 +180,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "basicjob"
+    go_path: "github.com/brotherlogic/basicjob"
+  >  
+  redundancy: REDUNDANT
+>
