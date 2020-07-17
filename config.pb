@@ -187,3 +187,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "recordadder"
+    go_path: "github.com/brotherlogic/recordadder"
+  >  
+  redundancy: REDUNDANT
+>
