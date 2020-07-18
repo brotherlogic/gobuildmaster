@@ -47,7 +47,8 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	for _, server := range slaves.GetServices() {
 		slaves, err := s.updateWorld(ctx, server)
 		if err != nil {
-			return err
+			s.Log(fmt.Sprintf("Unable to reach %v -> %v", server, err))
+			continue
 		}
 
 		for _, j := range slaves {
