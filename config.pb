@@ -77,6 +77,7 @@ nintents <
   job <
     name: "proxy"
     go_path: "github.com/brotherlogic/proxy"
+    breakout: true
     requirements <
       category: EXTERNAL
       properties: "external_ready"
