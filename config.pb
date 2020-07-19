@@ -201,3 +201,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "recordalerting"
+    go_path: "github.com/brotherlogic/recordalerting"
+  >  
+  redundancy: REDUNDANT
+>
