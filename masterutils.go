@@ -6,6 +6,8 @@ import (
 	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]string, error) {
@@ -82,7 +84,8 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 
 			if allmatch {
 				err := s.check(ctx, intent, jobCount, ourSlave)
-				if err != nil {
+				code := status.Convert(err).Code()
+				if code != codes.OK && code != codes.FailedPrecondition {
 					return err
 				}
 			}
