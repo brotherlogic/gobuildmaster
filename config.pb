@@ -223,3 +223,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "recordprinter"
+    go_path: "github.com/brotherlogic/recordprinter"
+  >  
+  redundancy: REDUNDANT
+>
