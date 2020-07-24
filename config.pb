@@ -230,3 +230,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "recordprocess"
+    go_path: "github.com/brotherlogic/recordprocess"
+  >  
+  redundancy: REDUNDANT
+>
