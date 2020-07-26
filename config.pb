@@ -244,3 +244,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "recordstats"
+    go_path: "github.com/brotherlogic/recordstats"
+  >  
+  redundancy: REDUNDANT
+>
