@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
@@ -67,6 +68,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	}
 
 	for _, intent := range s.config.Nintents {
+		time.Sleep(time.Second * 2)
 		if !ourjobs[intent.GetJob().GetName()] {
 			allmatch := true
 			for _, req := range intent.GetJob().GetRequirements() {
@@ -84,10 +86,13 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 
 			if allmatch {
 				err := s.check(ctx, intent, jobCount, ourSlave)
+				s.Log(fmt.Sprintf("Running %v -> %v", intent.GetJob().GetName(), err))
 				code := status.Convert(err).Code()
 				if code != codes.OK && code != codes.FailedPrecondition {
 					return err
 				}
+			} else {
+				s.Log(fmt.Sprintf("Missing requirements for %v", intent.GetJob().GetName()))
 			}
 		}
 	}
