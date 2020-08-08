@@ -526,7 +526,7 @@ func main() {
 		log.Fatalf("Unable to register: %v", err)
 	}
 
-	ctx, cancel := utils.ManualContext("gobuildmaster", "gobuildmaster", time.Minute, true)
+	ctx, cancel := utils.ManualContext("gobuildmaster", "gobuildmaster", time.Minute*5, true)
 	err = s.adjustWorld(ctx)
 	if err != nil {
 		log.Fatalf("Cannot run jobs: %v", err)
