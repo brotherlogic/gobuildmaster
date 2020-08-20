@@ -47,7 +47,7 @@ nintents <
     go_path: "github.com/brotherlogic/datastore"
     requirements <
       category: DISK
-      properties: "keystore"
+      properties: "datastore"
     >
   >
   redundancy: GLOBAL	
