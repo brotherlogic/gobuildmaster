@@ -284,3 +284,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "digitalwantlits"
+    go_path: "github.com/brotherlogic/digitalwantlist"
+  >  
+  redundancy: REDUNDANT
+>
