@@ -34,9 +34,10 @@ nintents <
   job <
     name: "keystore"
     go_path: "github.com/brotherlogic/keystore"
+    breakout: true
     requirements <
       category: SERVER
-      properties: "runner"
+      properties: "stationone"
     >
   >
   redundancy: GLOBAL
