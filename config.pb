@@ -286,7 +286,7 @@ nintents <
 >
 nintents <
   job <
-    name: "digitalwantlits"
+    name: "digitalwantlist"
     go_path: "github.com/brotherlogic/digitalwantlist"
   >  
   redundancy: REDUNDANT
