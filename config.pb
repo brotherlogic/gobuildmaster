@@ -258,7 +258,7 @@ nintents <
     go_path: "github.com/brotherlogic/cdprocessor"
     requirements <
       category: DISK
-      properties: "music"
+      properties: "raid"
     >
   >
   redundancy: REDUNDANT
