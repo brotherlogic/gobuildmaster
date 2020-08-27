@@ -291,3 +291,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "recordscores"
+    go_path: "github.com/brotherlogic/recordscores"
+  >  
+  redundancy: REDUNDANT
+>
