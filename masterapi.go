@@ -480,22 +480,17 @@ func (s *Server) raiseIssue(ctx context.Context) error {
 	return nil
 }
 
-func (s *Server) registerJobs(ctx context.Context) (time.Time, error) {
-	conn, err := s.DialMaster("githubcard")
+func (s *Server) registerJob(ctx context.Context, int *pb.NIntent) error {
+	conn, err := s.FDialServer(ctx, "githubcard")
 	if err != nil {
-		return time.Now().Add(time.Hour), nil
+		return nil
 	}
 	defer conn.Close()
 
 	client := pbgh.NewGithubClient(conn)
-	for _, job := range s.config.Nintents {
-		_, err := client.RegisterJob(ctx, &pbgh.RegisterRequest{Job: job.GetJob().GetName()})
-		if err != nil {
-			return time.Now().Add(time.Hour), err
-		}
-	}
+	_, err = client.RegisterJob(ctx, &pbgh.RegisterRequest{Job: int.GetJob().GetName()})
 
-	return time.Now().Add(time.Hour), nil
+	return err
 }
 
 func main() {
