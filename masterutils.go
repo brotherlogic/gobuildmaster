@@ -101,6 +101,11 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 }
 
 func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int, ls *pbd.RegistryEntry) error {
+	err := s.registerJob(ctx, i)
+	if err != nil {
+		return err
+	}
+
 	if i.Redundancy == pb.Redundancy_GLOBAL {
 		return s.runJob(ctx, i.GetJob(), ls)
 	}
