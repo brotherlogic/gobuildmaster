@@ -275,6 +275,7 @@ nintents <
   job <
     name: "etckiller"
     go_path: "github.com/brotherlogic/etckiller"
+    breakout: true
   >  
   redundancy: GLOBAL
 >
