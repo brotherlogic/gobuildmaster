@@ -138,6 +138,7 @@ nintents <
   job <
     name: "beertracker"
     go_path: "github.com/brotherlogic/beertracker"
+    breakout: true
   >  
   redundancy: GLOBAL
 >
