@@ -301,3 +301,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "orgprinter"
+    go_path: "github.com/brotherlogic/orgprinter"
+  >  
+  redundancy: REDUNDANT
+>
