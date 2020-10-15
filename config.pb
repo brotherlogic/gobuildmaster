@@ -319,5 +319,5 @@ nintents <
     >
 
   >  
-  redundancy: REDUNDANT
+  redundancy: GLOBAL
 >
