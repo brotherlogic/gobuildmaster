@@ -312,6 +312,12 @@ nintents <
   job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
+    breakout: true
+    requirements <
+      category: SERVER
+      properties: "personal"
+    >
+
   >  
   redundancy: REDUNDANT
 >
