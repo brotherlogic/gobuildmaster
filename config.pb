@@ -308,3 +308,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "dashboard"
+    go_path: "github.com/brotherlogic/dashboard"
+  >  
+  redundancy: REDUNDANT
+>
