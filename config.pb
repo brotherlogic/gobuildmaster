@@ -325,6 +325,7 @@ nintents <
   job <
     name: "secureproxy"
     go_path: "github.com/brotherlogic/secureproxy"
+    breakout: true
     requirements <
       category: EXTERNAL
       properties: "external_ready"
