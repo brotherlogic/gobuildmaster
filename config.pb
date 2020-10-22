@@ -317,6 +317,13 @@ nintents <
 >
 nintents <
   job <
+    name: "temp"
+    go_path: "github.com/brotherlogic/temp"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
@@ -324,7 +331,6 @@ nintents <
       category: SERVER
       properties: "personal"
     >
-
   >  
   redundancy: GLOBAL
 >
