@@ -324,6 +324,13 @@ nintents <
 >
 nintents <
   job <
+    name: "keymapper"
+    go_path: "github.com/brotherlogic/keymapper"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
