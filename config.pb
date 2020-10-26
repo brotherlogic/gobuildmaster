@@ -139,8 +139,12 @@ nintents <
     name: "beertracker"
     go_path: "github.com/brotherlogic/beertracker"
     breakout: true
+    requirements <	
+      category: SERVER
+      properties: "zero2"
+    >
   >  
-  redundancy: GLOBAL
+  count : 1
 >
 nintents <
   job <
