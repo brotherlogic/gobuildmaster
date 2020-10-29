@@ -514,7 +514,7 @@ func main() {
 
 	err = s.RegisterServerV2("gobuildmaster", false, true)
 	if err != nil {
-		if c := status.Convert(err); c.Code() == codes.FailedPrecondition {
+		if c := status.Convert(err); c.Code() == codes.FailedPrecondition || c.Code() == codes.Unavailable {
 			// this is expected if disc is not ready
 			return
 		}
