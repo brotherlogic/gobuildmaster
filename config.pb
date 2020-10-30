@@ -349,6 +349,13 @@ nintents <
 >
 nintents <
   job <
+    name: "recordvalidator"
+    go_path: "github.com/brotherlogic/recordvalidator"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
