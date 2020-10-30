@@ -342,6 +342,13 @@ nintents <
 >
 nintents <
   job <
+    name: "backup"
+    go_path: "github.com/brotherlogic/backup"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
