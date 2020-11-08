@@ -37,7 +37,7 @@ nintents <
     breakout: true
     requirements <
       category: SERVER
-      properties: "stationone"
+      properties: "framethree"
     >
   >
   redundancy: GLOBAL
