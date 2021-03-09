@@ -356,6 +356,13 @@ nintents <
 >
 nintents <
   job <
+    name: "printbridge"
+    go_path: "github.com/brotherlogic/printbridge"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
