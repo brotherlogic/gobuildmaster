@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"sort"
 	"strconv"
 	"sync"
 	"time"
@@ -273,31 +272,7 @@ func (s Server) Mote(ctx context.Context, master bool) error {
 
 //GetState gets the state of the server
 func (s Server) GetState() []*pbg.State {
-	s.worldMutex.Lock()
-	defer s.worldMutex.Unlock()
-	aps := make([]string, 0)
-	s.accessPointsMutex.Lock()
-	defer s.accessPointsMutex.Unlock()
-	for ap := range s.accessPoints {
-		aps = append(aps, ap)
-	}
-	sort.Strings(aps)
-	return []*pbg.State{
-		&pbg.State{Key: "num_jobs", Value: int64(len(s.config.Nintents))},
-		&pbg.State{Key: "access_points", Text: fmt.Sprintf("%v", aps)},
-		&pbg.State{Key: "last_intent", TimeValue: s.LastIntent.Unix()},
-		&pbg.State{Key: "last_job", Text: s.lastJob},
-		&pbg.State{Key: "last_track", Text: s.lastTrack},
-		&pbg.State{Key: "last_state", TimeValue: s.LastMaster.Unix()},
-		&pbg.State{Key: "last_master", TimeValue: s.LastMaster.Unix()},
-		&pbg.State{Key: "last_master_time", TimeDuration: s.lastMasterRunTime.Nanoseconds()},
-		&pbg.State{Key: "world", Text: fmt.Sprintf("%v", s.world)},
-		&pbg.State{Key: "master", Text: s.mapString},
-		&pbg.State{Key: "seen", Text: fmt.Sprintf("%v", s.lastMasterSatisfy)},
-		&pbg.State{Key: "servers", Text: fmt.Sprintf("%v", s.serverMap)},
-		&pbg.State{Key: "seen_map", Text: fmt.Sprintf("%v", s.lastSeen)},
-		&pbg.State{Key: "register_attempts", Value: s.registerAttempts},
-	}
+	return []*pbg.State{}
 }
 
 //Compare compares current state to desired state
