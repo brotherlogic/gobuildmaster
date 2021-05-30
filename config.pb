@@ -363,6 +363,13 @@ nintents <
 >
 nintents <
   job <
+    name: "stobridge"
+    go_path: "github.com/brotherlogic/stobridge"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
