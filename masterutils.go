@@ -6,6 +6,7 @@ import (
 
 	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
+	"github.com/brotherlogic/goserver/utils"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -101,8 +102,12 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 }
 
 func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int, ls *pbd.RegistryEntry) error {
-	// We register as best effort
-	s.registerJob(ctx, i)
+	// We register as best effort - and throw it into the background
+	go func() {
+		ctx, cancel := utils.ManualContext("gmb-register", "gbm-register", time.Minute, false)
+		defer cancel()
+		s.registerJob(ctx, i)
+	}()
 
 	if i.Redundancy == pb.Redundancy_GLOBAL {
 		return s.runJob(ctx, i.GetJob(), ls)
