@@ -95,7 +95,7 @@ nintents <
       properties: "scratch"
     >
   >
-  redundancy: REDUNDANT	
+  redundancy: GLOBAL	
 >
 nintents <
   job <
