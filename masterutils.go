@@ -104,7 +104,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int, ls *pbd.RegistryEntry) error {
 	// We register as best effort - and throw it into the background
 	go func() {
-		ctx, cancel := utils.ManualContext("gmb-register", "gbm-register", time.Minute, false)
+		ctx, cancel := utils.ManualContext("gmb-register", time.Minute)
 		defer cancel()
 		s.registerJob(ctx, i)
 	}()

@@ -95,7 +95,7 @@ func (g *prodGetter) getJobs(ctx context.Context, server *pbd.RegistryEntry) ([]
 	slave := pbs.NewBuildSlaveClient(conn)
 
 	// Set a tighter rpc deadline for listing jobs.
-	ctx, cancel := utils.ManualContext("getJobs", "gobuildmaster", time.Minute, true)
+	ctx, cancel := utils.ManualContext("getJobs", time.Minute)
 	defer cancel()
 	r, err := slave.ListJobs(ctx, &pbs.ListRequest{})
 	if err != nil {
@@ -129,7 +129,7 @@ func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceV2Client(conn)
-	ctx, cancel := utils.ManualContext("getSlaves", "gobuildmaster", time.Minute, true)
+	ctx, cancel := utils.ManualContext("getSlaves", time.Minute)
 	defer cancel()
 	r, err := registry.Get(ctx, &pbd.GetRequest{Job: "gobuildslave"})
 	if err != nil {
@@ -207,7 +207,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 	}
 	defer conn.Close()
 
-	ctx, cancel := utils.ManualContext("mastermaster", "mastermaster", time.Minute*5, true)
+	ctx, cancel := utils.ManualContext("mastermaster", time.Minute*5)
 	defer cancel()
 
 	server := pbg.NewGoserverServiceClient(conn)
@@ -496,7 +496,7 @@ func main() {
 		log.Fatalf("Unable to register: %v", err)
 	}
 
-	ctx, cancel := utils.ManualContext("gobuildmaster", "gobuildmaster", time.Minute*5, true)
+	ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*5)
 	err = s.adjustWorld(ctx)
 	if err != nil {
 		log.Fatalf("Cannot run jobs: %v", err)
