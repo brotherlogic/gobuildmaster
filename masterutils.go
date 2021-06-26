@@ -93,7 +93,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 					return err
 				}
 			} else {
-				s.Log(fmt.Sprintf("Missing requirements for %v", intent.GetJob().GetName()))
+				s.Log(fmt.Sprintf("Missing requirements for %v -> %v vs %v", intent.GetJob().GetName(), intent.GetJob().GetRequirements(), localConfig))
 			}
 		}
 	}
