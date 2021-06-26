@@ -130,7 +130,7 @@ nintents <
       category: RECEIPT_PRINTER
     >
   >  
-  count: 1
+  redundancy: REDUNDANT
 >
 nintents <
   job <
