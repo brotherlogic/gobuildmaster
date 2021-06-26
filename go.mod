@@ -8,6 +8,7 @@ require (
 	github.com/brotherlogic/gobuildslave v0.0.0-20210608160506-333d8c38d957
 	github.com/brotherlogic/goserver v0.0.0-20210606163817-6f1a6e8b38f3
 	github.com/golang/protobuf v1.5.2
+	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
 	google.golang.org/genproto v0.0.0-20210608205507-b6d2f5bf0d7d // indirect
 	google.golang.org/grpc v1.38.0

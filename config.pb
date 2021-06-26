@@ -126,10 +126,8 @@ nintents <
     name: "printer"
     go_path: "github.com/brotherlogic/printer"
     breakout: true
-    partial_bootstrap: true
     requirements <
-      category: SERVER
-      properties: "printer"
+      category: RECEIPT_PRINTER
     >
   >  
   count: 1
