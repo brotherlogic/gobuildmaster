@@ -55,6 +55,17 @@ nintents <
 >
 nintents <
   job <
+    name: "dstore"
+    go_path: "github.com/brotherlogic/dstore"
+    requirements <
+      category: DISK
+      properties: "datastore"
+    >
+  >
+  redundancy: GLOBAL	
+>
+nintents <
+  job <
     go_path: "github.com/brotherlogic/githubcard"
     name: "githubcard"
    >
