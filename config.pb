@@ -379,6 +379,13 @@ nintents <
 >
 nintents <
   job <
+    name: "lock"
+    go_path: "github.com/brotherlogic/lock"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
