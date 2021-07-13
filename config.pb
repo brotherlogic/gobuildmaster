@@ -386,6 +386,13 @@ nintents <
 >
 nintents <
   job <
+    name: "queue"
+    go_path: "github.com/brotherlogic/queue"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
