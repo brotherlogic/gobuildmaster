@@ -400,6 +400,13 @@ nintents <
 >
 nintents <
   job <
+    name: "recordcleaner"
+    go_path: "github.com/brotherlogic/recordcleaner"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
