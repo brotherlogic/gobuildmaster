@@ -1,49 +1,44 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
-	"strconv"
+	"time"
 
 	"github.com/brotherlogic/goserver/utils"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 
-	pbdi "github.com/brotherlogic/discovery/proto"
+	pb "github.com/brotherlogic/gobuildmaster/proto"
 )
 
-func findServer(name string) (string, int) {
-	conn, _ := grpc.Dial(utils.Discover, grpc.WithInsecure())
-	defer conn.Close()
-
-	registry := pbdi.NewDiscoveryServiceClient(conn)
-	rs, _ := registry.ListAllServices(context.Background(), &pbdi.ListRequest{})
-
-	for _, r := range rs.Services.Services {
-		if r.Name == name {
-			return r.Ip, int(r.Port)
-		}
-	}
-
-	return "", -1
-}
-
 func main() {
+	ctx, cancel := utils.ManualContext("gobuildmaster-cli", time.Minute)
+	defer cancel()
 
 	if len(os.Args) <= 1 {
 		fmt.Printf("Commands: list run\n")
 	} else {
 		switch os.Args[1] {
 		case "list":
-			host, port := findServer("gobuildmaster")
+			listFlags := flag.NewFlagSet("List", flag.ExitOnError)
+			var host = listFlags.String("host", "", "Name of the queue")
+			if err := listFlags.Parse(os.Args[2:]); err == nil {
+				conn, err := utils.LFDialSpecificServer(ctx, "gobuildmaster", *host)
+				if err != nil {
+					log.Fatalf("Unable to dial: %v", err)
+				}
 
-			conn, err := grpc.Dial(host+":"+strconv.Itoa(port), grpc.WithInsecure())
-			if err != nil {
-				log.Fatalf("Cannot dial master: %v", err)
+				client := pb.NewGoBuildMasterClient(conn)
+				decisions, err := client.GetDecisions(ctx, &pb.GetDecisionsRequest{})
+				if err != nil {
+					log.Fatalf("Request failed: %v", err)
+				}
+
+				for _, decision := range decisions.GetDecisions() {
+					fmt.Printf("%v -> %v / %v\n", decision.GetJobName(), decision.GetRunning(), decision.GetReason())
+				}
 			}
-			defer conn.Close()
-
 		}
 	}
 }
