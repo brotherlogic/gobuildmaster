@@ -46,6 +46,7 @@ nintents <
   job <
     name: "floppy"
     go_path: "github.com/brotherlogic/floppy"
+    breakout: true
     requirements <
       category: SERVER
       properties: "floppy"
