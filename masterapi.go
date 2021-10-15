@@ -52,6 +52,7 @@ type Server struct {
 	accessPoints      map[string]time.Time
 	accessPointsMutex *sync.Mutex
 	testing           bool
+	decisions         map[string]string
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) error {
@@ -393,6 +394,18 @@ func (s *Server) SetMaster(ctx context.Context) error {
 	return nil
 }
 
+func (s *Server) GetDecisions(ctx context.Context, _ *pb.GetDecisionsRequest) (*pb.GetDecisionsResponse, error) {
+	resp := &pb.GetDecisionsResponse{}
+	for job, dec := range s.decisions {
+		resp.Decisions = append(resp.Decisions, &pb.Decision{
+			JobName: job,
+			Running: len(dec) == 0,
+			Reason:  dec,
+		})
+	}
+	return resp, nil
+}
+
 //Init builds up the server
 func Init(config *pb.Config) *Server {
 	s := &Server{
@@ -418,6 +431,7 @@ func Init(config *pb.Config) *Server {
 		make(map[string]time.Time),
 		&sync.Mutex{},
 		false,
+		make(map[string]string),
 	}
 	s.getter = &prodGetter{s.FDial}
 

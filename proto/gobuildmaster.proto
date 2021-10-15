@@ -37,6 +37,18 @@ message CompareResponse {
   Config desired = 2;
 }
 
+message GetDecisionsRequest {}
+message GetDecisionsResponse {
+  repeated Decision decisions = 1;
+}
+
+message Decision {
+  string job_name = 1;
+  bool running = 2;
+  string reason = 3;
+}
+
 service GoBuildMaster {
 	rpc Compare(Empty) returns (CompareResponse) {};
+  rpc GetDecisions(GetDecisionsRequest) returns (GetDecisionsResponse) {};
 }

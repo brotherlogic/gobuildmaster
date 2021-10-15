@@ -89,10 +89,14 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 				err := s.check(ctx, intent, jobCount, ourSlave)
 				s.Log(fmt.Sprintf("Running %v -> %v", intent.GetJob().GetName(), err))
 				code := status.Convert(err).Code()
+				if code != codes.OK {
+					s.decisions[intent.GetJob().GetName()] = fmt.Sprintf("Error running job: %v", err)
+				}
 				if code != codes.OK && code != codes.FailedPrecondition {
 					return err
 				}
 			} else {
+				s.decisions[intent.GetJob().GetName()] = fmt.Sprintf("Missing requirement")
 				s.Log(fmt.Sprintf("Missing requirements for %v -> %v vs %v", intent.GetJob().GetName(), intent.GetJob().GetRequirements(), localConfig))
 			}
 		}
