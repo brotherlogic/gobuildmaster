@@ -113,6 +113,7 @@ nintents <
   job <
     name: "logging"
     go_path: "github.com/brotherlogic/logging"
+    breakout: true
     requirements <
       category: DISK
       properties: "scratch"
