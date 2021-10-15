@@ -44,6 +44,17 @@ nintents <
 >
 nintents <
   job <
+    name: "floppy"
+    go_path: "github.com/brotherlogic/floppy"
+    requirements <
+      category: SERVER
+      properties: "floppy"
+    >
+  >
+  redundancy: GLOBAL
+>
+nintents <
+  job <
     name: "datastore"
     go_path: "github.com/brotherlogic/datastore"
     requirements <
