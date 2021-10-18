@@ -92,6 +92,13 @@ nintents <
 >
 nintents <
   job <
+    name: "healthchecker"
+    go_path: "github.com/brotherlogic/healthchecker"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "frametracker"
     go_path: "github.com/brotherlogic/frametracker"
   >  
