@@ -69,6 +69,7 @@ nintents <
   job <
     name: "dstore"
     go_path: "github.com/brotherlogic/dstore"
+    partial_bootstrap: true
     requirements <
       category: DISK
       properties: "datastore"
