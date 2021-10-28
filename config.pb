@@ -374,6 +374,10 @@ nintents <
   job <
     name: "backup"
     go_path: "github.com/brotherlogic/backup"
+    requirements <
+      category: DISK
+      properties: "raid"
+    >
   >  
   redundancy: REDUNDANT
 >
