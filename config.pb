@@ -432,6 +432,13 @@ nintents <
 >
 nintents <
   job <
+    name: "euler"
+    go_path: "github.com/brotherlogic/euler"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
