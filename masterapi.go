@@ -510,6 +510,29 @@ func main() {
 		log.Fatalf("Unable to register: %v", err)
 	}
 
+	//We need to register ourselves
+	go func() {
+		for true {
+			time.Sleep(time.Minute)
+
+			ctx, cancel := utils.ManualContext("gbm-register", time.Minute)
+			defer cancel()
+
+			conn, err := s.FDialServer(ctx, "githubcard")
+			if err != nil {
+				s.CtxLog(ctx, fmt.Sprintf("Cannot dial: %v", err))
+				continue
+			}
+
+			client := pbgh.NewGithubClient(conn)
+			_, err = client.RegisterJob(ctx, &pbgh.RegisterRequest{Job: "gobuildmaster"})
+			if err != nil {
+				s.CtxLog(ctx, fmt.Sprintf("Unable to register: %v", err))
+			}
+			break
+		}
+	}()
+
 	ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*5)
 	err = s.adjustWorld(ctx)
 	if err != nil {
