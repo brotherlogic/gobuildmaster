@@ -100,6 +100,13 @@ nintents <
 >
 nintents <
   job <
+    name: "adventserver"
+    go_path: "github.com/brotherlogic/adventserver"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "frametracker"
     go_path: "github.com/brotherlogic/frametracker"
   >  
