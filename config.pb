@@ -173,6 +173,18 @@ nintents <
 >
 nintents <
   job <
+    name: "display"
+    go_path: "github.com/brotherlogic/display"
+    breakout: true
+    requirements <
+       category: SERVER
+      properties: "rdisplay"
+    >
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "beertracker"
     go_path: "github.com/brotherlogic/beertracker"
     breakout: true
