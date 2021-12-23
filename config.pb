@@ -327,14 +327,6 @@ nintents <
 >
 nintents <
   job <
-    name: "etckiller"
-    go_path: "github.com/brotherlogic/etckiller"
-    breakout: true
-  >  
-  redundancy: GLOBAL
->
-nintents <
-  job <
     name: "githubtasks"
     go_path: "github.com/brotherlogic/githubtasks"
   >  
