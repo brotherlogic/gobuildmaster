@@ -176,10 +176,6 @@ nintents <
     name: "display"
     go_path: "github.com/brotherlogic/display"
     breakout: true
-    requirements <
-       category: SERVER
-      properties: "rdisplay"
-    >
   >  
   redundancy: REDUNDANT
 >
