@@ -134,7 +134,8 @@ nintents <
       properties: "scratch"
     >
   >
-  redundancy: GLOBAL	
+  redundancy: GLOBAL
+  not_on_server: "rdisplay"	
 >
 nintents <
   job <

@@ -28,6 +28,7 @@ message NIntent {
   int32 count = 2;
   Redundancy redundancy = 3;
   bool no_master = 4;
+  string not_on_server = 5;
 }
 
 message Empty {}

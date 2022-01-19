@@ -114,7 +114,10 @@ func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int
 	}()
 
 	if i.Redundancy == pb.Redundancy_GLOBAL {
-		return s.runJob(ctx, i.GetJob(), ls)
+		if s.Registry.Identifier != i.NotOnServer {
+			return s.runJob(ctx, i.GetJob(), ls)
+		}
+		return nil
 	}
 
 	if i.Redundancy == pb.Redundancy_REDUNDANT {
