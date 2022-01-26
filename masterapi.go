@@ -536,6 +536,10 @@ func main() {
 	ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*5)
 	err = s.adjustWorld(ctx)
 	if err != nil {
+		// Sometimes gbm starts before discover is available
+		if status.Convert(err).Code() == codes.Unavailable {
+			return
+		}
 		log.Fatalf("Cannot run jobs: %v", err)
 	}
 	cancel()
