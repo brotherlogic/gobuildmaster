@@ -447,6 +447,13 @@ nintents <
 >
 nintents <
   job <
+    name: "recordsorg"
+    go_path: "github.com/brotherlogic/recordsorg"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
     breakout: true
