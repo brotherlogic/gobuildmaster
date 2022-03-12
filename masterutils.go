@@ -26,6 +26,32 @@ func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]
 	return slaveMap, nil
 }
 
+func (s *Server) claimJob(ctx context.Context, job string) error {
+	s.claimed = job
+	masters, err := s.FFind(ctx, "gobuildmaster")
+	if err != nil {
+		s.claimed = ""
+		return err
+	}
+	ctx, cancel := utils.ManualContext("gbm-claim", time.Minute)
+	defer cancel()
+	for _, master := range masters {
+		conn, err := s.FDial(master)
+		if err != nil {
+			s.claimed = ""
+			return err
+		}
+		client := pb.NewGoBuildMasterClient(conn)
+		_, err = client.Claim(ctx, &pb.ClaimRequest{Server: s.Registry.Identifier, JobName: job})
+		if err != nil {
+			s.claimed = ""
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (s *Server) adjustWorld(ctx context.Context) error {
 	slaves, err := s.getter.getSlaves()
 	if err != nil {
@@ -71,6 +97,10 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	for _, intent := range s.config.Nintents {
 		time.Sleep(time.Second * 2)
 		if !ourjobs[intent.GetJob().GetName()] {
+			err = s.claimJob(ctx, intent.GetJob().GetName())
+			if err != nil {
+				continue
+			}
 			allmatch := true
 			for _, req := range intent.GetJob().GetRequirements() {
 				localmatch := false

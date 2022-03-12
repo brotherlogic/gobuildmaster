@@ -49,7 +49,17 @@ message Decision {
   string reason = 3;
 }
 
+message ClaimRequest {
+  string server = 1;
+  string job_name = 2;
+}
+
+message ClaimResponse {
+
+}
+
 service GoBuildMaster {
 	rpc Compare(Empty) returns (CompareResponse) {};
   rpc GetDecisions(GetDecisionsRequest) returns (GetDecisionsResponse) {};
+  rpc Claim(ClaimRequest) returns (ClaimResponse) {};
 }

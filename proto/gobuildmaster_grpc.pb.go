@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 type GoBuildMasterClient interface {
 	Compare(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*CompareResponse, error)
 	GetDecisions(ctx context.Context, in *GetDecisionsRequest, opts ...grpc.CallOption) (*GetDecisionsResponse, error)
+	Claim(ctx context.Context, in *ClaimRequest, opts ...grpc.CallOption) (*ClaimResponse, error)
 }
 
 type goBuildMasterClient struct {
@@ -47,12 +48,22 @@ func (c *goBuildMasterClient) GetDecisions(ctx context.Context, in *GetDecisions
 	return out, nil
 }
 
+func (c *goBuildMasterClient) Claim(ctx context.Context, in *ClaimRequest, opts ...grpc.CallOption) (*ClaimResponse, error) {
+	out := new(ClaimResponse)
+	err := c.cc.Invoke(ctx, "/gobuildmaster.GoBuildMaster/Claim", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GoBuildMasterServer is the server API for GoBuildMaster service.
 // All implementations should embed UnimplementedGoBuildMasterServer
 // for forward compatibility
 type GoBuildMasterServer interface {
 	Compare(context.Context, *Empty) (*CompareResponse, error)
 	GetDecisions(context.Context, *GetDecisionsRequest) (*GetDecisionsResponse, error)
+	Claim(context.Context, *ClaimRequest) (*ClaimResponse, error)
 }
 
 // UnimplementedGoBuildMasterServer should be embedded to have forward compatible implementations.
@@ -64,6 +75,9 @@ func (UnimplementedGoBuildMasterServer) Compare(context.Context, *Empty) (*Compa
 }
 func (UnimplementedGoBuildMasterServer) GetDecisions(context.Context, *GetDecisionsRequest) (*GetDecisionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDecisions not implemented")
+}
+func (UnimplementedGoBuildMasterServer) Claim(context.Context, *ClaimRequest) (*ClaimResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Claim not implemented")
 }
 
 // UnsafeGoBuildMasterServer may be embedded to opt out of forward compatibility for this service.
@@ -113,6 +127,24 @@ func _GoBuildMaster_GetDecisions_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _GoBuildMaster_Claim_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ClaimRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoBuildMasterServer).Claim(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/gobuildmaster.GoBuildMaster/Claim",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoBuildMasterServer).Claim(ctx, req.(*ClaimRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _GoBuildMaster_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "gobuildmaster.GoBuildMaster",
 	HandlerType: (*GoBuildMasterServer)(nil),
@@ -124,6 +156,10 @@ var _GoBuildMaster_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDecisions",
 			Handler:    _GoBuildMaster_GetDecisions_Handler,
+		},
+		{
+			MethodName: "Claim",
+			Handler:    _GoBuildMaster_Claim_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -53,6 +53,7 @@ type Server struct {
 	accessPointsMutex *sync.Mutex
 	testing           bool
 	decisions         map[string]string
+	claimed           string
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) error {
@@ -432,6 +433,7 @@ func Init(config *pb.Config) *Server {
 		&sync.Mutex{},
 		false,
 		make(map[string]string),
+		"",
 	}
 	s.getter = &prodGetter{s.FDial}
 
@@ -533,16 +535,21 @@ func main() {
 		}
 	}()
 
-	ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*5)
-	err = s.adjustWorld(ctx)
-	if err != nil {
-		// Sometimes gbm starts before discover is available
-		if status.Convert(err).Code() == codes.Unavailable {
-			return
+	go func() {
+		for !s.LameDuck {
+			ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*5)
+			err = s.adjustWorld(ctx)
+			if err != nil {
+				// Sometimes gbm starts before discover is available
+				if status.Convert(err).Code() == codes.Unavailable {
+					return
+				}
+				log.Fatalf("Cannot run jobs: %v", err)
+			}
+			cancel()
+			time.Sleep(time.Minute)
 		}
-		log.Fatalf("Cannot run jobs: %v", err)
-	}
-	cancel()
+	}()
 	err = s.Serve()
 	if err != nil {
 		log.Fatalf("Serve error: %v", err)
