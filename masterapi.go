@@ -547,7 +547,7 @@ func main() {
 				log.Fatalf("Cannot run jobs: %v", err)
 			}
 			cancel()
-			time.Sleep(time.Minute)
+			time.Sleep(time.Minute * 10)
 		}
 	}()
 	err = s.Serve()
