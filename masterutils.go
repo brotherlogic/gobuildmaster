@@ -41,6 +41,8 @@ func (s *Server) claimJob(ctx context.Context, job string) error {
 			s.claimed = ""
 			return err
 		}
+		defer conn.Close()
+
 		client := pb.NewGoBuildMasterClient(conn)
 		_, err = client.Claim(ctx, &pb.ClaimRequest{Server: s.Registry.Identifier, JobName: job})
 		if err != nil {
