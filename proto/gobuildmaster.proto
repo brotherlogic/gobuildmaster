@@ -27,6 +27,7 @@ message NIntent {
   gobuildslave.Job job = 1;
   int32 count = 2;
   Redundancy redundancy = 3;
+  Redundancy redundancy64 = 6;
   bool no_master = 4;
   string not_on_server = 5;
 }

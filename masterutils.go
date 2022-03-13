@@ -12,18 +12,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]string, error) {
+func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]string, []string, error) {
 	jobs, err := s.getter.getJobs(ctx, server)
 	if err != nil {
-		return []string{}, err
+		return []string{}, []string{}, err
 	}
 
 	slaveMap := []string{}
+	slaveMap64 := []string{}
 	for _, job := range jobs {
-		slaveMap = append(slaveMap, job.GetJob().GetName())
+		if job.GetBits() == 32 {
+			slaveMap = append(slaveMap, job.GetJob().GetName())
+		} else {
+			slaveMap64 = append(slaveMap64, job.GetJob().GetName())
+		}
+
 	}
 
-	return slaveMap, nil
+	return slaveMap, slaveMap64, nil
 }
 
 func (s *Server) claimJob(ctx context.Context, job string) error {
@@ -75,9 +81,10 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	}
 
 	jobCount := make(map[string]int)
+	jobCount64 := make(map[string]int)
 	ourjobs := make(map[string]bool)
 	for _, server := range slaves.GetServices() {
-		slaves, err := s.updateWorld(ctx, server)
+		slaves, slaves64, err := s.updateWorld(ctx, server)
 		if err != nil {
 			s.Log(fmt.Sprintf("Unable to reach %v -> %v", server, err))
 			continue
@@ -85,6 +92,12 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 
 		for _, j := range slaves {
 			jobCount[j]++
+			if server.Identifier == s.Registry.Identifier {
+				ourjobs[j] = true
+			}
+		}
+		for _, j := range slaves64 {
+			jobCount64[j]++
 			if server.Identifier == s.Registry.Identifier {
 				ourjobs[j] = true
 			}
@@ -118,7 +131,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 			}
 
 			if allmatch {
-				err := s.check(ctx, intent, jobCount, ourSlave)
+				err := s.check(ctx, intent, jobCount, jobCount64, ourSlave)
 				s.Log(fmt.Sprintf("Running %v -> %v", intent.GetJob().GetName(), err))
 				code := status.Convert(err).Code()
 				if code != codes.OK {
@@ -137,7 +150,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	return nil
 }
 
-func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int, ls *pbd.RegistryEntry) error {
+func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int, counts64 map[string]int, ls *pbd.RegistryEntry) error {
 	// We register as best effort - and throw it into the background
 	go func() {
 		ctx, cancel := utils.ManualContext("gmb-register", time.Minute)
@@ -147,19 +160,25 @@ func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int
 
 	if i.Redundancy == pb.Redundancy_GLOBAL {
 		if s.Registry.Identifier != i.NotOnServer {
-			return s.runJob(ctx, i.GetJob(), ls)
+			return s.runJob(ctx, i.GetJob(), ls, 0)
 		}
 		return nil
 	}
 
 	if i.Redundancy == pb.Redundancy_REDUNDANT {
 		if counts[i.GetJob().GetName()] < 3 {
-			return s.runJob(ctx, i.GetJob(), ls)
+			return s.runJob(ctx, i.GetJob(), ls, 0)
+		}
+	}
+
+	if i.Redundancy64 == pb.Redundancy_REDUNDANT {
+		if counts64[i.GetJob().GetName()] < 3 {
+			return s.runJob(ctx, i.GetJob(), ls, 64)
 		}
 	}
 
 	if counts[i.GetJob().GetName()] < int(i.Count) {
-		return s.runJob(ctx, i.GetJob(), ls)
+		return s.runJob(ctx, i.GetJob(), ls, 0)
 	}
 
 	return nil

@@ -3,13 +3,12 @@ module github.com/brotherlogic/gobuildmaster
 go 1.13
 
 require (
-	github.com/brotherlogic/discovery v0.0.0-20211122201709-d7c7cb44eb84
-	github.com/brotherlogic/dstore v0.0.0-20211223221805-20e4c82e86c4 // indirect
-	github.com/brotherlogic/githubcard v0.0.0-20211123170149-daebf91787e2
-	github.com/brotherlogic/gobuildslave v0.0.0-20211126143211-04b65d282911
-	github.com/brotherlogic/goserver v0.0.0-20211223221043-80196dad7069
+	github.com/brotherlogic/discovery v0.0.0-20220305205509-0d9c25e7c1e0
+	github.com/brotherlogic/githubcard v0.0.0-20220308231648-283f0f99b864
+	github.com/brotherlogic/gobuildslave v0.0.0-20220313175910-080bcf0a34ec
+	github.com/brotherlogic/goserver v0.0.0-20220313174609-1f86505d1724
 	github.com/golang/protobuf v1.5.2
-	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
-	google.golang.org/grpc v1.43.0
+	golang.org/x/net v0.0.0-20220225172249-27dd8689420f
+	google.golang.org/grpc v1.45.0
 	google.golang.org/protobuf v1.27.1
 )

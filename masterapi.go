@@ -218,7 +218,7 @@ func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error
 	return err == nil, err
 }
 
-func (s *Server) runJob(ctx context.Context, job *pbs.Job, localSlave *pbd.RegistryEntry) error {
+func (s *Server) runJob(ctx context.Context, job *pbs.Job, localSlave *pbd.RegistryEntry, bits int) error {
 	if s.testing {
 		return nil
 	}
@@ -228,7 +228,7 @@ func (s *Server) runJob(ctx context.Context, job *pbs.Job, localSlave *pbd.Regis
 
 		slave := pbs.NewBuildSlaveClient(conn)
 		s.Log(fmt.Sprintf("Attempting to run %v", job))
-		_, err = slave.RunJob(ctx, &pbs.RunRequest{Job: job})
+		_, err = slave.RunJob(ctx, &pbs.RunRequest{Job: job, Bits: int32(bits)})
 	}
 	return err
 }

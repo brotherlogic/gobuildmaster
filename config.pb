@@ -12,6 +12,19 @@ nintents <
 >
 nintents <
   job <
+    name: "buildserver"
+    go_path: "github.com/brotherlogic/buildserver"
+    partial_bootstrap: true
+    requirements <
+      category: DISK
+      properties: "scratch"
+    >
+  >
+  redundancy: REDUNDANT
+  redundancy64: REDUNDANT
+>
+nintents <
+  job <
     go_path: "github.com/brotherlogic/filecopier"
     name: "filecopier"
     partial_bootstrap: true
