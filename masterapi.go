@@ -544,7 +544,7 @@ func main() {
 				if status.Convert(err).Code() == codes.Unavailable {
 					return
 				}
-				log.Fatalf("Cannot run jobs: %v", err)
+				s.CtxLog(ctx, fmt.Sprintf("Cannot run jobs: %v", err))
 			}
 			cancel()
 			time.Sleep(time.Minute * 10)
