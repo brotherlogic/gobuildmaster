@@ -21,6 +21,7 @@ func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]
 	slaveMap := []string{}
 	slaveMap64 := []string{}
 	for _, job := range jobs {
+		s.CtxLog(ctx, fmt.Sprintf("From %v -> %v", server.GetIdentifier(), job))
 		if job.GetBits() == 32 {
 			slaveMap = append(slaveMap, job.GetJob().GetName())
 		} else {
