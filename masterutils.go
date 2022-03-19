@@ -84,7 +84,9 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	jobCount64 := make(map[string]int)
 	ourjobs := make(map[string]bool)
 	for _, server := range slaves.GetServices() {
+
 		slaves, slaves64, err := s.updateWorld(ctx, server)
+		s.CtxLog(ctx, fmt.Sprintf("Checking services from %v -> %v AND %v", server, slaves, slaves64))
 		if err != nil {
 			s.Log(fmt.Sprintf("Unable to reach %v -> %v", server, err))
 			continue
