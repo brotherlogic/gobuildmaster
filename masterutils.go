@@ -169,14 +169,14 @@ func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int
 	}
 
 	if i.Redundancy == pb.Redundancy_REDUNDANT {
-		if counts[i.GetJob().GetName()] < 3 {
+		if counts[i.GetJob().GetName()] < 2 {
 			s.CtxLog(ctx, fmt.Sprintf("Running %v because %v", i.GetJob().GetName(), counts))
 			return s.runJob(ctx, i.GetJob(), ls, 0)
 		}
 	}
 
 	if i.Redundancy64 == pb.Redundancy_REDUNDANT {
-		if counts64[i.GetJob().GetName()] < 3 {
+		if counts64[i.GetJob().GetName()] < 2 {
 			return s.runJob(ctx, i.GetJob(), ls, 64)
 		}
 	}
