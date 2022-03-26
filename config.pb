@@ -39,7 +39,7 @@ nintents <
     breakout: true
     requirements <
       category: SERVER
-      properties: "framethree"
+      properties: "clust2"
     >
   >
   redundancy: GLOBAL
