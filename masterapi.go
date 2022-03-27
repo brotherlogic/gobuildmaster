@@ -538,6 +538,7 @@ func main() {
 	go func() {
 		for !s.LameDuck {
 			ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*5)
+			s.CtxLog(ctx, "Beginning rebuild run")
 			err = s.adjustWorld(ctx)
 			if err != nil {
 				// Sometimes gbm starts before discover is available
