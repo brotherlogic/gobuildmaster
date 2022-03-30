@@ -173,6 +173,8 @@ func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int
 			s.CtxLog(ctx, fmt.Sprintf("Running %v because %v", i.GetJob().GetName(), counts))
 			return s.runJob(ctx, i.GetJob(), ls, 0)
 		}
+	} else {
+		s.CtxLog(ctx, fmt.Sprintf("Not running %v because %v", i.GetJob().GetName(), counts))
 	}
 
 	if i.Redundancy64 == pb.Redundancy_REDUNDANT {

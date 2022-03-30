@@ -532,7 +532,7 @@ func main() {
 				s.CtxLog(ctx, fmt.Sprintf("Unable to register: %v", err))
 			}
 			break
-		}
+	 	}
 	}()
 
 	go func() {
