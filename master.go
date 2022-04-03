@@ -14,7 +14,7 @@ import (
 )
 
 type getter interface {
-	getSlaves() (*pbd.ServiceList, error)
+	getSlaves(context.Context) (*pbd.ServiceList, error)
 	getJobs(context.Context, *pbd.RegistryEntry) ([]*pbs.JobAssignment, error)
 	getConfig(context.Context, *pbd.RegistryEntry) ([]*pbs.Requirement, error)
 }
@@ -96,7 +96,7 @@ func (s *Server) addAccessPoint(ctx context.Context, ap string) {
 
 // Find the first available server
 func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) string {
-	services, _ := g.getSlaves()
+	services, _ := g.getSlaves(ctx)
 	for _, i := range rand.Perm(len(services.Services)) {
 		jobs, _ := g.getJobs(ctx, services.Services[i])
 		//Don't accept a server which is already running this job

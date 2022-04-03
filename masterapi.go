@@ -121,7 +121,7 @@ func (g *prodGetter) getConfig(ctx context.Context, server *pbd.RegistryEntry) (
 	return r.Config.Requirements, err
 }
 
-func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
+func (g *prodGetter) getSlaves(ctx context.Context) (*pbd.ServiceList, error) {
 	ret := &pbd.ServiceList{}
 
 	conn, err := g.dial("127.0.0.1:" + strconv.Itoa(utils.RegistryPort))
@@ -131,8 +131,6 @@ func (g *prodGetter) getSlaves() (*pbd.ServiceList, error) {
 	defer conn.Close()
 
 	registry := pbd.NewDiscoveryServiceV2Client(conn)
-	ctx, cancel := utils.ManualContext("getSlaves", time.Minute)
-	defer cancel()
 	r, err := registry.Get(ctx, &pbd.GetRequest{Job: "gobuildslave"})
 	if err != nil {
 		return ret, err
@@ -532,7 +530,7 @@ func main() {
 				s.CtxLog(ctx, fmt.Sprintf("Unable to register: %v", err))
 			}
 			break
-	 	}
+		}
 	}()
 
 	go func() {
@@ -541,10 +539,6 @@ func main() {
 			s.CtxLog(ctx, "Beginning rebuild run")
 			err = s.adjustWorld(ctx)
 			if err != nil {
-				// Sometimes gbm starts before discover is available
-				if status.Convert(err).Code() == codes.Unavailable {
-					return
-				}
 				s.CtxLog(ctx, fmt.Sprintf("Cannot run jobs: %v", err))
 			}
 			cancel()

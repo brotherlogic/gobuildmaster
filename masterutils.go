@@ -62,7 +62,7 @@ func (s *Server) claimJob(ctx context.Context, job string) error {
 }
 
 func (s *Server) adjustWorld(ctx context.Context) error {
-	slaves, err := s.getter.getSlaves()
+	slaves, err := s.getter.getSlaves(ctx)
 	if err != nil {
 		return err
 	}
