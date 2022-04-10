@@ -536,7 +536,7 @@ func main() {
 	go func() {
 		for !s.LameDuck {
 			t1 := time.Now()
-			ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*5)
+			ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*10)
 			s.CtxLog(ctx, "Beginning rebuild run")
 			err = s.adjustWorld(ctx)
 			if err != nil {
