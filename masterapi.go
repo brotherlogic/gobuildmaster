@@ -535,6 +535,7 @@ func main() {
 
 	go func() {
 		for !s.LameDuck {
+			t1 := time.Now()
 			ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*5)
 			s.CtxLog(ctx, "Beginning rebuild run")
 			err = s.adjustWorld(ctx)
@@ -542,6 +543,7 @@ func main() {
 				s.CtxLog(ctx, fmt.Sprintf("Cannot run jobs: %v", err))
 			}
 			cancel()
+			s.CtxLog(ctx, fmt.Sprintf("Took %v to adjust the world", time.Since(t1)))
 			time.Sleep(time.Minute * 10)
 		}
 	}()
