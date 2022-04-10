@@ -7,9 +7,18 @@ import (
 	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
 	"github.com/brotherlogic/goserver/utils"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+)
+
+var (
+	rebuildTime = promauto.NewGauge(prometheus.GaugeOpts{
+		Name: "gobuildmaster_rebuild_time",
+		Help: "The size of the print queue",
+	})
 )
 
 func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]string, []string, error) {

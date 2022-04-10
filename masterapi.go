@@ -544,6 +544,7 @@ func main() {
 			}
 			cancel()
 			s.CtxLog(ctx, fmt.Sprintf("Took %v to adjust the world", time.Since(t1)))
+			rebuildTime.Set(float64(time.Since(t1).Seconds()))
 			time.Sleep(time.Minute * 10)
 		}
 	}()
