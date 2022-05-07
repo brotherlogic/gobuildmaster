@@ -480,3 +480,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "bandcampserver"
+    go_path: "github.com/brotherlogic/bandcampserver"
+  >  
+  redundancy: REDUNDANT
+>
