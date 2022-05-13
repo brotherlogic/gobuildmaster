@@ -487,3 +487,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "builder"
+    go_path: "github.com/brotherlogic/builder"
+  >  
+  redundancy: REDUNDANT
+>
