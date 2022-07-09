@@ -200,22 +200,6 @@ func (t *mainChecker) assess(ctx context.Context, server string) (*pbs.JobList, 
 	return r, r2
 }
 
-func (t *mainChecker) master(entry *pbd.RegistryEntry, master bool) (bool, error) {
-	conn, err := t.dialEntry(entry)
-	if err != nil {
-		return false, err
-	}
-	defer conn.Close()
-
-	ctx, cancel := utils.ManualContext("mastermaster", time.Minute*5)
-	defer cancel()
-
-	server := pbg.NewGoserverServiceClient(conn)
-	_, err = server.Mote(ctx, &pbg.MoteRequest{Master: master})
-
-	return err == nil, err
-}
-
 func (s *Server) runJob(ctx context.Context, job *pbs.Job, localSlave *pbd.RegistryEntry, bits int) error {
 	if s.testing {
 		return nil
@@ -265,11 +249,6 @@ func (s Server) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-// Mote promotes/demotes this server
-func (s Server) Mote(ctx context.Context, master bool) error {
-	return nil
-}
-
 //GetState gets the state of the server
 func (s Server) GetState() []*pbg.State {
 	return []*pbg.State{}
@@ -312,85 +291,6 @@ func getConfig(ctx context.Context, c checker) *pb.Config {
 	}
 
 	return config
-}
-
-// SetMaster sets up the master settings
-func (s *Server) SetMaster(ctx context.Context) error {
-	checker := &mainChecker{logger: s.Log, dial: s.DialServer, dialEntry: s.DoDial}
-	s.LastMaster = time.Now()
-	masterMap := make(map[string]string)
-
-	fleet := checker.discover()
-	matcher := make(map[string][]*pbd.RegistryEntry)
-	hasMaster := make(map[string]int)
-	s.lastTrack = "Building Mapping"
-	for _, entry := range fleet.GetServices() {
-		if !entry.GetIgnoresMaster() && entry.GetVersion() == pbd.RegistryEntry_V1 {
-			if _, ok := matcher[entry.GetName()]; !ok {
-				if entry.GetMaster() {
-					hasMaster[entry.GetName()]++
-					masterMap[entry.GetName()] = entry.GetIdentifier()
-				}
-				matcher[entry.GetName()] = []*pbd.RegistryEntry{entry}
-			} else {
-				if entry.GetMaster() {
-					hasMaster[entry.GetName()] = 1
-					masterMap[entry.GetName()] = entry.GetIdentifier()
-				}
-				matcher[entry.GetName()] = append(matcher[entry.GetName()], entry)
-			}
-		}
-	}
-
-	s.lastTrack = "Processing Mapping"
-	for key, entries := range matcher {
-		s.lastJob = key
-		seen := hasMaster[key] == 1
-		if hasMaster[key] > 1 {
-			hasMaster[key] = 1
-			for _, entry := range entries {
-				if seen && entry.GetMaster() {
-					s.lastTrack = fmt.Sprintf("%v master for %v", entry.Identifier, entry.Name)
-					checker.master(entry, false)
-				} else if entry.GetMaster() {
-					seen = true
-				}
-			}
-		}
-
-		if hasMaster[key] == 0 {
-			if len(entries) == 0 {
-				masterMap[key] = "NONE_AVAILABLE"
-			}
-
-			for _, entry := range entries {
-				s.lastTrack = fmt.Sprintf("%v master for %v", entry.Identifier, entry.Name)
-				val, err := checker.master(entry, true)
-				if val {
-					masterMap[entry.GetName()] = entry.GetIdentifier()
-					entry.Master = true
-					seen = true
-					break
-				} else {
-					masterMap[entry.GetName()] = fmt.Sprintf("%v", err)
-				}
-			}
-
-		}
-
-		_, ok := s.lastMasterSatisfy[key]
-		if ok && seen {
-			delete(s.lastMasterSatisfy, key)
-		}
-		if !ok && !seen {
-			s.lastMasterSatisfy[key] = time.Now()
-		}
-
-	}
-	s.mapString = fmt.Sprintf("%v", masterMap)
-	s.lastMasterRunTime = time.Now().Sub(s.LastMaster)
-
-	return nil
 }
 
 func (s *Server) GetDecisions(ctx context.Context, _ *pb.GetDecisionsRequest) (*pb.GetDecisionsResponse, error) {
@@ -436,21 +336,6 @@ func Init(config *pb.Config) *Server {
 	s.getter = &prodGetter{s.FDial}
 
 	return s
-}
-
-func (s *Server) becomeMaster(ctx context.Context) error {
-	for true {
-		time.Sleep(time.Second * 5)
-		if !s.Registry.Master {
-			_, _, err := utils.Resolve("gobuildmaster", "gobuildmaster-become")
-			if err != nil {
-				s.registerAttempts++
-				s.Registry.Master = true
-			}
-		}
-	}
-
-	return nil
 }
 
 func (s *Server) raiseIssue(ctx context.Context) error {
@@ -499,9 +384,9 @@ func main() {
 	}
 
 	s.Register = s
-	s.PrepServer()
+	s.PrepServer("gobuildmaster")
 
-	err = s.RegisterServerV2("gobuildmaster", false, true)
+	err = s.RegisterServerV2(false)
 	if err != nil {
 		if c := status.Convert(err); c.Code() == codes.FailedPrecondition || c.Code() == codes.Unavailable {
 			// this is expected if disc is not ready
