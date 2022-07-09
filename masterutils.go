@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	pbd "github.com/brotherlogic/discovery/proto"
@@ -132,7 +133,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 			for _, req := range intent.GetJob().GetRequirements() {
 				localmatch := false
 				for _, r := range localConfig {
-					if r.Category == req.Category && r.Properties == req.Properties {
+					if r.Category == req.Category && strings.Contains(r.Properties, req.Properties) {
 						localmatch = true
 					}
 				}
