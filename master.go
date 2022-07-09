@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -117,7 +118,7 @@ func (s *Server) selectServer(ctx context.Context, job *pbs.Job, g getter) strin
 						if r.Category == pbs.RequirementCategory_ACCESS_POINT {
 							s.addAccessPoint(ctx, r.Properties)
 						}
-						if r.Category == req.Category && r.Properties == req.Properties {
+						if r.Category == req.Category && strings.Contains(r.Properties, req.Properties) {
 							localmatch = true
 
 						}
