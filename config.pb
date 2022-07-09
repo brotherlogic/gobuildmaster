@@ -10,7 +10,7 @@ nintents <
     >
     requirements <
       category: HOST_TYPE
-      properties: "Raspberry Pi 4 Model B Rev 1.4"
+      properties: "Pi 4"
   >
   redundancy: REDUNDANT
   redundancy64: REDUNDANT
