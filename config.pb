@@ -11,6 +11,7 @@ nintents <
     requirements <
       category: HOST_TYPE
       properties: "Pi 4"
+    >
   >
   redundancy: REDUNDANT
   redundancy64: REDUNDANT
