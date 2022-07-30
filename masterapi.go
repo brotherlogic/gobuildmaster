@@ -357,6 +357,7 @@ func main() {
 			t1 := time.Now()
 			ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*10)
 			err = s.adjustWorld(ctx)
+			s.CtxLog(ctx, fmt.Sprintf("Adjusted world: %v", err))
 			cancel()
 			rebuildTime.Set(float64(time.Since(t1).Seconds()))
 			time.Sleep(time.Minute * 10)
