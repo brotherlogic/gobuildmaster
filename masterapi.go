@@ -152,26 +152,6 @@ type mainChecker struct {
 	dialEntry func(*pbd.RegistryEntry) (*grpc.ClientConn, error)
 }
 
-func getIP(servertype, servername string) (string, int) {
-	conn, _ := grpc.Dial(utils.RegistryIP+":"+strconv.Itoa(utils.RegistryPort), grpc.WithInsecure())
-	defer conn.Close()
-
-	registry := pbd.NewDiscoveryServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{})
-	if err != nil {
-		return "", -1
-	}
-	for _, s := range r.GetServices().Services {
-		if s.Name == servertype && s.Identifier == servername {
-			return s.Ip, int(s.Port)
-		}
-	}
-
-	return "", -1
-}
-
 func (t *mainChecker) getprev() []string {
 	return t.prev
 }
@@ -209,7 +189,6 @@ func (s *Server) runJob(ctx context.Context, job *pbs.Job, localSlave *pbd.Regis
 		defer conn.Close()
 
 		slave := pbs.NewBuildSlaveClient(conn)
-		s.Log(fmt.Sprintf("Attempting to run %v", job))
 		_, err = slave.RunJob(ctx, &pbs.RunRequest{Job: job, Bits: int32(bits)})
 	}
 	return err
@@ -226,9 +205,7 @@ func (t *mainChecker) discover() *pbd.ServiceList {
 	defer cancel()
 	r, err := registry.ListAllServices(ctx, &pbd.ListRequest{})
 	if err == nil {
-		for _, s := range r.GetServices().Services {
-			ret.Services = append(ret.Services, s)
-		}
+		ret.Services = append(ret.GetServices(), r.GetServices().Services...)
 	}
 
 	return ret
@@ -268,29 +245,6 @@ func (s Server) Compare(ctx context.Context, in *pb.Empty) (*pb.CompareResponse,
 	resp.Desired = s.config
 
 	return resp, nil
-}
-
-func getConfig(ctx context.Context, c checker) *pb.Config {
-	list, _ := getFleetStatus(ctx, c)
-	config := &pb.Config{}
-
-	for _, jlist := range list {
-		for _, job := range jlist.Details {
-			found := false
-			for _, ij := range config.Intents {
-				if job.Spec.Name == ij.Spec.Name {
-					ij.Count++
-					found = true
-				}
-			}
-
-			if !found {
-				config.Intents = append(config.Intents, &pb.Intent{Spec: &pbs.JobSpec{Name: job.Spec.Name}, Count: 1})
-			}
-		}
-	}
-
-	return config
 }
 
 func (s *Server) GetDecisions(ctx context.Context, _ *pb.GetDecisionsRequest) (*pb.GetDecisionsResponse, error) {
@@ -338,22 +292,6 @@ func Init(config *pb.Config) *Server {
 	return s
 }
 
-func (s *Server) raiseIssue(ctx context.Context) error {
-	for key, val := range s.lastMasterSatisfy {
-		if time.Now().Sub(val) > time.Hour {
-			conn, err := s.DialMaster("githubcard")
-			if err == nil {
-				defer conn.Close()
-				client := pbgh.NewGithubClient(conn)
-				client.AddIssue(ctx, &pbgh.Issue{Service: key, Title: fmt.Sprintf("No Master Found - %v", key), Body: ""})
-			}
-
-		}
-	}
-
-	return nil
-}
-
 func (s *Server) registerJob(ctx context.Context, int *pb.NIntent) error {
 	conn, err := s.FDialServer(ctx, "githubcard")
 	if err != nil {
@@ -397,7 +335,7 @@ func main() {
 
 	//We need to register ourselves
 	go func() {
-		for true {
+		for {
 			time.Sleep(time.Minute)
 
 			ctx, cancel := utils.ManualContext("gbm-register", time.Minute)
@@ -405,15 +343,11 @@ func main() {
 
 			conn, err := s.FDialServer(ctx, "githubcard")
 			if err != nil {
-				s.CtxLog(ctx, fmt.Sprintf("Cannot dial: %v", err))
 				continue
 			}
 
 			client := pbgh.NewGithubClient(conn)
-			_, err = client.RegisterJob(ctx, &pbgh.RegisterRequest{Job: "gobuildmaster"})
-			if err != nil {
-				s.CtxLog(ctx, fmt.Sprintf("Unable to register: %v", err))
-			}
+			client.RegisterJob(ctx, &pbgh.RegisterRequest{Job: "gobuildmaster"})
 			break
 		}
 	}()
@@ -422,13 +356,8 @@ func main() {
 		for !s.LameDuck {
 			t1 := time.Now()
 			ctx, cancel := utils.ManualContext("gobuildmaster", time.Minute*10)
-			s.CtxLog(ctx, "Beginning rebuild run")
 			err = s.adjustWorld(ctx)
-			if err != nil {
-				s.CtxLog(ctx, fmt.Sprintf("Cannot run jobs: %v", err))
-			}
 			cancel()
-			s.CtxLog(ctx, fmt.Sprintf("Took %v to adjust the world", time.Since(t1)))
 			rebuildTime.Set(float64(time.Since(t1).Seconds()))
 			time.Sleep(time.Minute * 10)
 		}

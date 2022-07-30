@@ -31,7 +31,6 @@ func (s *Server) updateWorld(ctx context.Context, server *pbd.RegistryEntry) ([]
 	slaveMap := []string{}
 	slaveMap64 := []string{}
 	for _, job := range jobs {
-		s.CtxLog(ctx, fmt.Sprintf("From %v -> %v", server.GetIdentifier(), job))
 		if job.GetBits() == 32 {
 			slaveMap = append(slaveMap, job.GetJob().GetName())
 		} else {
@@ -97,9 +96,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 	for _, server := range slaves.GetServices() {
 
 		slaves, slaves64, err := s.updateWorld(ctx, server)
-		s.CtxLog(ctx, fmt.Sprintf("Checking services from %v -> %v AND %v", server, slaves, slaves64))
 		if err != nil {
-			s.Log(fmt.Sprintf("Unable to reach %v -> %v", server, err))
 			continue
 		}
 
@@ -145,7 +142,6 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 
 			if allmatch {
 				err := s.check(ctx, intent, jobCount, jobCount64, ourSlave)
-				s.Log(fmt.Sprintf("Running %v -> %v", intent.GetJob().GetName(), err))
 				code := status.Convert(err).Code()
 				if code != codes.OK {
 					s.decisions[intent.GetJob().GetName()] = fmt.Sprintf("Error running job: %v", err)
@@ -155,7 +151,6 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 				}
 			} else {
 				s.decisions[intent.GetJob().GetName()] = fmt.Sprintf("Missing requirement")
-				s.Log(fmt.Sprintf("Missing requirements for %v -> %v vs %v", intent.GetJob().GetName(), intent.GetJob().GetRequirements(), localConfig))
 			}
 		}
 	}
@@ -180,11 +175,8 @@ func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int
 
 	if i.Redundancy == pb.Redundancy_REDUNDANT {
 		if counts[i.GetJob().GetName()] < 2 {
-			s.CtxLog(ctx, fmt.Sprintf("Running %v because %v", i.GetJob().GetName(), counts))
 			return s.runJob(ctx, i.GetJob(), ls, 0)
 		}
-	} else {
-		s.CtxLog(ctx, fmt.Sprintf("Not running %v because %v", i.GetJob().GetName(), counts))
 	}
 
 	if i.Redundancy64 == pb.Redundancy_REDUNDANT {
