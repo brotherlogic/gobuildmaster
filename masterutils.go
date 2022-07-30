@@ -142,6 +142,9 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 
 			if allmatch {
 				err := s.check(ctx, intent, jobCount, jobCount64, ourSlave)
+				if err != nil {
+					s.CtxLog(ctx, fmt.Sprintf("Adjust: Unable to run %v -> %v", intent.GetJob().GetName(), err))
+				}
 				code := status.Convert(err).Code()
 				if code != codes.OK {
 					s.decisions[intent.GetJob().GetName()] = fmt.Sprintf("Error running job: %v", err)
@@ -170,6 +173,7 @@ func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int
 		if s.Registry.Identifier != i.NotOnServer {
 			return s.runJob(ctx, i.GetJob(), ls, 0)
 		}
+		s.CtxLog(ctx, fmt.Sprintf("Adjust: Skipping %v because %v", i.GetJob().GetName(), i))
 		return nil
 	}
 
@@ -177,17 +181,21 @@ func (s *Server) check(ctx context.Context, i *pb.NIntent, counts map[string]int
 		if counts[i.GetJob().GetName()] < 2 {
 			return s.runJob(ctx, i.GetJob(), ls, 0)
 		}
+		s.CtxLog(ctx, fmt.Sprintf("Adjust: Skipping %v because count", i.GetJob().GetName()))
 	}
 
 	if i.Redundancy64 == pb.Redundancy_REDUNDANT {
 		if counts64[i.GetJob().GetName()] < 2 {
 			return s.runJob(ctx, i.GetJob(), ls, 64)
 		}
+		s.CtxLog(ctx, fmt.Sprintf("Adjust: Skipping %v because 64 count", i.GetJob().GetName()))
+
 	}
 
 	if counts[i.GetJob().GetName()] < int(i.Count) {
 		return s.runJob(ctx, i.GetJob(), ls, 0)
 	}
+	s.CtxLog(ctx, fmt.Sprintf("Adjust: Skipping %v because final count", i.GetJob().GetName()))
 
 	return nil
 }
