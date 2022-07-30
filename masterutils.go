@@ -121,9 +121,11 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 
 	for _, intent := range s.config.Nintents {
 		time.Sleep(time.Second * 2)
+		s.CtxLog(ctx, fmt.Sprintf("Starting Adjust run: %v", intent.GetJob().GetName()))
 		if !ourjobs[intent.GetJob().GetName()] {
 			err = s.claimJob(ctx, intent.GetJob().GetName())
 			if err != nil {
+				s.CtxLog(ctx, fmt.Sprintf("Adjust failed: Cannot claim: %v", err))
 				continue
 			}
 			allmatch := true
@@ -152,7 +154,9 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 				if code != codes.OK && code != codes.FailedPrecondition {
 					return err
 				}
+				s.CtxLog(ctx, fmt.Sprintf("Adjusted to run %v", intent.GetJob().GetName()))
 			} else {
+				s.CtxLog(ctx, fmt.Sprintf("Not running: %v", allmatch))
 				s.decisions[intent.GetJob().GetName()] = fmt.Sprintf("Missing requirement")
 			}
 		}
