@@ -173,7 +173,6 @@ nintents <
   job <
     name: "printer"
     go_path: "github.com/brotherlogic/printer"
-    breakout: true
     requirements <
       category: RECEIPT_PRINTER
     >
@@ -184,7 +183,6 @@ nintents <
   job <
     name: "display"
     go_path: "github.com/brotherlogic/display"
-    breakout: true
   >  
   redundancy: REDUNDANT
 >
@@ -192,7 +190,6 @@ nintents <
   job <
     name: "beertracker"
     go_path: "github.com/brotherlogic/beertracker"
-    breakout: true
     requirements <	
       category: SERVER
       properties: "zero2"
