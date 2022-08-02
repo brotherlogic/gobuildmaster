@@ -52,7 +52,6 @@ nintents <
   job <
     name: "floppy"
     go_path: "github.com/brotherlogic/floppy"
-    breakout: true
     requirements <
       category: SERVER
       properties: "floppy"
@@ -123,7 +122,6 @@ nintents <
   job <
     name: "proxy"
     go_path: "github.com/brotherlogic/proxy"
-    breakout: true
     requirements <
       category: EXTERNAL
       properties: "external_ready"
@@ -461,7 +459,6 @@ nintents <
   job <
     name: "dashboard"
     go_path: "github.com/brotherlogic/dashboard"
-    breakout: true
     requirements <
       category: SERVER
       properties: "personal"
@@ -473,7 +470,6 @@ nintents <
   job <
     name: "secureproxy"
     go_path: "github.com/brotherlogic/secureproxy"
-    breakout: true
     requirements <
       category: EXTERNAL
       properties: "external_ready"
