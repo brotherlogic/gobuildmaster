@@ -144,13 +144,6 @@ nintents <
 >
 nintents <
   job <
-    name: "beerserver"
-    go_path: "github.com/brotherlogic/beerserver"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "executor"
     go_path: "github.com/brotherlogic/executor"
     breakout: true
