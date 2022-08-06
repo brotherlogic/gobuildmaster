@@ -164,6 +164,7 @@ nintents <
   job <
     name: "printer"
     go_path: "github.com/brotherlogic/printer"
+    breakout: true
     requirements <
       category: RECEIPT_PRINTER
     >
