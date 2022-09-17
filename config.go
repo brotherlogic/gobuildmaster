@@ -81,7 +81,7 @@ func configPb() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "config.pb", size: 8731, mode: os.FileMode(436), modTime: time.Unix(1663376125, 0)}
+	info := bindataFileInfo{name: "config.pb", size: 8731, mode: os.FileMode(436), modTime: time.Unix(1663377105, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
