@@ -43,7 +43,7 @@ nintents <
     breakout: true
     requirements <
       category: SERVER
-      properties: "clust2"
+      properties: "argon"
     >
   >
   redundancy: GLOBAL
