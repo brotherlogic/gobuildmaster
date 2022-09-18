@@ -80,6 +80,10 @@ nintents <
       category: DISK
       properties: "datastore"
     >
+    requirements <
+      category: ZONE
+      properties: "noncluster"
+    >
   >
   redundancy: GLOBAL	
 >
