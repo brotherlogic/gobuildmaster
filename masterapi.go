@@ -147,7 +147,7 @@ func (g *prodGetter) getSlaves(ctx context.Context) (*pbd.ServiceList, error) {
 
 type mainChecker struct {
 	prev      []string
-	logger    func(string)
+	logger    func(context.Context, string)
 	dial      func(server, host string) (*grpc.ClientConn, error)
 	dialEntry func(*pbd.RegistryEntry) (*grpc.ClientConn, error)
 }
@@ -234,7 +234,7 @@ func (s Server) GetState() []*pbg.State {
 //Compare compares current state to desired state
 func (s Server) Compare(ctx context.Context, in *pb.Empty) (*pb.CompareResponse, error) {
 	resp := &pb.CompareResponse{}
-	list, _ := getFleetStatus(ctx, &mainChecker{logger: s.Log, dial: s.DialServer, dialEntry: s.DoDial})
+	list, _ := getFleetStatus(ctx, &mainChecker{logger: s.CtxLog, dial: s.DialServer, dialEntry: s.DoDial})
 	cc := &pb.Config{}
 	for _, jlist := range list {
 		for _, job := range jlist.GetDetails() {
