@@ -493,3 +493,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "sonosbridge"
+    go_path: "github.com/brotherlogic/sonosbridge"
+  >  
+  redundancy: REDUNDANT
+>
