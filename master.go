@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/protobuf/proto"
 	"golang.org/x/net/context"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	pbd "github.com/brotherlogic/discovery/proto"
 	pb "github.com/brotherlogic/gobuildmaster/proto"
@@ -160,7 +160,7 @@ func configDiff(cm, cs *pb.Config) *pb.Config {
 func loadConfig() (*pb.Config, error) {
 	toload := &pb.Config{}
 	data, _ := Asset("config.pb")
-	err := proto.UnmarshalText(string(data), toload)
+	err := prototext.Unmarshal(data, toload)
 	return toload, err
 }
 
