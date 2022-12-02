@@ -3,9 +3,9 @@ module github.com/brotherlogic/gobuildmaster
 go 1.16
 
 require (
-	github.com/brotherlogic/discovery v0.0.0-20221202173710-b0a7944a6def
-	github.com/brotherlogic/githubcard v0.0.0-20221202170138-6798fc70b66d
-	github.com/brotherlogic/gobuildslave v0.0.0-20221202062908-5dba9f272c1e
+	github.com/brotherlogic/discovery v0.0.0-20221202173903-271018caa258
+	github.com/brotherlogic/githubcard v0.0.0-20221202173755-dba8c18ee350
+	github.com/brotherlogic/gobuildslave v0.0.0-20221202173750-e3cb77d8d7d1
 	github.com/brotherlogic/goserver v0.0.0-20221106165541-0672428e3628
 	github.com/golang/protobuf v1.5.2
 	github.com/prometheus/client_golang v1.14.0
