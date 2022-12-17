@@ -121,7 +121,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 
 	for _, intent := range s.config.Nintents {
 		time.Sleep(time.Second * 2)
-		s.CtxLog(ctx, fmt.Sprintf("Starting Adjust run: %v", intent.GetJob().GetName()))
+		s.CtxLog(ctx, fmt.Sprintf("Starting Adjust run: %v with %v", intent.GetJob().GetName(), ourjobs[intent.GetJob().GetName()]))
 		if !ourjobs[intent.GetJob().GetName()] {
 			err = s.claimJob(ctx, intent.GetJob().GetName())
 			if err != nil {
