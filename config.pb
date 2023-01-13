@@ -507,3 +507,11 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+
+nintents <
+  job <
+    name: "focus"
+    go_path: "github.com/brotherlogic/focus"
+  >  
+  redundancy: REDUNDANT
+>
