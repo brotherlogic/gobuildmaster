@@ -47,7 +47,7 @@ nintents <
     breakout: true
     requirements <
       category: SERVER
-      properties: "mdisplay"
+      properties: "argon"
     >
   >
   redundancy: GLOBAL
