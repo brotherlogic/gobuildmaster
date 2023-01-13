@@ -500,3 +500,10 @@ nintents <
   >  
   redundancy: REDUNDANT
 >
+nintents <
+  job <
+    name: "tasklist"
+    go_path: "github.com/brotherlogic/tasklist"
+  >  
+  redundancy: REDUNDANT
+>
