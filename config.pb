@@ -188,6 +188,13 @@ nintents <
 >
 nintents <
   job <
+    name: "grambridge"
+    go_path: "github.com/brotherlogic/grambridge"
+  >  
+  redundancy: REDUNDANT
+>
+nintents <
+  job <
     name: "beertracker"
     go_path: "github.com/brotherlogic/beertracker"
     requirements <	
