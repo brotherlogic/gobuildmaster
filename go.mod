@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/brotherlogic/discovery v0.0.0-20230902193302-520563d002e3
 	github.com/brotherlogic/githubcard v0.0.0-20230905022601-0bc2851cc71a
-	github.com/brotherlogic/gobuildslave v0.0.0-20230829152314-ca71975983f6
+	github.com/brotherlogic/gobuildslave v0.0.0-20230905152905-ce155dfbfe26
 	github.com/brotherlogic/goserver v0.0.0-20230726200050-779ae6811580
 	github.com/golang/protobuf v1.5.3
 	github.com/prometheus/client_golang v1.16.0
