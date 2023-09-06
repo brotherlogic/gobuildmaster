@@ -173,6 +173,10 @@ nintents <
     name: "printer"
     go_path: "github.com/brotherlogic/printer"
     breakout: true
+    requirements <	
+      category: SERVER
+      properties: "cd"
+    >
   >  
   redundancy: REDUNDANT
 >
