@@ -20,7 +20,7 @@ require (
 	github.com/brotherlogic/datastore v0.0.0-20230901200259-dc560f948279 // indirect
 	github.com/brotherlogic/dstore v0.0.0-20230902202942-a8b8333265ee // indirect
 	github.com/brotherlogic/keystore v0.0.0-20230901231139-d77459255d7a // indirect
-	github.com/brotherlogic/lock v0.0.0-20230906041502-78aff663a3cb // indirect
+	github.com/brotherlogic/lock v0.0.0-20230906042017-818fd38629b4 // indirect
 	github.com/brotherlogic/logging v0.0.0-20230906034004-1fab9e23479e // indirect
 	github.com/brotherlogic/monitor v0.0.0-20221025152653-c10877c5f9e6 // indirect
 	github.com/brotherlogic/versionserver v0.0.0-20221025154054-c9bcd41be2f2 // indirect
