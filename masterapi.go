@@ -54,6 +54,7 @@ type Server struct {
 	testing           bool
 	decisions         map[string]string
 	claimed           string
+	regMap            map[string]time.Time
 }
 
 func (s *Server) alertOnMissingJob(ctx context.Context) error {
@@ -286,6 +287,7 @@ func Init(config *pb.Config) *Server {
 		false,
 		make(map[string]string),
 		"",
+		make(map[string]time.Time),
 	}
 	s.getter = &prodGetter{s.FDial}
 
