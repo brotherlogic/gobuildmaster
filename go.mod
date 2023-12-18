@@ -3,7 +3,7 @@ module github.com/brotherlogic/gobuildmaster
 go 1.19
 
 require (
-	github.com/brotherlogic/discovery v0.0.0-20231211043301-7bb74ed3ffa5
+	github.com/brotherlogic/discovery v0.0.0-20231218045841-2fefdb82bf44
 	github.com/brotherlogic/githubcard v0.0.0-20231214022358-724458ac73cb
 	github.com/brotherlogic/gobuildslave v0.0.0-20231213194136-346fbf2eebb1
 	github.com/brotherlogic/goserver v0.0.0-20230726200050-779ae6811580
