@@ -100,13 +100,6 @@ nintents <
 >
 nintents <
   job <
-    name: "dropboxsync"
-    go_path: "github.com/brotherlogic/dropboxsync"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "healthchecker"
     go_path: "github.com/brotherlogic/healthchecker"
   >  
