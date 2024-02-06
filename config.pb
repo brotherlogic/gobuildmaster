@@ -242,13 +242,6 @@ nintents <
 >
 nintents <
   job <
-    name: "basicjob"
-    go_path: "github.com/brotherlogic/basicjob"
-  >  
-  redundancy: REDUNDANT
->
-nintents <
-  job <
     name: "recordadder"
     go_path: "github.com/brotherlogic/recordadder"
   >  
