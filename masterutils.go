@@ -61,7 +61,7 @@ func (s *Server) claimJob(ctx context.Context, job string) error {
 
 		client := pb.NewGoBuildMasterClient(conn)
 		_, err = client.Claim(ctx, &pb.ClaimRequest{Server: s.Registry.Identifier, JobName: job})
-		if err != nil && status.Convert(err).Code() != codes.Unavailable {
+		if err != nil && status.Convert(err).Code() != codes.Unavailable && status.Convert(err).Code() != codes.Unimplemented {
 			s.claimed = ""
 			return err
 		}
