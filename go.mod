@@ -7,7 +7,7 @@ toolchain go1.23.0
 require (
 	github.com/brotherlogic/discovery v0.0.0-20241109204028-02908558af09
 	github.com/brotherlogic/githubcard v0.0.0-20241106094256-6204bb5676f4
-	github.com/brotherlogic/gobuildslave v0.0.0-20241104084926-a33b425f3128
+	github.com/brotherlogic/gobuildslave v0.0.0-20241111085829-8d4e5069a7fd
 	github.com/brotherlogic/goserver v0.0.0-20240826215223-fccbac46b3d4
 	github.com/golang/protobuf v1.5.4
 	github.com/prometheus/client_golang v1.20.5
