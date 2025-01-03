@@ -138,6 +138,7 @@ func (s *Server) adjustWorld(ctx context.Context) error {
 				}
 
 				if !localmatch {
+					s.CtxLog(ctx, fmt.Sprintf("Mismatch: %v vs %v", intent.GetJob().GetRequirements(), localConfig))
 					allmatch = false
 				}
 			}
