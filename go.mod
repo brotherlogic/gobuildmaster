@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/brotherlogic/discovery v0.0.0-20241109204028-02908558af09
 	github.com/brotherlogic/githubcard v0.0.0-20250221141309-fd5830677d1e
-	github.com/brotherlogic/gobuildslave v0.0.0-20250221170425-b4b2561a5a15
+	github.com/brotherlogic/gobuildslave v0.0.0-20250221175337-5b64ff5a1af7
 	github.com/brotherlogic/goserver v0.0.0-20250123145056-95c6fbb2310a
 	github.com/golang/protobuf v1.5.4
 	github.com/prometheus/client_golang v1.21.0
@@ -18,7 +18,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/brotherlogic/buildserver v0.0.0-20250221150729-278793330a6a // indirect
 	github.com/brotherlogic/datastore v0.0.0-20250113225754-a9cab19c721e // indirect
-	github.com/brotherlogic/dstore v0.0.0-20250221170601-dbdc9aa19806 // indirect
+	github.com/brotherlogic/dstore v0.0.0-20250221175241-bc0852937f8a // indirect
 	github.com/brotherlogic/githubridge v0.2848.0 // indirect
 	github.com/brotherlogic/keystore v0.0.0-20240508161349-814b3200b126 // indirect
 	github.com/brotherlogic/lock v0.0.0-20250221174525-8ffd309a081d // indirect
