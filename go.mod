@@ -22,7 +22,7 @@ require (
 	github.com/brotherlogic/githubridge v0.2848.0 // indirect
 	github.com/brotherlogic/keystore v0.0.0-20240508161349-814b3200b126 // indirect
 	github.com/brotherlogic/lock v0.0.0-20250220234450-7012c6d617b8 // indirect
-	github.com/brotherlogic/logging v0.0.0-20250220230011-85e7b9c60bf6 // indirect
+	github.com/brotherlogic/logging v0.0.0-20250221000529-af5f4625bfc2 // indirect
 	github.com/brotherlogic/monitor v0.0.0-20221025152653-c10877c5f9e6 // indirect
 	github.com/brotherlogic/versionserver v0.0.0-20221025154054-c9bcd41be2f2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
