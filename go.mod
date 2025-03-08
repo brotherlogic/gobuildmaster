@@ -5,7 +5,7 @@ go 1.23.2
 require (
 	github.com/brotherlogic/discovery v0.0.0-20241109204028-02908558af09
 	github.com/brotherlogic/githubcard v0.0.0-20250308161301-4b0aa0e0e75b
-	github.com/brotherlogic/gobuildslave v0.0.0-20250308145644-657b94475d32
+	github.com/brotherlogic/gobuildslave v0.0.0-20250308180200-caf7d34bec1a
 	github.com/brotherlogic/goserver v0.0.0-20250123145056-95c6fbb2310a
 	github.com/golang/protobuf v1.5.4
 	github.com/prometheus/client_golang v1.21.1
@@ -22,7 +22,7 @@ require (
 	github.com/brotherlogic/githubridge v0.2848.0 // indirect
 	github.com/brotherlogic/keystore v0.0.0-20240508161349-814b3200b126 // indirect
 	github.com/brotherlogic/lock v0.0.0-20250308175208-7d679f9f502f // indirect
-	github.com/brotherlogic/logging v0.0.0-20250308165549-b6177cf3d753 // indirect
+	github.com/brotherlogic/logging v0.0.0-20250308180128-23ee0754cace // indirect
 	github.com/brotherlogic/monitor v0.0.0-20221025152653-c10877c5f9e6 // indirect
 	github.com/brotherlogic/versionserver v0.0.0-20221025154054-c9bcd41be2f2 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
