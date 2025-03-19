@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/brotherlogic/discovery v0.0.0-20241109204028-02908558af09
-	github.com/brotherlogic/githubcard v0.0.0-20250319215148-19abf9993011
+	github.com/brotherlogic/githubcard v0.0.0-20250319224117-4365f12fe871
 	github.com/brotherlogic/gobuildslave v0.0.0-20250319214213-fd5227b9a6ce
 	github.com/brotherlogic/goserver v0.0.0-20250123145056-95c6fbb2310a
 	github.com/golang/protobuf v1.5.4
