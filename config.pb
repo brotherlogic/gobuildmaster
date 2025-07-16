@@ -47,7 +47,7 @@ nintents <
     breakout: true
     requirements <
       category: SERVER
-      properties: "argon"
+      properties: "argon.home"
     >
   >
   redundancy: GLOBAL
@@ -161,7 +161,7 @@ nintents <
     breakout: true
     requirements <	
       category: SERVER
-      properties: "cd"
+      properties: "cd.home"
     >
   >  
   redundancy: REDUNDANT
@@ -301,8 +301,8 @@ nintents <
     name: "cdprocessor"
     go_path: "github.com/brotherlogic/cdprocessor"
     requirements <
-      category: DISK
-      properties: "raid"
+      category: SERVER
+      properties: "argon.home"
     >
   >
   redundancy: REDUNDANT
