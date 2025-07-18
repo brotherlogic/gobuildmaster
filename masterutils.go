@@ -52,7 +52,7 @@ func (s *Server) claimJob(ctx context.Context, job string) error {
 	ctx, cancel := utils.ManualContext("gbm-claim", time.Minute)
 	defer cancel()
 	for _, master := range masters {
-		s.CtxLog(ctx, fmt.FormatString("Claiming %v on %v", job, master))
+		s.CtxLog(ctx, fmt.Sprintf("Claiming %v on %v", job, master))
 		conn, err := s.FDial(master)
 		if err != nil {
 			s.claimed = ""
