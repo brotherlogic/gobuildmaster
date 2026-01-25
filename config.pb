@@ -47,7 +47,7 @@ nintents <
     breakout: true
     requirements <
       category: SERVER
-      properties: "argon.home"
+      properties: "argon"
     >
   >
   redundancy: GLOBAL
