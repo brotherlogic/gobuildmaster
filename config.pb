@@ -12,10 +12,6 @@ nintents <
       category: HOST_TYPE
       properties: "Pi 4"
     >
-    requirements <
-      category: ZONE
-      properties: "noncluster"
-    >
   >
   redundancy: REDUNDANT
   redundancy64: REDUNDANT
