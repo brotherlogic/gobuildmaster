@@ -166,6 +166,10 @@ nintents <
   job <
     name: "display"
     go_path: "github.com/brotherlogic/display"
+    requirements <
+      category: SERVER
+      properties: "argon"
+    >
   >  
   redundancy: REDUNDANT
 >
